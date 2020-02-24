@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/components/mixins/resizable.dart';
@@ -17,7 +15,11 @@ class CardComponent extends SpriteComponent with Resizable {
     height = tileSize * 1.25 * 1.39444;
   }
 
-  static fromCard(Card card) {
-    return CardComponent('cards/${card.color.folder}/${card.head.fileName}');
+  static fromCard(Card card, {bool showBackFace = false}) {
+    return CardComponent(
+      showBackFace
+          ? 'cards/BackFace.png'
+          : 'cards/${card.color.folder}/${card.head.fileName}',
+    );
   }
 }

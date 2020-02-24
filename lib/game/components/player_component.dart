@@ -24,7 +24,8 @@ class PlayerComponent extends PositionComponent
     cards.forEach((card) => card.setWidthAndHeightFromTileSize(size.width / 9));
 
     double cardHeight = cards.first.height;
-    double fullDeckWidth = cards.first.width * .25 * (cards.length - 1) + cards.first.width;
+    double fullDeckWidth =
+        cards.first.width * .25 * (cards.length - 1) + cards.first.width;
     double initialX = 0;
     double initialY = 0;
     double cardX = 0;
@@ -65,7 +66,11 @@ class PlayerComponent extends PositionComponent
   }
 
   static PlayerComponent fromPlayer(Player player) {
-    List<CardComponent> cards = player.cards.map((card) => CardComponent.fromCard(card)).toList().cast();
+    List<CardComponent> cards = player.cards
+        .map((card) =>
+            CardComponent.fromCard(card, showBackFace: !player.isRealPlayer))
+        .toList()
+        .cast();
     return PlayerComponent(
       cards,
       player.position,
