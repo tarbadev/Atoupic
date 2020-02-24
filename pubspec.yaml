@@ -11,10 +11,14 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^0.1.2
   flame: ^0.18.1
+  kiwi: ^0.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mockito: ^4.1.1
+  build_runner: ^1.7.2
+  kiwi_generator: ^0.4.0
 
 flutter:
   uses-material-design: true
