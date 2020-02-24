@@ -23,3 +23,37 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/cards/clubs/7.png
+    - assets/images/cards/clubs/8.png
+    - assets/images/cards/clubs/9.png
+    - assets/images/cards/clubs/10.png
+    - assets/images/cards/clubs/A.png
+    - assets/images/cards/clubs/J.png
+    - assets/images/cards/clubs/K.png
+    - assets/images/cards/clubs/Q.png
+    - assets/images/cards/diamonds/7.png
+    - assets/images/cards/diamonds/8.png
+    - assets/images/cards/diamonds/9.png
+    - assets/images/cards/diamonds/10.png
+    - assets/images/cards/diamonds/A.png
+    - assets/images/cards/diamonds/J.png
+    - assets/images/cards/diamonds/K.png
+    - assets/images/cards/diamonds/Q.png
+    - assets/images/cards/hearts/7.png
+    - assets/images/cards/hearts/8.png
+    - assets/images/cards/hearts/9.png
+    - assets/images/cards/hearts/10.png
+    - assets/images/cards/hearts/A.png
+    - assets/images/cards/hearts/J.png
+    - assets/images/cards/hearts/K.png
+    - assets/images/cards/hearts/Q.png
+    - assets/images/cards/spades/7.png
+    - assets/images/cards/spades/8.png
+    - assets/images/cards/spades/9.png
+    - assets/images/cards/spades/10.png
+    - assets/images/cards/spades/A.png
+    - assets/images/cards/spades/J.png
+    - assets/images/cards/spades/K.png
+    - assets/images/cards/spades/Q.png
+    - assets/images/cards/BackFace.png
