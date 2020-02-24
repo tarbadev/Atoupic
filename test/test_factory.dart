@@ -2,7 +2,7 @@ import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 
 abstract class TestFactory {
-  static get cards => [
+  static List<Card> get cards => [
     Card(CardColor.Spade, CardHead.Seven),
     Card(CardColor.Spade, CardHead.Eight),
     Card(CardColor.Spade, CardHead.Nine),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/player_service.dart';
 import 'package:atoupic/game/atoupic_game.dart';
@@ -16,6 +18,11 @@ class GameService {
     ];
 
     atoupicGame.setPlayers(players);
+    atoupicGame.setCurrentPlayer(players[Random().nextInt(players.length)], onTakeOrPassDecision);
+
     atoupicGame.visible = true;
+  }
+
+  onTakeOrPassDecision() {
   }
 }

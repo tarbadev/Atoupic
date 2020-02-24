@@ -14,6 +14,8 @@ class AtoupicGame extends BaseGame {
   bool visible = false;
   int _turn = 1;
   TextComponent _turnComponent;
+  List<PlayerComponent> _players;
+  PlayerComponent _currentPlayer;
 
   AtoupicGame() {
     _background = Background(0xFF079992);
@@ -36,7 +38,11 @@ class AtoupicGame extends BaseGame {
   }
 
   setPlayers(List<Player> players) {
-    players.forEach((player) => add(PlayerComponent.fromPlayer(player)));
+    players.forEach((player) {
+      var playerComponent = PlayerComponent.fromPlayer(player);
+      _players.add(playerComponent);
+      add(playerComponent);
+    });
   }
 
   @override
@@ -45,5 +51,9 @@ class AtoupicGame extends BaseGame {
     _background.height = size.height;
 
     super.resize(size);
+  }
+
+  setCurrentPlayer(Player player, Function onTakeOrPassDecision) {
+    _currentPlayer = _players.firstWhere((playerComponent) => player.position == playerComponent.position);
   }
 }

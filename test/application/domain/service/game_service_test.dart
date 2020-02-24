@@ -14,6 +14,7 @@ void main() {
     GameService gameService;
 
     setUp(() {
+      reset(Mocks.gameService);
       gameService = GameService();
     });
 
@@ -34,7 +35,7 @@ void main() {
         ]);
       });
 
-      test('sets the players in game', () {
+      test('sets the players in game and displays the game', () {
         var computerPlayer = Player(TestFactory.cards, Position.Top);
         when(Mocks.playerService.buildRealPlayer())
             .thenReturn(TestFactory.realPlayer);
@@ -52,6 +53,22 @@ void main() {
           ]),
           Mocks.atoupicGame.visible = true,
         ]);
+      });
+
+      test('sets the random first current player', () {
+        var computerPlayer = Player(TestFactory.cards.sublist(0, 2), Position.Top);
+        when(Mocks.playerService.buildRealPlayer())
+            .thenReturn(TestFactory.realPlayer);
+        when(Mocks.playerService.buildComputerPlayer(any))
+            .thenReturn(computerPlayer);
+
+        gameService.startSoloGame();
+
+        var player = verify(Mocks.atoupicGame.setCurrentPlayer(
+                captureAny, gameService.onTakeOrPassDecision))
+            .captured
+            .single;
+        expect([TestFactory.realPlayer, computerPlayer].contains(player), isTrue);
       });
     });
   });
