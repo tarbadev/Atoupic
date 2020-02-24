@@ -8,4 +8,9 @@ class PlayerService {
     var cards = Container().resolve<CardService>().distributeCards(5);
     return Player(cards, Position.Bottom, isRealPlayer: true);
   }
+
+  Player buildComputerPlayer(Position position) {
+    var cards = Container().resolve<CardService>().distributeCards(5);
+    return Player(cards, position);
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/player.dart';
 
 abstract class TestFactory {
   static get cards => [
@@ -35,4 +36,8 @@ abstract class TestFactory {
     Card(CardColor.Club, CardHead.King),
     Card(CardColor.Club, CardHead.Ace),
   ];
+
+  static get realPlayer => Player(cards, Position.Bottom, isRealPlayer: true);
+
+  static Player realPlayerWithCards(List<Card> cards) => Player(cards, Position.Bottom, isRealPlayer: true);
 }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:flame/anchor.dart';
 import 'package:flame/components/text_component.dart';
 import 'package:flame/game.dart';
@@ -10,11 +11,6 @@ class AtoupicGame extends BaseGame {
   bool visible = false;
 
   AtoupicGame() {
-    TextConfig regular = TextConfig(color: BasicPalette.white.color);
-    add(TextComponent('In game', config: regular)
-      ..x = 200
-      ..y = 200
-      ..anchor = Anchor.center);
   }
 
   @override
@@ -23,4 +19,6 @@ class AtoupicGame extends BaseGame {
       super.render(canvas);
     }
   }
+
+  setPlayers(List<Player> players) {}
 }
