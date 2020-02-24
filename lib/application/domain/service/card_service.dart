@@ -1,10 +1,18 @@
+import 'dart:math';
+
 import 'package:atoupic/application/domain/entity/card.dart';
 
 class CardService {
-  List<Card> cards = [];
+  List<Card> pile = [];
+  Random _random;
 
-  initializeCards() {
-    cards = [
+  CardService() {
+    _random = Random();
+    _initializeCards();
+  }
+
+  _initializeCards() {
+    pile = [
       Card(CardColor.Spade, CardHead.Seven),
       Card(CardColor.Spade, CardHead.Eight),
       Card(CardColor.Spade, CardHead.Nine),
@@ -38,5 +46,17 @@ class CardService {
       Card(CardColor.Club, CardHead.King),
       Card(CardColor.Club, CardHead.Ace),
     ];
+  }
+
+  List<Card> distributeCards(int count) {
+    List<Card> cardsToDistribute = List();
+
+    for(int i = 0; i < count; i++) {
+      var card = pile[_random.nextInt(pile.length)];
+      cardsToDistribute.add(card);
+      pile.remove(card);
+    }
+
+    return cardsToDistribute;
   }
 }

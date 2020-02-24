@@ -8,6 +8,7 @@ void setupDependencyInjectorForTest() {
   final container = kiwi.Container();
   container.registerInstance(Mocks.atoupicGame);
   container.registerInstance(Mocks.cardService);
+  container.registerInstance(Mocks.playerService);
 
   when(Mocks.atoupicGame.widget).thenReturn(Scaffold());
 }

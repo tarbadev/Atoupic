@@ -21,9 +21,9 @@ void main() {
     verify(Mocks.atoupicGame.visible = true);
   });
 
-  testWidgets('AtoupicApp load cards through cardService', (WidgetTester tester) async {
+  testWidgets('AtoupicApp creates a player', (WidgetTester tester) async {
     await tester.pumpWidget(AtoupicApp());
 
-    verify(Mocks.cardService.initializeCards());
+    verify(Mocks.playerService.buildRealPlayer());
   });
 }

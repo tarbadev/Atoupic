@@ -1,4 +1,5 @@
 import 'package:atoupic/application/domain/service/card_service.dart';
+import 'package:atoupic/application/domain/service/player_service.dart';
 import 'package:atoupic/game/atoupic_game.dart';
 import 'package:kiwi/kiwi.dart';
 
@@ -11,6 +12,7 @@ abstract class ApplicationInjector {
 
   @Register.singleton(AtoupicGame)
   @Register.singleton(CardService)
+  @Register.singleton(PlayerService)
   void configureAnnotations();
 }
 

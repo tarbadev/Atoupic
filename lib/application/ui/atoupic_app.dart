@@ -1,4 +1,6 @@
+import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/card_service.dart';
+import 'package:atoupic/application/domain/service/player_service.dart';
 import 'package:atoupic/game/atoupic_game.dart';
 import 'package:flutter/material.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
@@ -22,6 +24,8 @@ class _MainPage extends StatefulWidget {
 class _MainPageState extends State<_MainPage> {
   AtoupicGame game;
   CardService _cardService;
+  PlayerService _playerService;
+  Player _realPlayer;
   Color backgroundColor;
 
   @override
@@ -30,7 +34,9 @@ class _MainPageState extends State<_MainPage> {
 
     var container = kiwi.Container();
     _cardService = container.resolve<CardService>();
-    _cardService.initializeCards();
+    _playerService = container.resolve<PlayerService>();
+
+    _realPlayer = _playerService.buildRealPlayer();
 
     game = container.resolve<AtoupicGame>();
     backgroundColor = Colors.white;

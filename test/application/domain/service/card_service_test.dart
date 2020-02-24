@@ -1,5 +1,6 @@
 import 'package:atoupic/application/domain/service/card_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../test_factory.dart';
@@ -12,12 +13,16 @@ void main() {
       cardService = CardService();
     });
 
-    test('initializeCards sets the cards to default', () {
-      expect(cardService.cards, isEmpty);
+    test('initializes pile on startup', () {
+      expect(cardService.pile.length, 32);
+      expect(listEquals(cardService.pile, TestFactory.cards), isTrue);
+    });
 
-      cardService.initializeCards();
+    test('distributeCards returns the number of cards specified and removes them from the pile', () {
+      var cards = cardService.distributeCards(10);
 
-      expect(listEquals(cardService.cards, TestFactory.cards), isTrue);
+      expect(cardService.pile.length, 22);
+      cards.forEach((card) => expect(cardService.pile.contains(card), isFalse));
     });
   });
 }
