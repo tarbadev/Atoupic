@@ -12,6 +12,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   flame: ^0.18.1
   kiwi: ^0.2.0
+  equatable: ^1.0.1
 
 dev_dependencies:
   flutter_test:

@@ -9,7 +9,7 @@ import '../../mock_definition.dart';
 void main() {
   setupDependencyInjectorForTest();
 
-  testWidgets('AtoupicApp the game display method when clicking on solo', (WidgetTester tester) async {
+  testWidgets('AtoupicApp display the game when clicking on solo', (WidgetTester tester) async {
     var atoupicAppView = AtoupicAppView(tester);
 
     await tester.pumpWidget(AtoupicApp());
@@ -19,5 +19,11 @@ void main() {
     await atoupicAppView.tapOnSolo();
 
     verify(Mocks.atoupicGame.visible = true);
+  });
+
+  testWidgets('AtoupicApp load cards through cardService', (WidgetTester tester) async {
+    await tester.pumpWidget(AtoupicApp());
+
+    verify(Mocks.cardService.initializeCards());
   });
 }
