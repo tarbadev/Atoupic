@@ -13,6 +13,7 @@ dependencies:
   flame: ^0.18.1
   kiwi: ^0.2.0
   equatable: ^1.0.1
+  collection: ^1.14.11
 
 dev_dependencies:
   flutter_test:

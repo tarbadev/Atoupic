@@ -19,18 +19,12 @@ void main() {
       playerService = PlayerService();
     });
 
-    test('buildRealPlayer returns a player', () {
-      var cards = [
-        Card(CardColor.Club, CardHead.Seven),
-        Card(CardColor.Club, CardHead.Eight),
-        Card(CardColor.Club, CardHead.Nine),
-        Card(CardColor.Club, CardHead.Ten),
-        Card(CardColor.Club, CardHead.Jack),
-      ];
+    test('buildRealPlayer returns a player with ordered cards', () {
+      var unSortedCards = TestFactory.cards.toList()..shuffle();
+      when(Mocks.cardService.distributeCards(any))
+          .thenReturn(unSortedCards);
 
-      when(Mocks.cardService.distributeCards(any)).thenReturn(cards);
-
-      var expectedPlayer = TestFactory.realPlayerWithCards(cards);
+      var expectedPlayer = TestFactory.realPlayerWithCards(TestFactory.cards);
       var actualPlayer = playerService.buildRealPlayer();
 
       expect(actualPlayer, expectedPlayer);

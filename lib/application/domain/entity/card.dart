@@ -75,4 +75,9 @@ class Card extends Equatable {
 
   @override
   List<Object> get props => [color, head];
+
+  @override
+  String toString() {
+    return 'Card{color: $color, head: $head}';
+  }
 }
