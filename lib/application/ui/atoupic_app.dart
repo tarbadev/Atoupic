@@ -1,6 +1,5 @@
-import 'package:atoupic/application/domain/service/game_service.dart';
-import 'package:atoupic/application/ui/view/in_game_view.dart';
 import 'package:atoupic/application/ui/view/home_view.dart';
+import 'package:atoupic/application/ui/view/in_game_view.dart';
 import 'package:atoupic/game/atoupic_game.dart';
 import 'package:flutter/material.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
@@ -23,9 +22,8 @@ class _MainPage extends StatefulWidget {
 
 class _MainPageState extends State<_MainPage> {
   AtoupicGame _game;
-  GameService _gameService;
-  Widget _homeView;
-  Widget _inGameView;
+  HomeView _homeView;
+  InGameView _inGameView;
   Widget _currentView;
 
   @override
@@ -35,16 +33,12 @@ class _MainPageState extends State<_MainPage> {
     _homeView = HomeView(_startSoloGame);
     _inGameView = InGameView();
 
-    var container = kiwi.Container();
-    _gameService = container.resolve<GameService>();
-
     _currentView = _homeView;
 
-    _game = container.resolve<AtoupicGame>();
+    _game = kiwi.Container().resolve<AtoupicGame>();
   }
 
   _startSoloGame() {
-    _gameService.startSoloGame();
     setState(() {
       _currentView = _inGameView;
     });

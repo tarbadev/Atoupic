@@ -38,6 +38,7 @@ abstract class TestFactory {
   ];
 
   static get realPlayer => Player(cards, Position.Bottom, isRealPlayer: true);
+  static get computerPlayer => Player(cards.sublist(0, 5), Position.Top);
 
   static Player realPlayerWithCards(List<Card> cards) => Player(cards, Position.Bottom, isRealPlayer: true);
 }

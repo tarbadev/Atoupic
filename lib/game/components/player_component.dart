@@ -1,22 +1,49 @@
 import 'dart:ui';
 
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:flame/anchor.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/components/composed_component.dart';
 import 'package:flame/components/mixins/has_game_ref.dart';
 import 'package:flame/components/mixins/resizable.dart';
 import 'package:flame/components/mixins/tapable.dart';
+import 'package:flame/components/text_box_component.dart';
+import 'package:flame/text_config.dart';
 
 import 'card_component.dart';
+
+class PassedCaption extends TextBoxComponent {
+  bool visible = false;
+
+  PassedCaption() : super('Passed   ', config: TextConfig(fontSize: 18)) {
+    anchor = Anchor.bottomRight;
+  }
+
+  @override
+  void render(Canvas canvas) {
+    if (visible) {
+      super.render(canvas);
+    }
+  }
+
+  @override
+  void drawBackground(Canvas c) {
+    final Rect rect = Rect.fromLTWH(0, 0, width, height);
+    c.drawRect(rect, Paint()..color = const Color(0xFFFFFFFF));
+  }
+}
 
 class PlayerComponent extends PositionComponent
     with HasGameRef, Tapable, Resizable, ComposedComponent {
   final List<CardComponent> cards;
   final Position position;
   final bool isRealPlayer;
+  PassedCaption _passedCaption;
 
   PlayerComponent(this.cards, this.position, this.isRealPlayer) {
+    _passedCaption = PassedCaption();
     this.cards.forEach((card) => add(card));
+    add(_passedCaption);
   }
 
   @override
@@ -62,6 +89,23 @@ class PlayerComponent extends PositionComponent
       card.y = cardY;
       card.angle = cardAngle;
     });
+
+    if (position == Position.Bottom) {
+    } else if (position == Position.Top) {
+      _passedCaption
+        ..anchor = Anchor.bottomLeft
+        ..x = cards.last.x
+        ..y = cards.first.y;
+    } else if (position == Position.Left) {
+      _passedCaption
+        ..anchor = Anchor.bottomLeft
+        ..x = cards.first.x - cards.first.height * .25
+        ..y = cards.first.y;
+    } else if (position == Position.Right) {
+      _passedCaption
+        ..x = cards.first.x + cards.first.height * .25
+        ..y = cards.first.y - cards.first.width;
+    }
     super.resize(size);
   }
 
@@ -76,5 +120,9 @@ class PlayerComponent extends PositionComponent
       player.position,
       player.isRealPlayer,
     );
+  }
+
+  void displayPassed() {
+    _passedCaption.visible = true;
   }
 }

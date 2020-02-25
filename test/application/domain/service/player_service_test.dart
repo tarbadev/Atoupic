@@ -5,9 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import '../../../fake_application_injector.dart';
-import '../../../mock_definition.dart';
-import '../../../test_factory.dart';
+import '../../../helper/fake_application_injector.dart';
+import '../../../helper/mock_definition.dart';
+import '../../../helper/test_factory.dart';
 
 void main() {
   setupDependencyInjectorForTest();

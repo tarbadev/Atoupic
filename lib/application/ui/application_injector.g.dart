@@ -11,7 +11,8 @@ class _$ApplicationInjector extends ApplicationInjector {
     final Container container = Container();
     container.registerSingleton((c) => AtoupicGame());
     container.registerSingleton((c) => CardService());
-    container.registerSingleton((c) => PlayerService());
-    container.registerSingleton((c) => GameService());
+    container.registerFactory((c) => PlayerService());
+    container.registerFactory((c) => GameService(c<GameContextRepository>()));
+    container.registerSingleton((c) => GameContextRepository());
   }
 }
