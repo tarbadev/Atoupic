@@ -1,9 +1,7 @@
 import 'dart:ui';
 
-import 'package:atoupic/application/domain/entity/card.dart' as AtoupicCard;
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
-import 'package:atoupic/game/components/card_component.dart';
 import 'package:atoupic/game/components/player_component.dart';
 import 'package:flame/anchor.dart';
 import 'package:flame/components/text_component.dart';
@@ -39,9 +37,13 @@ class AtoupicGame extends BaseGame with HasWidgetsOverlay {
     }
   }
 
-  setPlayers(List<Player> players) {
-    players.forEach((player) {
-      var playerComponent = PlayerComponent.fromPlayer(player);
+  void setPlayers(List<PlayerComponent> players) {
+    _players.forEach((playerComponent) => playerComponent.shouldDestroy = true);
+    _setPlayers(players);
+  }
+
+  void _setPlayers(List<PlayerComponent> players) {
+    players.forEach((playerComponent) {
       _players.add(playerComponent);
       add(playerComponent);
     });
@@ -59,7 +61,6 @@ class AtoupicGame extends BaseGame with HasWidgetsOverlay {
     if (_currentPlayer.isRealPlayer) {
       print('Current player!');
     } else {
-      _currentPlayer.displayPassed();
       onTakeOrPassDecision(player, Decision.Pass);
     }
   }

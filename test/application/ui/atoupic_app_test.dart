@@ -26,12 +26,13 @@ void main() {
       List<Player> players = [
         Player(TestFactory.cards.sublist(0, 5), Position.Left),
         firstPlayer,
+        TestFactory.realPlayer,
         Player(TestFactory.cards.sublist(0, 5), Position.Right),
-        TestFactory.realPlayer
       ];
       gameContext = GameContext(players, [Turn(1, firstPlayer)]);
 
       when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
+      when(Mocks.gameService.save(any)).thenReturn(gameContext);
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
     });
 

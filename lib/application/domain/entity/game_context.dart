@@ -23,24 +23,13 @@ class GameContext extends Equatable {
   }
 
   Player nextPlayer() {
-    return _nextPlayer(1);
-
-  }
-
-  Player _nextPlayer(int count) {
     var lastTurnFirstPlayer = turns.last.firstPlayer;
-    var index = players.indexOf(lastTurnFirstPlayer) + count;
+    var index = players.indexOf(lastTurnFirstPlayer) + turns.last.playerDecisions.length;
 
-    if (index == players.length) {
-      index = 0;
+    if (index >= players.length) {
+      index -= 4;
     }
 
-    var player = players[index];
-
-    if (turns.last.playerDecisions[player] != null) {
-      player = _nextPlayer(count + 1);
-    }
-
-    return player;
+    return players[index];
   }
 }

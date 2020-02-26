@@ -26,6 +26,20 @@ void main() {
     });
 
     group('nextPlayer', () {
+      test('when no decision yet returns the first player', () {
+        var firstPlayer = TestFactory.computerPlayer;
+        List<Player> players = [
+          Player(TestFactory.cards.sublist(0, 5), Position.Left),
+          Player(TestFactory.cards.sublist(0, 5), Position.Right),
+          firstPlayer,
+          TestFactory.realPlayer,
+        ];
+        var gameContext = GameContext(players, [
+          Turn(1, firstPlayer)
+        ]);
+        expect(gameContext.nextPlayer(), firstPlayer);
+      });
+
       test('when next player is after the first player', () {
         var firstPlayer = TestFactory.computerPlayer;
         List<Player> players = [
@@ -59,10 +73,10 @@ void main() {
         var secondPlayer = Player(TestFactory.cards.sublist(0, 5), Position.Left);
         var thirdPlayer = Player(TestFactory.cards.sublist(0, 5), Position.Right);
         List<Player> players = [
-          firstPlayer,
-          secondPlayer,
           thirdPlayer,
           TestFactory.realPlayer,
+          firstPlayer,
+          secondPlayer,
         ];
         var gameContext = GameContext(players, [
           Turn(1, firstPlayer)

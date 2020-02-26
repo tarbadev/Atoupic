@@ -38,12 +38,20 @@ class PlayerComponent extends PositionComponent
   final List<CardComponent> cards;
   final Position position;
   final bool isRealPlayer;
+  final bool passed;
   PassedCaption _passedCaption;
+  bool shouldDestroy = false;
 
-  PlayerComponent(this.cards, this.position, this.isRealPlayer) {
+  PlayerComponent(this.cards, this.position, this.isRealPlayer, this.passed) {
     _passedCaption = PassedCaption();
+    _passedCaption.visible = this.passed;
     this.cards.forEach((card) => add(card));
     add(_passedCaption);
+  }
+
+  @override
+  bool destroy() {
+    return shouldDestroy;
   }
 
   @override
@@ -109,7 +117,7 @@ class PlayerComponent extends PositionComponent
     super.resize(size);
   }
 
-  static PlayerComponent fromPlayer(Player player) {
+  static PlayerComponent fromPlayer(Player player, {bool passed = false}) {
     List<CardComponent> cards = player.cards
         .map((card) =>
             CardComponent.fromCard(card, showBackFace: !player.isRealPlayer))
@@ -119,10 +127,7 @@ class PlayerComponent extends PositionComponent
       cards,
       player.position,
       player.isRealPlayer,
+      passed,
     );
-  }
-
-  void displayPassed() {
-    _passedCaption.visible = true;
   }
 }
