@@ -48,7 +48,6 @@ void main() {
       verifyInOrder([
         Mocks.atoupicGame.setPlayers(gameContext.players),
         Mocks.cardService.distributeCards(1),
-        Mocks.atoupicGame.setTakeOrPassCard(card),
         Mocks.atoupicGame
             .setCurrentPlayer(firstPlayer, inGameView.onTakeOrPassDecision),
         Mocks.atoupicGame.visible = true,

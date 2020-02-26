@@ -24,7 +24,6 @@ class InGameView extends StatelessWidget {
     _atoupicGame.setPlayers(gameContext.players);
 
     var card = _cardService.distributeCards(1).first;
-    _atoupicGame.setTakeOrPassCard(card);
     _atoupicGame.setCurrentPlayer(gameContext.turns[0].firstPlayer, onTakeOrPassDecision);
 
     _atoupicGame.visible = true;

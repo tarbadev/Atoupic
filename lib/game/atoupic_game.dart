@@ -18,7 +18,6 @@ class AtoupicGame extends BaseGame with HasWidgetsOverlay {
   TextComponent _turnComponent;
   List<PlayerComponent> _players = List();
   PlayerComponent _currentPlayer;
-  CardComponent _takeOrPassCard;
 
   AtoupicGame() {
     TextConfig regular = TextConfig(color: BasicPalette.white.color);
@@ -63,9 +62,5 @@ class AtoupicGame extends BaseGame with HasWidgetsOverlay {
       _currentPlayer.displayPassed();
       onTakeOrPassDecision(player, Decision.Pass);
     }
-  }
-
-  setTakeOrPassCard(AtoupicCard.Card card) {
-    _takeOrPassCard = CardComponent.fromCard(card);
   }
 }
