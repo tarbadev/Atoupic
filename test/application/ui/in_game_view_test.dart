@@ -42,6 +42,7 @@ void main() {
       when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
 
       await tester.pumpWidget(buildTestableWidget(inGameView));
+      inGameView.startSoloGame();
 
       expect(inGameView.gameContext, gameContext);
 

@@ -42,6 +42,7 @@ class _MainPageState extends State<_MainPage> {
     setState(() {
       _currentView = _inGameView;
     });
+    _inGameView.startSoloGame();
   }
 
   @override

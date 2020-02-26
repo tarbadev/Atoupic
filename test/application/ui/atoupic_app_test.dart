@@ -55,6 +55,8 @@ void main() {
 
       expect(homeViewTester.isVisible, isFalse);
       expect(inGameViewTester.isVisible, isTrue);
+
+      verify(Mocks.gameService.startSoloGame());
     });
   });
 }
