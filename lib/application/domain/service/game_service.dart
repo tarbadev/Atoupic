@@ -33,4 +33,6 @@ class GameService {
   }
 
   GameContext save(GameContext gameContext) => _gameContextRepository.save(gameContext);
+
+  GameContext read() => _gameContextRepository.read();
 }

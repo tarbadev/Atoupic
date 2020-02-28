@@ -7,6 +7,8 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 import 'package:redux/redux.dart';
 
+enum AtoupicView { Home, InGame }
+
 class AtoupicApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -24,43 +26,43 @@ class AtoupicApp extends StatelessWidget {
   }
 }
 
-class _MainPage extends StatefulWidget {
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-class _MainPageState extends State<_MainPage> {
-  AtoupicGame _game;
-  HomeView _homeView;
-  InGameView _inGameView;
-  Widget _currentView;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _homeView = HomeView(_startSoloGame);
-    _inGameView = InGameView();
-
-    _currentView = _homeView;
-
-    _game = kiwi.Container().resolve<AtoupicGame>();
-  }
-
-  _startSoloGame() {
-    setState(() {
-      _currentView = _inGameView;
-    });
-    _inGameView.startSoloGame();
-  }
+class _MainPage extends StatelessWidget {
+  final AtoupicGame _game = kiwi.Container().resolve<AtoupicGame>();
+  final HomeView _homeView = HomeView();
+  final InGameView _inGameView = InGameView();
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        _game.widget,
-        _currentView,
-      ],
-    );
+    return StoreConnector<ApplicationState, _AtoupicAppModel>(
+        converter: (Store<ApplicationState> store) =>
+            _AtoupicAppModel.create(store),
+        builder: (BuildContext context, _AtoupicAppModel viewModel) {
+          var currentView;
+          switch (viewModel.currentView) {
+            case AtoupicView.Home:
+              currentView = _homeView;
+              break;
+            case AtoupicView.InGame:
+              currentView = _inGameView;
+              break;
+          }
+          return Stack(
+            children: <Widget>[
+              _game.widget,
+              currentView,
+            ],
+          );
+        });
   }
+}
+
+class _AtoupicAppModel {
+  final AtoupicView currentView;
+
+  _AtoupicAppModel(this.currentView);
+
+  factory _AtoupicAppModel.create(Store<ApplicationState> store) =>
+      _AtoupicAppModel(
+        store.state.currentView,
+      );
 }

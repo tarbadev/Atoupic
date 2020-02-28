@@ -8,4 +8,6 @@ class GameContextRepository {
 
     return this.gameContext;
   }
+
+  GameContext read() => this.gameContext;
 }

@@ -79,5 +79,20 @@ void main() {
         verify(Mocks.gameContextRepository.save(gameContext));
       });
     });
+
+    group('read', () {
+      test('returns the read context', () {
+        var readGameContext = GameContext(
+          [TestFactory.computerPlayer, TestFactory.realPlayer],
+          [Turn(1, TestFactory.computerPlayer)],
+        );
+
+        when(Mocks.gameContextRepository.read()).thenReturn(readGameContext);
+
+        expect(gameService.read(), readGameContext);
+
+        verify(Mocks.gameContextRepository.read());
+      });
+    });
   });
 }

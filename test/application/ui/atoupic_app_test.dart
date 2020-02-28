@@ -2,6 +2,7 @@ import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/atoupic_app.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -17,48 +18,30 @@ void main() {
   setupDependencyInjectorForTest();
 
   group('AtoupicApp', () {
-    var gameContext;
-    var firstPlayer;
-    var card;
-
-    setUp(() {
-      card = Card(CardColor.Club, CardHead.Ace);
-      firstPlayer = TestFactory.computerPlayer;
-      List<Player> players = [
-        Player(TestFactory.cards.sublist(0, 5), Position.Left),
-        firstPlayer,
-        TestFactory.realPlayer,
-        Player(TestFactory.cards.sublist(0, 5), Position.Right),
-      ];
-      gameContext = GameContext(players, [Turn(1, firstPlayer)]);
-
-      when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
-      when(Mocks.gameService.save(any)).thenReturn(gameContext);
-      when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
-    });
-
     testWidgets('loads the game on startup', (WidgetTester tester) async {
-      await tester.pumpWidget(AtoupicApp());
+      await tester.pumpWidget(buildTestableWidget(AtoupicApp()));
 
       verify(Mocks.atoupicGame.widget);
     });
 
-    testWidgets('changes view when clicking on solo', (WidgetTester tester) async {
+    testWidgets('displays HomeView when current view is Home', (WidgetTester tester) async {
       var homeViewTester = HomeViewTester(tester);
       var inGameViewTester = InGameViewTester(tester);
 
-      await tester.pumpWidget(buildTestableWidget(AtoupicApp()));
+      await tester.pumpWidget(buildTestableWidget(AtoupicApp(), currentView: AtoupicView.Home));
 
       expect(homeViewTester.isVisible, isTrue);
       expect(inGameViewTester.isVisible, isFalse);
+    });
 
-      await homeViewTester.tapOnSolo();
-      await tester.pump();
+    testWidgets('displays InGameView when current view is InGame', (WidgetTester tester) async {
+      var homeViewTester = HomeViewTester(tester);
+      var inGameViewTester = InGameViewTester(tester);
+
+      await tester.pumpWidget(buildTestableWidget(AtoupicApp(), currentView: AtoupicView.InGame));
 
       expect(homeViewTester.isVisible, isFalse);
       expect(inGameViewTester.isVisible, isTrue);
-
-      verify(Mocks.gameService.startSoloGame());
     });
   });
 }
