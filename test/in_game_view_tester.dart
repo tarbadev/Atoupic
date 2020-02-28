@@ -7,4 +7,12 @@ class InGameViewTester extends BaseViewTester {
   InGameViewTester(tester): super(tester);
 
   bool get isVisible => widgetExists('InGame__Container');
+
+  TakeOrPassDialogElement get takeOrPass => TakeOrPassDialogElement(tester);
+}
+
+class TakeOrPassDialogElement extends BaseViewTester {
+  TakeOrPassDialogElement(tester): super(tester);
+
+  bool get isVisible => widgetExists('TakeOrPassDialog');
 }

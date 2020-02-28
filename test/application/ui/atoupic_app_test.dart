@@ -8,6 +8,7 @@ import 'package:mockito/mockito.dart';
 
 import '../../helper/mock_definition.dart';
 import '../../helper/test_factory.dart';
+import '../../helper/testable_widget.dart';
 import '../../home_view_tester.dart';
 import '../../helper/fake_application_injector.dart';
 import '../../in_game_view_tester.dart';
@@ -46,7 +47,7 @@ void main() {
       var homeViewTester = HomeViewTester(tester);
       var inGameViewTester = InGameViewTester(tester);
 
-      await tester.pumpWidget(AtoupicApp());
+      await tester.pumpWidget(buildTestableWidget(AtoupicApp()));
 
       expect(homeViewTester.isVisible, isTrue);
       expect(inGameViewTester.isVisible, isFalse);

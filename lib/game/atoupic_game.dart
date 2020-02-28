@@ -15,7 +15,6 @@ class AtoupicGame extends BaseGame with HasWidgetsOverlay {
   int _turn = 1;
   TextComponent _turnComponent;
   List<PlayerComponent> _players = List();
-  PlayerComponent _currentPlayer;
 
   AtoupicGame() {
     TextConfig regular = TextConfig(color: BasicPalette.white.color);
@@ -52,16 +51,5 @@ class AtoupicGame extends BaseGame with HasWidgetsOverlay {
   @override
   void resize(Size size) {
     super.resize(size);
-  }
-
-  setCurrentPlayer(Player player, Function onTakeOrPassDecision) {
-    _currentPlayer = _players.firstWhere(
-        (playerComponent) => player.position == playerComponent.position);
-
-    if (_currentPlayer.isRealPlayer) {
-      print('Current player!');
-    } else {
-      onTakeOrPassDecision(player, Decision.Pass);
-    }
   }
 }

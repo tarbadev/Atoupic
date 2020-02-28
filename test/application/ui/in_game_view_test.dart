@@ -3,6 +3,7 @@ import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
+import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/view/in_game_view.dart';
 import 'package:atoupic/game/components/player_component.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +13,7 @@ import '../../helper/fake_application_injector.dart';
 import '../../helper/mock_definition.dart';
 import '../../helper/test_factory.dart';
 import '../../helper/testable_widget.dart';
+import '../../in_game_view_tester.dart';
 
 void main() {
   setupDependencyInjectorForTest();
@@ -80,8 +82,24 @@ void main() {
 
         verifyInOrder([
           Mocks.cardService.distributeCards(1),
+          Mocks.store.dispatch(ShowTakeOrPassDialogAction(true)),
         ]);
       });
+    });
+
+    testWidgets('displays dialog if showTakeOrPassDialog is true',
+        (WidgetTester tester) async {
+      var inGameView = InGameView();
+      inGameView.card = card;
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        showTakeOrPassDialog: true,
+      ));
+      await tester.pump();
+
+      var inGameViewTester = InGameViewTester(tester);
+      expect(inGameViewTester.takeOrPass.isVisible, isTrue);
     });
 
     group('onTakeOrPassDecision', () {
@@ -103,6 +121,7 @@ void main() {
             .thenReturn(TestFactory.realPlayer);
         when(Mocks.gameService.save(any)).thenReturn(updatedGameContext);
         when(updatedGameContext.players).thenReturn([computerPlayer]);
+        inGameView.card = card;
         when(updatedGameContext.turns).thenReturn([
           Turn(1, computerPlayer)
             ..playerDecisions[computerPlayer] = Decision.Pass
