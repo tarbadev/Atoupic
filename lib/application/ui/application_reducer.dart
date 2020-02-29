@@ -1,4 +1,5 @@
 import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/application_state.dart';
 import 'package:atoupic/application/ui/atoupic_app.dart';
@@ -9,6 +10,7 @@ ApplicationState applicationReducer(ApplicationState state, action) =>
       setShowTakeOrPassDialogReducer(state.showTakeOrPassDialog, action),
       setCurrentViewReducer(state.currentView, action),
       setTakeOrPassCardReducer(state.takeOrPassCard, action),
+      setRealPlayerReducer(state.realPlayer, action),
     );
 
 final Reducer<bool> setShowTakeOrPassDialogReducer = combineReducers([
@@ -28,3 +30,9 @@ final Reducer<Card> setTakeOrPassCardReducer = combineReducers([
 ]);
 
 Card _setTakeOrPassCard(Card card, SetTakeOrPassCard action) => action.newCard;
+
+final Reducer<Player> setRealPlayerReducer = combineReducers([
+  TypedReducer<Player, SetRealPlayerAction>(_setRealPlayer),
+]);
+
+Player _setRealPlayer(Player player, SetRealPlayerAction action) => action.player;

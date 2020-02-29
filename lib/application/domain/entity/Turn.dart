@@ -8,6 +8,7 @@ class Turn extends Equatable {
   final Player firstPlayer;
   Card card;
   Map<Player, Decision> playerDecisions = Map();
+  int round = 1;
 
   Turn(this.number, this.firstPlayer);
 

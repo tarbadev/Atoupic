@@ -30,6 +30,7 @@ void startSoloGame(
 
   final gameContext = gameService.startSoloGame();
 
+  store.dispatch(SetRealPlayerAction(gameContext.players.firstWhere((player) => player.isRealPlayer)));
   store.dispatch(SetPlayersInGame(gameContext));
   store.dispatch(TakeOrPassAction(gameContext));
 
@@ -99,10 +100,16 @@ void passDecision(
   final container = Container();
   final GameService gameService = container<GameService>();
 
-  var gameContext = gameService.read();
-  var newGameContext = gameService.save(gameContext.setDecision(action.player, Decision.Pass));
+  var gameContext = gameService.read().setDecision(action.player, Decision.Pass);
+  var nextPlayer = gameContext.nextPlayer();
+  if (nextPlayer == null) {
+    gameContext = gameContext.nextRound();
+    nextPlayer = gameContext.nextPlayer();
+  }
 
-  store.dispatch(TakeOrPassDecisionAction(newGameContext.nextPlayer()));
+  var newGameContext = gameService.save(gameContext);
+
+  store.dispatch(TakeOrPassDecisionAction(nextPlayer));
   store.dispatch(SetPlayersInGame(newGameContext));
 
   next(action);

@@ -1,5 +1,6 @@
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
+import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/card_service.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:atoupic/application/domain/service/player_service.dart';
@@ -46,6 +47,7 @@ class Mocks {
     bool showTakeOrPassDialog: false,
     AtoupicView currentView = AtoupicView.Home,
     Card takeOrPassCard,
+    Player realPlayer,
   }) {
     reset(store);
     reset(applicationState);
@@ -55,5 +57,6 @@ class Mocks {
     when(applicationState.showTakeOrPassDialog).thenReturn(showTakeOrPassDialog);
     when(applicationState.currentView).thenReturn(currentView);
     when(applicationState.takeOrPassCard).thenReturn(takeOrPassCard);
+    when(applicationState.realPlayer).thenReturn(realPlayer);
   }
 }

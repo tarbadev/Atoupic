@@ -7,6 +7,8 @@ class GameContext extends Equatable {
   final List<Player> players;
   List<Turn> turns;
 
+  Turn get lastTurn => turns.last;
+
   GameContext(this.players, this.turns);
 
   @override
@@ -18,18 +20,38 @@ class GameContext extends Equatable {
   }
 
   GameContext setDecision(Player player, Decision decision) {
-    turns.last.playerDecisions[player] = decision;
+    lastTurn.playerDecisions[player] = decision;
     return this;
   }
 
   Player nextPlayer() {
-    var lastTurnFirstPlayer = turns.last.firstPlayer;
-    var index = players.indexOf(lastTurnFirstPlayer) + turns.last.playerDecisions.length;
+    if (lastTurn.playerDecisions.length == players.length) {
+      return null;
+    }
+    final lastTurnFirstPlayer = lastTurn.firstPlayer;
+    var index = players.indexOf(lastTurnFirstPlayer) + lastTurn.playerDecisions.length;
 
     if (index >= players.length) {
       index -= 4;
     }
 
     return players[index];
+  }
+
+  GameContext nextRound() {
+    lastTurn.round = 2;
+    lastTurn.playerDecisions.clear();
+    return this;
+  }
+
+  GameContext nextTurn() {
+    var firstPlayerIndex = players.indexOf(lastTurn.firstPlayer) + 1;
+    if (firstPlayerIndex == players.length) {
+      firstPlayerIndex = 0;
+    }
+
+    var firstPlayer = players[firstPlayerIndex];
+    turns.add(Turn(lastTurn.number + 1, firstPlayer));
+    return this;
   }
 }

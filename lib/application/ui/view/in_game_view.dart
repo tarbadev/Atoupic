@@ -1,4 +1,5 @@
 import 'package:atoupic/application/domain/entity/card.dart' as AtoupicCard;
+import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/application_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -55,8 +56,10 @@ class InGameView extends StatelessWidget {
                               ),
                               SizedBox(width: 20),
                               RaisedButton(
+                                key: Key('TakeOrPassDialog__PassButton'),
                                 color: Color(0xffc0392b),
                                 onPressed: () {
+                                  viewModel.onPassTap();
                                   Navigator.of(context).pop();
                                 },
                                 child: Text(
@@ -90,12 +93,14 @@ class InGameView extends StatelessWidget {
 class _InGameViewModel {
   final bool showDialog;
   final AtoupicCard.Card takeOrPassCard;
+  final Function onPassTap;
 
-  _InGameViewModel(this.showDialog, this.takeOrPassCard);
+  _InGameViewModel(this.showDialog, this.takeOrPassCard, this.onPassTap);
 
   factory _InGameViewModel.create(Store<ApplicationState> store) =>
       _InGameViewModel(
         store.state.showTakeOrPassDialog,
         store.state.takeOrPassCard,
+        () => store.dispatch(PassDecisionAction(store.state.realPlayer)),
       );
 }

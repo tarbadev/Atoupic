@@ -72,3 +72,12 @@ class SetTakeOrPassCard extends Equatable {
   @override
   List<Object> get props => [this.newCard];
 }
+
+class SetRealPlayerAction extends Equatable {
+  final Player player;
+
+  SetRealPlayerAction(this.player);
+
+  @override
+  List<Object> get props => [this.player];
+}

@@ -35,6 +35,7 @@ void main() {
 
       verifyInOrder([
         Mocks.gameService.startSoloGame(),
+        Mocks.store.dispatch(SetRealPlayerAction(TestFactory.realPlayer)),
         Mocks.store.dispatch(SetPlayersInGame(gameContext)),
         Mocks.store.dispatch(TakeOrPassAction(gameContext)),
         Mocks.atoupicGame.visible = true,
@@ -148,7 +149,6 @@ void main() {
       when(Mocks.gameService.read()).thenReturn(gameContext);
       when(Mocks.gameService.save(any)).thenReturn(mockedContext);
       when(mockedContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
-      when(mockedContext.turns).thenReturn([Turn(1, firstPlayer)..card = card]);
       when(mockedContext.players).thenReturn([firstPlayer, TestFactory.realPlayer]);
 
       passDecision(Mocks.store, action, Mocks.next);
@@ -161,5 +161,40 @@ void main() {
         Mocks.mockNext.next(action),
       ]);
     });
+    test(
+        'when nextPlayer returnsNull switch to round 2',
+            () {
+          var card = Card(CardColor.Club, CardHead.Ace);
+          var firstPlayer = TestFactory.computerPlayer;
+          List<Player> players = [
+            Player(TestFactory.cards.sublist(0, 5), Position.Left),
+            firstPlayer,
+            TestFactory.realPlayer,
+            Player(TestFactory.cards.sublist(0, 5), Position.Right),
+          ];
+          var updatedGameContext = GameContext(players, [
+            Turn(1, firstPlayer)
+              ..card = card
+              ..round = 2
+          ]);
+          var action = PassDecisionAction(firstPlayer);
+          GameContext mockedContext = MockGameContext();
+
+          when(Mocks.gameService.read()).thenReturn(mockedContext);
+          when(mockedContext.setDecision(any, any)).thenReturn(mockedContext);
+          when(mockedContext.nextPlayer()).thenReturn(null);
+          when(mockedContext.nextRound()).thenReturn(updatedGameContext);
+          when(Mocks.gameService.save(any)).thenReturn(mockedContext);
+
+          passDecision(Mocks.store, action, Mocks.next);
+
+          verifyInOrder([
+            Mocks.gameService.read(),
+            Mocks.gameService.save(updatedGameContext),
+            Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
+            Mocks.store.dispatch(SetPlayersInGame(mockedContext)),
+            Mocks.mockNext.next(action),
+          ]);
+        });
   });
 }

@@ -1,11 +1,6 @@
-import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
-import 'package:atoupic/application/domain/entity/game_context.dart';
-import 'package:atoupic/application/domain/entity/player.dart';
-import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/view/in_game_view.dart';
-import 'package:atoupic/game/components/player_component.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -32,6 +27,23 @@ void main() {
 
       var inGameViewTester = InGameViewTester(tester);
       expect(inGameViewTester.takeOrPass.isVisible, isTrue);
+    });
+
+    testWidgets('dispatches a PassAction on pass tap',
+        (WidgetTester tester) async {
+      var inGameView = InGameView();
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        showTakeOrPassDialog: true,
+        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
+        realPlayer: TestFactory.realPlayer,
+      ));
+      await tester.pump();
+
+      var inGameViewTester = InGameViewTester(tester);
+      await inGameViewTester.takeOrPass.tapOnPass();
+      verify(Mocks.store.dispatch(PassDecisionAction(TestFactory.realPlayer)));
     });
   });
 }
