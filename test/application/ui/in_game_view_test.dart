@@ -1,3 +1,4 @@
+import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/view/in_game_view.dart';
@@ -34,7 +35,7 @@ void main() {
 
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
-        turn: 12,
+        lastTurn: Turn(12, MockPlayer()),
       ));
 
       var inGameViewTester = InGameViewTester(tester);

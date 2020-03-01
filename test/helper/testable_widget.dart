@@ -1,3 +1,4 @@
+import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart' as AtoupicCard;
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/ui/application_state.dart';
@@ -13,14 +14,14 @@ Widget buildTestableWidget(
   AtoupicView currentView = AtoupicView.Home,
   AtoupicCard.Card takeOrPassCard,
   Player realPlayer,
-      int turn = 1,
+  Turn lastTurn,
 }) {
   Mocks.setupMockStore(
     showTakeOrPassDialog: showTakeOrPassDialog,
     currentView: currentView,
     takeOrPassCard: takeOrPassCard,
     realPlayer: realPlayer,
-    turn: turn,
+    lastTurn: lastTurn,
   );
 
   return MediaQuery(

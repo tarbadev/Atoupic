@@ -45,12 +45,15 @@ class Mocks {
     AtoupicView currentView = AtoupicView.Home,
     Card takeOrPassCard,
     Player realPlayer,
-    int turn = 1,
+    Turn lastTurn,
   }) {
     reset(store);
     reset(applicationState);
 
-    final gameContext = GameContext([], [Turn(turn, MockPlayer())..card = takeOrPassCard]);
+    if (lastTurn == null) {
+      lastTurn = Turn(1, MockPlayer());
+    }
+    final gameContext = GameContext([], [lastTurn..card = takeOrPassCard]);
 
     when(store.state).thenReturn(applicationState);
     when(store.onChange).thenAnswer((_) => Stream.empty());
