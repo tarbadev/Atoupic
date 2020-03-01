@@ -44,7 +44,7 @@ void main() {
 
       when(Mocks.cardService.distributeCards(any)).thenReturn(cards);
 
-      var expectedPlayer = Player(cards, Position.Top);
+      var expectedPlayer = Player(Position.Top);
       var actualPlayer = playerService.buildComputerPlayer(Position.Top);
 
       expect(actualPlayer, expectedPlayer);

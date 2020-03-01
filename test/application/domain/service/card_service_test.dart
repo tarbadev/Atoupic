@@ -1,6 +1,5 @@
 import 'package:atoupic/application/domain/service/card_service.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../helper/test_factory.dart';
@@ -13,7 +12,9 @@ void main() {
       cardService = CardService();
     });
 
-    test('initializes pile on startup', () {
+    test('initializes pile on initialize', () {
+      cardService.initializeCards();
+
       expect(cardService.pile.length, 32);
       expect(listEquals(cardService.pile, TestFactory.cards), isTrue);
     });

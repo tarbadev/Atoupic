@@ -37,8 +37,8 @@ abstract class TestFactory {
     Card(CardColor.Club, CardHead.Ace),
   ];
 
-  static get realPlayer => Player(cards, Position.Bottom, isRealPlayer: true);
-  static get computerPlayer => Player(cards.sublist(0, 5), Position.Top);
+  static get realPlayer => Player(Position.Bottom, isRealPlayer: true);
+  static get computerPlayer => Player(Position.Top);
 
-  static Player realPlayerWithCards(List<Card> cards) => Player(cards, Position.Bottom, isRealPlayer: true);
+  static Player realPlayerWithCards(List<Card> cards) => Player(Position.Bottom, isRealPlayer: true)..cards = cards;
 }

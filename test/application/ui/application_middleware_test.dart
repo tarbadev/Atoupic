@@ -22,10 +22,10 @@ void main() {
       var startSoloGameAction = StartSoloGameAction();
       var firstPlayer = TestFactory.computerPlayer;
       List<Player> players = [
-        Player(TestFactory.cards.sublist(0, 5), Position.Left),
+        Player(Position.Left),
         firstPlayer,
         TestFactory.realPlayer,
-        Player(TestFactory.cards.sublist(0, 5), Position.Right),
+        Player(Position.Right),
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
 
@@ -47,10 +47,10 @@ void main() {
     test('sets the players in game', () {
       var firstPlayer = TestFactory.computerPlayer;
       List<Player> players = [
-        Player(TestFactory.cards.sublist(0, 5), Position.Left),
+        Player(Position.Left),
         firstPlayer,
         TestFactory.realPlayer,
-        Player(TestFactory.cards.sublist(0, 5), Position.Right),
+        Player(Position.Right),
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
       var setGameContextAction = SetPlayersInGame(gameContext);
@@ -72,10 +72,10 @@ void main() {
       var card = Card(CardColor.Club, CardHead.Ace);
       var firstPlayer = TestFactory.computerPlayer;
       List<Player> players = [
-        Player(TestFactory.cards.sublist(0, 5), Position.Left),
+        Player(Position.Left),
         firstPlayer,
         TestFactory.realPlayer,
-        Player(TestFactory.cards.sublist(0, 5), Position.Right),
+        Player(Position.Right),
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
       var updatedGameContext =
@@ -88,6 +88,7 @@ void main() {
       startTurn(Mocks.store, takeOrPassAction, Mocks.next);
 
       verifyInOrder([
+        Mocks.cardService.initializeCards(),
         Mocks.cardService.distributeCards(1),
         Mocks.gameService.save(updatedGameContext),
         Mocks.store.dispatch(SetTurnAction(1)),
@@ -95,6 +96,37 @@ void main() {
         Mocks.store.dispatch(SetPlayersInGame(gameContext)),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.mockNext.next(takeOrPassAction),
+      ]);
+    });
+
+    test('distributes 5 cards to each players before getting one for the turn', () {
+      var card = Card(CardColor.Club, CardHead.Ace);
+      var firstPlayer = TestFactory.computerPlayer;
+      Player mockPlayer = MockPlayer();
+      List<Player> players = [
+        mockPlayer,
+        firstPlayer,
+        TestFactory.realPlayer,
+        Player(Position.Right),
+      ];
+      var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
+      var updatedGameContext =
+          GameContext(players, [Turn(1, firstPlayer)..card = card]);
+      var takeOrPassAction = StartTurnAction(gameContext);
+
+      when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
+      when(Mocks.gameService.save(any)).thenReturn(gameContext);
+
+      startTurn(Mocks.store, takeOrPassAction, Mocks.next);
+
+      verifyInOrder([
+        Mocks.cardService.distributeCards(5),
+        mockPlayer.cards = [card],
+        Mocks.cardService.distributeCards(5),
+        Mocks.cardService.distributeCards(5),
+        Mocks.cardService.distributeCards(5),
+        Mocks.cardService.distributeCards(1),
+        Mocks.gameService.save(updatedGameContext),
       ]);
     });
   });
@@ -132,10 +164,10 @@ void main() {
       var card = Card(CardColor.Club, CardHead.Ace);
       var firstPlayer = TestFactory.computerPlayer;
       List<Player> players = [
-        Player(TestFactory.cards.sublist(0, 5), Position.Left),
+        Player(Position.Left),
         firstPlayer,
         TestFactory.realPlayer,
-        Player(TestFactory.cards.sublist(0, 5), Position.Right),
+        Player(Position.Right),
       ];
       var gameContext =
           GameContext(players, [Turn(1, firstPlayer)..card = card]);
@@ -168,10 +200,10 @@ void main() {
       var card = Card(CardColor.Club, CardHead.Ace);
       var firstPlayer = TestFactory.computerPlayer;
       List<Player> players = [
-        Player(TestFactory.cards.sublist(0, 5), Position.Left),
+        Player(Position.Left),
         firstPlayer,
         TestFactory.realPlayer,
-        Player(TestFactory.cards.sublist(0, 5), Position.Right),
+        Player(Position.Right),
       ];
       var updatedGameContext = GameContext(players, [
         Turn(1, firstPlayer)
@@ -203,10 +235,10 @@ void main() {
       var card = Card(CardColor.Club, CardHead.Ace);
       var firstPlayer = TestFactory.computerPlayer;
       List<Player> players = [
-        Player(TestFactory.cards.sublist(0, 5), Position.Left),
+        Player(Position.Left),
         firstPlayer,
         TestFactory.realPlayer,
-        Player(TestFactory.cards.sublist(0, 5), Position.Right),
+        Player(Position.Right),
       ];
       var updatedGameContext = GameContext(players, [
         Turn(1, firstPlayer)

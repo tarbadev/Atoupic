@@ -12,9 +12,9 @@ void main() {
       test('stores the players decision', () {
         var firstPlayer = TestFactory.computerPlayer;
         List<Player> players = [
-          Player(TestFactory.cards.sublist(0, 5), Position.Left),
+          Player(Position.Left),
           firstPlayer,
-          Player(TestFactory.cards.sublist(0, 5), Position.Right),
+          Player(Position.Right),
           TestFactory.realPlayer
         ];
         var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
@@ -29,8 +29,8 @@ void main() {
       test('when no decision yet returns the first player', () {
         var firstPlayer = TestFactory.computerPlayer;
         List<Player> players = [
-          Player(TestFactory.cards.sublist(0, 5), Position.Left),
-          Player(TestFactory.cards.sublist(0, 5), Position.Right),
+          Player(Position.Left),
+          Player(Position.Right),
           firstPlayer,
           TestFactory.realPlayer,
         ];
@@ -41,8 +41,8 @@ void main() {
       test('when next player is after the first player', () {
         var firstPlayer = TestFactory.computerPlayer;
         List<Player> players = [
-          Player(TestFactory.cards.sublist(0, 5), Position.Left),
-          Player(TestFactory.cards.sublist(0, 5), Position.Right),
+          Player(Position.Left),
+          Player(Position.Right),
           firstPlayer,
           TestFactory.realPlayer,
         ];
@@ -56,8 +56,8 @@ void main() {
         var firstPlayer = TestFactory.computerPlayer;
         List<Player> players = [
           TestFactory.realPlayer,
-          Player(TestFactory.cards.sublist(0, 5), Position.Left),
-          Player(TestFactory.cards.sublist(0, 5), Position.Right),
+          Player(Position.Left),
+          Player(Position.Right),
           firstPlayer,
         ];
         var gameContext = GameContext(players, [
@@ -69,9 +69,9 @@ void main() {
       test('when other players already passed', () {
         var firstPlayer = TestFactory.computerPlayer;
         var secondPlayer =
-            Player(TestFactory.cards.sublist(0, 5), Position.Left);
+            Player(Position.Left);
         var thirdPlayer =
-            Player(TestFactory.cards.sublist(0, 5), Position.Right);
+            Player(Position.Right);
         List<Player> players = [
           thirdPlayer,
           TestFactory.realPlayer,
@@ -90,9 +90,9 @@ void main() {
       test('when all passed return null', () {
         var firstPlayer = TestFactory.computerPlayer;
         var secondPlayer =
-            Player(TestFactory.cards.sublist(0, 5), Position.Left);
+            Player(Position.Left);
         var thirdPlayer =
-            Player(TestFactory.cards.sublist(0, 5), Position.Right);
+            Player(Position.Right);
         List<Player> players = [
           thirdPlayer,
           TestFactory.realPlayer,

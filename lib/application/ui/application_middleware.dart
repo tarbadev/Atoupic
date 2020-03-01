@@ -61,8 +61,11 @@ void startTurn(
   NextDispatcher next,
 ) {
   final container = Container();
-  final CardService cardService = container<CardService>();
+  final CardService cardService = container<CardService>()..initializeCards();
   final GameService gameService = container<GameService>();
+
+  action.gameContext.players.forEach((player) => player.cards = cardService.distributeCards(5));
+
   final card = cardService.distributeCards(1).first;
 
   action.gameContext.lastTurn.card = card;

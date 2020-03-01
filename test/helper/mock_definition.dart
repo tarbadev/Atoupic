@@ -12,19 +12,13 @@ import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 
 class MockAtoupicGame extends Mock implements AtoupicGame {}
-
 class MockCardService extends Mock implements CardService {}
-
 class MockPlayerService extends Mock implements PlayerService {}
-
 class MockGameService extends Mock implements GameService {}
-
 class MockGameContextRepository extends Mock implements GameContextRepository {}
-
 class MockGameContext extends Mock implements GameContext {}
-
+class MockPlayer extends Mock implements Player {}
 class MockStore extends Mock implements Store<ApplicationState> {}
-
 class MockApplicationState extends Mock implements ApplicationState {}
 
 abstract class MockFunction {

@@ -8,10 +8,10 @@ class CardService {
 
   CardService() {
     _random = Random();
-    _initializeCards();
+    initializeCards();
   }
 
-  _initializeCards() {
+  initializeCards() {
     pile = [
       Card(CardColor.Spade, CardHead.Seven),
       Card(CardColor.Spade, CardHead.Eight),

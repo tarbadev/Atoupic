@@ -5,12 +5,10 @@ import 'card_service.dart';
 
 class PlayerService {
   Player buildRealPlayer() {
-    var cards = Container().resolve<CardService>().distributeCards(5);
-    return Player(cards, Position.Bottom, isRealPlayer: true);
+    return Player(Position.Bottom, isRealPlayer: true);
   }
 
   Player buildComputerPlayer(Position position) {
-    var cards = Container().resolve<CardService>().distributeCards(5);
-    return Player(cards, position);
+    return Player(position);
   }
 }

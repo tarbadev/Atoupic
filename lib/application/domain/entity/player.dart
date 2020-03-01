@@ -10,9 +10,7 @@ class Player extends Equatable {
   final Position position;
   List<Card> cards;
 
-  Player(this.cards, this.position, {this.isRealPlayer = false}) {
-    initializeCards();
-  }
+  Player(this.position, {this.isRealPlayer = false});
 
   @override
   List<Object> get props => [isRealPlayer, position, cards];
@@ -43,8 +41,4 @@ class Player extends Equatable {
       }
     });
   }
-//
-//  void addCards(List<Card> cards) {
-//    this.cards.addAll(cards);
-//  }
 }

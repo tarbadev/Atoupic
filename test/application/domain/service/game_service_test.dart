@@ -41,7 +41,7 @@ void main() {
 
       test('sets the random first current player and saves the game context',
           () {
-        var computerPlayer = Player(TestFactory.cards, Position.Top);
+        var computerPlayer = Player(Position.Top);
         List<Player> players = [
           computerPlayer,
           computerPlayer,
