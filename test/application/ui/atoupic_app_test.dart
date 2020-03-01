@@ -1,17 +1,12 @@
-import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
-import 'package:atoupic/application/domain/entity/game_context.dart';
-import 'package:atoupic/application/domain/entity/player.dart';
-import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/atoupic_app.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
+import '../../helper/fake_application_injector.dart';
 import '../../helper/mock_definition.dart';
-import '../../helper/test_factory.dart';
 import '../../helper/testable_widget.dart';
 import '../../home_view_tester.dart';
-import '../../helper/fake_application_injector.dart';
 import '../../in_game_view_tester.dart';
 
 void main() {
@@ -24,21 +19,28 @@ void main() {
       verify(Mocks.atoupicGame.widget);
     });
 
-    testWidgets('displays HomeView when current view is Home', (WidgetTester tester) async {
+    testWidgets('displays HomeView when current view is Home',
+        (WidgetTester tester) async {
       var homeViewTester = HomeViewTester(tester);
       var inGameViewTester = InGameViewTester(tester);
 
-      await tester.pumpWidget(buildTestableWidget(AtoupicApp(), currentView: AtoupicView.Home));
+      await tester.pumpWidget(
+          buildTestableWidget(AtoupicApp(), currentView: AtoupicView.Home));
 
       expect(homeViewTester.isVisible, isTrue);
       expect(inGameViewTester.isVisible, isFalse);
     });
 
-    testWidgets('displays InGameView when current view is InGame', (WidgetTester tester) async {
+    testWidgets('displays InGameView when current view is InGame',
+        (WidgetTester tester) async {
       var homeViewTester = HomeViewTester(tester);
       var inGameViewTester = InGameViewTester(tester);
 
-      await tester.pumpWidget(buildTestableWidget(AtoupicApp(), currentView: AtoupicView.InGame));
+      await tester.pumpWidget(buildTestableWidget(
+        AtoupicApp(),
+        currentView: AtoupicView.InGame,
+        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
+      ));
 
       expect(homeViewTester.isVisible, isFalse);
       expect(inGameViewTester.isVisible, isTrue);

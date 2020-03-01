@@ -52,6 +52,7 @@ void main() {
 
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
+        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
         lastTurn: Turn(12, MockPlayer()),
       ));
 
@@ -93,6 +94,26 @@ void main() {
       await inGameViewTester.takeOrPass.tapOnTake();
       verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
       verify(Mocks.store.dispatch(TakeDecisionAction(TestFactory.realPlayer, CardColor.Club)));
+    });
+
+    testWidgets('dispatches a TakeAction on round 2 take tap',
+        (WidgetTester tester) async {
+      var inGameView = InGameView();
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        showTakeOrPassDialog: true,
+        realPlayer: TestFactory.realPlayer,
+        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
+        lastTurn: Turn(1, MockPlayer())..round = 2,
+      ));
+      await tester.pump();
+
+      var inGameViewTester = InGameViewTester(tester);
+      await inGameViewTester.takeOrPass.tapOnColorChoice(CardColor.Heart);
+      await inGameViewTester.takeOrPass.tapOnTake();
+      verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
+      verify(Mocks.store.dispatch(TakeDecisionAction(TestFactory.realPlayer, CardColor.Heart)));
     });
   });
 }

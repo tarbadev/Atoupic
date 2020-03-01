@@ -142,11 +142,21 @@ class _InGameViewModel {
     final lastTurn = store.state.gameContext.lastTurn;
     final colorChoices = AtoupicCard.CardColor.values.toList()
       ..removeWhere((cardColor) => lastTurn.card.color == cardColor);
+    var colorChoicesWidget = ColorChoices(colorChoices);
+
+    _onTake() {
+      var cardColor = lastTurn.card.color;
+      if (lastTurn.round == 2) {
+        cardColor = colorChoicesWidget.selectedColor;
+      }
+      store.dispatch(ShowTakeOrPassDialogAction(false));
+      store.dispatch(TakeDecisionAction(store.state.realPlayer, cardColor));
+    }
 
     return _InGameViewModel(
       store.state.showTakeOrPassDialog,
       store.state.showTakeOrPassDialog && lastTurn.round == 2,
-      ColorChoices(colorChoices),
+      colorChoicesWidget,
       lastTurn.number,
       lastTurn.card,
       () {
@@ -155,7 +165,7 @@ class _InGameViewModel {
       },
       () {
         store.dispatch(ShowTakeOrPassDialogAction(false));
-        store.dispatch(TakeDecisionAction(store.state.realPlayer, lastTurn.card.color));
+        _onTake();
       },
     );
   }
@@ -163,12 +173,17 @@ class _InGameViewModel {
 
 class ColorChoices extends StatefulWidget {
   final List<AtoupicCard.CardColor> colorChoices;
+  _ColorChoicesState _choices;
 
-  ColorChoices(this.colorChoices);
+  AtoupicCard.CardColor get selectedColor => _choices.selectedColor;
+
+  ColorChoices(this.colorChoices){
+    _choices = new _ColorChoicesState(colorChoices);
+  }
 
   @override
   State<StatefulWidget> createState() {
-    return new _ColorChoicesState(this.colorChoices);
+    return _choices;
   }
 }
 
