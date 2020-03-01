@@ -69,7 +69,12 @@ class PassDecisionAction extends DecisionAction {
 }
 
 class TakeDecisionAction extends DecisionAction {
-  TakeDecisionAction(Player player) : super(player);
+  final CardColor color;
+
+  TakeDecisionAction(Player player, this.color) : super(player);
+
+  @override
+  List<Object> get props => [this.player, this.color];
 }
 
 class SetTakeOrPassCard extends Equatable {

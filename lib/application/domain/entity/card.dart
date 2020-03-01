@@ -6,6 +6,21 @@ extension ColorExtension on CardColor {
   String get folder {
     return '${this.toString().toLowerCase().replaceFirst('cardcolor.', '')}s';
   }
+
+  String get symbol {
+    switch (this) {
+      case CardColor.Spade:
+        return '♠';
+      case CardColor.Heart:
+        return '♥';
+      case CardColor.Club:
+        return '♣';
+      case CardColor.Diamond:
+        return '♦';
+      default:
+        return '';
+    }
+  }
 }
 
 enum CardHead {

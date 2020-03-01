@@ -305,7 +305,7 @@ void main() {
           ..card = card
           ..playerDecisions[realPlayer] = Decision.Take
       ]);
-      var action = TakeDecisionAction(realPlayer);
+      var action = TakeDecisionAction(realPlayer, CardColor.Club);
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
@@ -330,7 +330,7 @@ void main() {
       Player mockPlayer = MockPlayer();
       var gameContext =
       GameContext([mockPlayer], [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
-      var action = TakeDecisionAction(mockPlayer);
+      var action = TakeDecisionAction(mockPlayer, CardColor.Club);
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
       when(Mocks.cardService.distributeCards(any)).thenReturn([Card(CardColor.Club, CardHead.Eight)]);

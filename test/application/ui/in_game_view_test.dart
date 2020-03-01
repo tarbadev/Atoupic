@@ -30,6 +30,23 @@ void main() {
       expect(inGameViewTester.takeOrPass.isVisible, isTrue);
     });
 
+    testWidgets('displays round 2 dialog if showTakeOrPassDialog is true and round = 2',
+        (WidgetTester tester) async {
+      var inGameView = InGameView();
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        showTakeOrPassDialog: true,
+        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
+        lastTurn: Turn(1, MockPlayer())..round = 2,
+      ));
+      await tester.pump();
+
+      var inGameViewTester = InGameViewTester(tester);
+      expect(inGameViewTester.takeOrPass.isVisible, isTrue);
+      expect(inGameViewTester.takeOrPass.colorChoices, [CardColor.Spade, CardColor.Heart, CardColor.Diamond]);
+    });
+
     testWidgets('displays current turn number', (WidgetTester tester) async {
       var inGameView = InGameView();
 
@@ -75,7 +92,7 @@ void main() {
       var inGameViewTester = InGameViewTester(tester);
       await inGameViewTester.takeOrPass.tapOnTake();
       verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
-      verify(Mocks.store.dispatch(TakeDecisionAction(TestFactory.realPlayer)));
+      verify(Mocks.store.dispatch(TakeDecisionAction(TestFactory.realPlayer, CardColor.Club)));
     });
   });
 }
