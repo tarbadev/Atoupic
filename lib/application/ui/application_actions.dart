@@ -98,3 +98,17 @@ class SetTurnAction extends Equatable {
   @override
   List<Object> get props => [this.newTurn];
 }
+
+class SetGameContextAction extends Equatable {
+  final GameContext newGameContext;
+
+  SetGameContextAction(this.newGameContext);
+
+  @override
+  List<Object> get props => [this.newGameContext];
+
+  @override
+  String toString() {
+    return 'SetGameContextAction{newGameContext: $newGameContext}';
+  }
+}

@@ -63,7 +63,6 @@ void startTurn(
 ) {
   final container = Container();
   final CardService cardService = container<CardService>()..initializeCards();
-  final GameService gameService = container<GameService>();
 
   action.gameContext.players
       .forEach((player) => player.cards = cardService.distributeCards(5));
@@ -75,8 +74,7 @@ void startTurn(
 
   action.gameContext.lastTurn.card = card;
 
-  gameService.save(action.gameContext);
-
+  store.dispatch(SetGameContextAction(action.gameContext));
   store.dispatch(SetTurnAction(action.gameContext.lastTurn.number));
   store.dispatch(SetTakeOrPassCard(card));
   store.dispatch(SetPlayersInGame(action.gameContext));
@@ -112,20 +110,18 @@ void passDecision(
   var nextPlayer = gameContext.nextPlayer();
   if (nextPlayer == null && gameContext.lastTurn.round == 2) {
     gameContext = gameContext.nextTurn();
-    var newGameContext = gameService.save(gameContext);
-    store.dispatch(StartTurnAction(newGameContext));
-    store.dispatch(SetPlayersInGame(newGameContext));
+    store.dispatch(StartTurnAction(gameContext));
   } else {
     if (nextPlayer == null) {
       gameContext = gameContext.nextRound();
       nextPlayer = gameContext.nextPlayer();
     }
 
-    var newGameContext = gameService.save(gameContext);
-
     store.dispatch(TakeOrPassDecisionAction(nextPlayer));
-    store.dispatch(SetPlayersInGame(newGameContext));
   }
+
+  store.dispatch(SetGameContextAction(gameContext));
+  store.dispatch(SetPlayersInGame(gameContext));
 
   next(action);
 }
@@ -154,8 +150,8 @@ void takeDecision(
       .firstWhere((player) => player.isRealPlayer)
       .initializeCards();
 
-  var newGameContext = gameService.save(gameContext);
-  store.dispatch(SetPlayersInGame(newGameContext));
+  store.dispatch(SetGameContextAction(gameContext));
+  store.dispatch(SetPlayersInGame(gameContext));
 
   next(action);
 }

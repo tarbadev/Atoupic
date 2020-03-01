@@ -1,8 +1,11 @@
 import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/application_state.dart';
 import 'package:atoupic/application/ui/atoupic_app.dart';
+import 'package:kiwi/kiwi.dart';
 import 'package:redux/redux.dart';
 
 ApplicationState applicationReducer(ApplicationState state, action) =>
@@ -12,19 +15,22 @@ ApplicationState applicationReducer(ApplicationState state, action) =>
       setTakeOrPassCardReducer(state.takeOrPassCard, action),
       setRealPlayerReducer(state.realPlayer, action),
       setTurnReducer(state.turn, action),
+      setGameContextReducer(state.gameContext, action),
     );
 
 final Reducer<bool> setShowTakeOrPassDialogReducer = combineReducers([
   TypedReducer<bool, ShowTakeOrPassDialogAction>(_setShowTakeOrPassDialog),
 ]);
 
-bool _setShowTakeOrPassDialog(bool show, ShowTakeOrPassDialogAction action) => action.show;
+bool _setShowTakeOrPassDialog(bool show, ShowTakeOrPassDialogAction action) =>
+    action.show;
 
 final Reducer<AtoupicView> setCurrentViewReducer = combineReducers([
   TypedReducer<AtoupicView, SetCurrentViewAction>(_setCurrentView),
 ]);
 
-AtoupicView _setCurrentView(AtoupicView show, SetCurrentViewAction action) => action.view;
+AtoupicView _setCurrentView(AtoupicView show, SetCurrentViewAction action) =>
+    action.view;
 
 final Reducer<Card> setTakeOrPassCardReducer = combineReducers([
   TypedReducer<Card, SetTakeOrPassCard>(_setTakeOrPassCard),
@@ -36,10 +42,21 @@ final Reducer<Player> setRealPlayerReducer = combineReducers([
   TypedReducer<Player, SetRealPlayerAction>(_setRealPlayer),
 ]);
 
-Player _setRealPlayer(Player player, SetRealPlayerAction action) => action.player;
+Player _setRealPlayer(Player player, SetRealPlayerAction action) =>
+    action.player;
 
 final Reducer<int> setTurnReducer = combineReducers([
   TypedReducer<int, SetTurnAction>(_setTurn),
 ]);
 
 int _setTurn(int currentTurn, SetTurnAction action) => action.newTurn;
+
+final Reducer<GameContext> setGameContextReducer = combineReducers([
+  TypedReducer<GameContext, SetGameContextAction>(setGameContext),
+]);
+
+GameContext setGameContext(
+  GameContext currentGameContext,
+  SetGameContextAction action,
+) =>
+    Container().resolve<GameService>().save(action.newGameContext);

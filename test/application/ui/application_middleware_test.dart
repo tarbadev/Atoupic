@@ -83,14 +83,13 @@ void main() {
       var takeOrPassAction = StartTurnAction(gameContext);
 
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
-      when(Mocks.gameService.save(any)).thenReturn(gameContext);
 
       startTurn(Mocks.store, takeOrPassAction, Mocks.next);
 
       verifyInOrder([
         Mocks.cardService.initializeCards(),
         Mocks.cardService.distributeCards(1),
-        Mocks.gameService.save(updatedGameContext),
+        Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
         Mocks.store.dispatch(SetTurnAction(1)),
         Mocks.store.dispatch(SetTakeOrPassCard(card)),
         Mocks.store.dispatch(SetPlayersInGame(gameContext)),
@@ -111,12 +110,10 @@ void main() {
         Player(Position.Right),
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
-      var updatedGameContext =
-          GameContext(players, [Turn(1, firstPlayer)..card = card]);
       var takeOrPassAction = StartTurnAction(gameContext);
 
+      when(mockPlayer.isRealPlayer).thenReturn(false);
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
-      when(Mocks.gameService.save(any)).thenReturn(gameContext);
 
       startTurn(Mocks.store, takeOrPassAction, Mocks.next);
 
@@ -127,7 +124,7 @@ void main() {
         Mocks.cardService.distributeCards(5),
         Mocks.cardService.distributeCards(5),
         Mocks.cardService.distributeCards(1),
-        Mocks.gameService.save(updatedGameContext),
+        Mocks.store.dispatch(SetGameContextAction(gameContext)),
       ]);
     });
 
@@ -200,7 +197,6 @@ void main() {
       var mockedContext = MockGameContext();
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(Mocks.gameService.save(any)).thenReturn(mockedContext);
       when(mockedContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
       when(mockedContext.players)
           .thenReturn([firstPlayer, TestFactory.realPlayer]);
@@ -209,9 +205,9 @@ void main() {
 
       verifyInOrder([
         Mocks.gameService.read(),
-        Mocks.gameService.save(updatedGameContext),
         Mocks.store.dispatch(TakeOrPassDecisionAction(TestFactory.realPlayer)),
-        Mocks.store.dispatch(SetPlayersInGame(mockedContext)),
+        Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
+        Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -238,15 +234,14 @@ void main() {
       when(mockedContext.nextPlayer()).thenReturn(null);
       when(mockedContext.lastTurn).thenReturn(Turn(1, firstPlayer));
       when(mockedContext.nextRound()).thenReturn(updatedGameContext);
-      when(Mocks.gameService.save(any)).thenReturn(mockedContext);
 
       passDecision(Mocks.store, action, Mocks.next);
 
       verifyInOrder([
         Mocks.gameService.read(),
-        Mocks.gameService.save(updatedGameContext),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
-        Mocks.store.dispatch(SetPlayersInGame(mockedContext)),
+        Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
+        Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -273,14 +268,13 @@ void main() {
       when(mockedContext.nextPlayer()).thenReturn(null);
       when(mockedContext.lastTurn).thenReturn(Turn(1, firstPlayer)..round = 2);
       when(mockedContext.nextTurn()).thenReturn(updatedGameContext);
-      when(Mocks.gameService.save(any)).thenReturn(updatedGameContext);
 
       passDecision(Mocks.store, action, Mocks.next);
 
       verifyInOrder([
         Mocks.gameService.read(),
-        Mocks.gameService.save(updatedGameContext),
         Mocks.store.dispatch(StartTurnAction(updatedGameContext)),
+        Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
         Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
@@ -315,7 +309,6 @@ void main() {
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
-      when(Mocks.gameService.save(any)).thenReturn(updatedGameContext);
 
       takeDecision(Mocks.store, action, Mocks.next);
 
@@ -327,7 +320,7 @@ void main() {
         Mocks.cardService.distributeCards(3),
         Mocks.cardService.distributeCards(3),
         Mocks.cardService.distributeCards(3),
-        Mocks.gameService.save(updatedGameContext),
+        Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
         Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
