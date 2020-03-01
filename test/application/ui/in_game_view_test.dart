@@ -29,6 +29,18 @@ void main() {
       expect(inGameViewTester.takeOrPass.isVisible, isTrue);
     });
 
+    testWidgets('displays current turn number', (WidgetTester tester) async {
+      var inGameView = InGameView();
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        turn: 12,
+      ));
+
+      var inGameViewTester = InGameViewTester(tester);
+      expect(inGameViewTester.turn, 'Turn 12');
+    });
+
     testWidgets('dispatches a PassAction on pass tap',
         (WidgetTester tester) async {
       var inGameView = InGameView();

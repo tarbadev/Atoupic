@@ -11,6 +11,7 @@ ApplicationState applicationReducer(ApplicationState state, action) =>
       setCurrentViewReducer(state.currentView, action),
       setTakeOrPassCardReducer(state.takeOrPassCard, action),
       setRealPlayerReducer(state.realPlayer, action),
+      setTurnReducer(state.turn, action),
     );
 
 final Reducer<bool> setShowTakeOrPassDialogReducer = combineReducers([
@@ -36,3 +37,9 @@ final Reducer<Player> setRealPlayerReducer = combineReducers([
 ]);
 
 Player _setRealPlayer(Player player, SetRealPlayerAction action) => action.player;
+
+final Reducer<int> setTurnReducer = combineReducers([
+  TypedReducer<int, SetTurnAction>(_setTurn),
+]);
+
+int _setTurn(int currentTurn, SetTurnAction action) => action.newTurn;

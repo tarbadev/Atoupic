@@ -37,10 +37,10 @@ class StartSoloGameAction extends Equatable {
   List<Object> get props => ['StartSoloGameAction'];
 }
 
-class TakeOrPassAction extends Equatable {
+class StartTurnAction extends Equatable {
   final GameContext gameContext;
 
-  TakeOrPassAction(this.gameContext);
+  StartTurnAction(this.gameContext);
 
   @override
   List<Object> get props => [gameContext];
@@ -80,4 +80,13 @@ class SetRealPlayerAction extends Equatable {
 
   @override
   List<Object> get props => [this.player];
+}
+
+class SetTurnAction extends Equatable {
+  final int newTurn;
+
+  SetTurnAction(this.newTurn);
+
+  @override
+  List<Object> get props => [this.newTurn];
 }

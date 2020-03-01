@@ -13,12 +13,14 @@ Widget buildTestableWidget(
   AtoupicView currentView = AtoupicView.Home,
   AtoupicCard.Card takeOrPassCard,
   Player realPlayer,
+      int turn = 1,
 }) {
   Mocks.setupMockStore(
     showTakeOrPassDialog: showTakeOrPassDialog,
     currentView: currentView,
     takeOrPassCard: takeOrPassCard,
     realPlayer: realPlayer,
+    turn: turn,
   );
 
   return MediaQuery(

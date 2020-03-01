@@ -7,12 +7,14 @@ class ApplicationState {
   final AtoupicView currentView;
   final Card takeOrPassCard;
   final Player realPlayer;
+  final int turn;
 
   ApplicationState(
     this.showTakeOrPassDialog,
     this.currentView,
     this.takeOrPassCard,
     this.realPlayer,
+    this.turn,
   );
 
   factory ApplicationState.initial() => ApplicationState(
@@ -20,5 +22,6 @@ class ApplicationState {
         AtoupicView.Home,
         null,
         null,
+        0,
       );
 }

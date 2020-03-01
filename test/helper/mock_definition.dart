@@ -26,9 +26,11 @@ class MockGameContext extends Mock implements GameContext {}
 class MockStore extends Mock implements Store<ApplicationState> {}
 
 class MockApplicationState extends Mock implements ApplicationState {}
+
 abstract class MockFunction {
   next(dynamic action);
 }
+
 class MockNext extends Mock implements MockFunction {}
 
 class Mocks {
@@ -48,15 +50,18 @@ class Mocks {
     AtoupicView currentView = AtoupicView.Home,
     Card takeOrPassCard,
     Player realPlayer,
+    int turn = 1,
   }) {
     reset(store);
     reset(applicationState);
 
     when(store.state).thenReturn(applicationState);
     when(store.onChange).thenAnswer((_) => Stream.empty());
-    when(applicationState.showTakeOrPassDialog).thenReturn(showTakeOrPassDialog);
+    when(applicationState.showTakeOrPassDialog)
+        .thenReturn(showTakeOrPassDialog);
     when(applicationState.currentView).thenReturn(currentView);
     when(applicationState.takeOrPassCard).thenReturn(takeOrPassCard);
     when(applicationState.realPlayer).thenReturn(realPlayer);
+    when(applicationState.turn).thenReturn(turn);
   }
 }

@@ -9,6 +9,8 @@ class InGameViewTester extends BaseViewTester {
   bool get isVisible => widgetExists('InGame__Container');
 
   TakeOrPassDialogElement get takeOrPass => TakeOrPassDialogElement(tester);
+
+  String get turn => getTextByKey('InGame__TurnCounter');
 }
 
 class TakeOrPassDialogElement extends BaseViewTester {

@@ -36,8 +36,7 @@ void main() {
       verifyInOrder([
         Mocks.gameService.startSoloGame(),
         Mocks.store.dispatch(SetRealPlayerAction(TestFactory.realPlayer)),
-        Mocks.store.dispatch(SetPlayersInGame(gameContext)),
-        Mocks.store.dispatch(TakeOrPassAction(gameContext)),
+        Mocks.store.dispatch(StartTurnAction(gameContext)),
         Mocks.atoupicGame.visible = true,
         Mocks.mockNext.next(startSoloGameAction),
       ]);
@@ -68,7 +67,7 @@ void main() {
     });
   });
 
-  group('takeOrPass', () {
+  group('startTurn', () {
     test('gets one card and dispatch a TakeOrPassDecision with the player', () {
       var card = Card(CardColor.Club, CardHead.Ace);
       var firstPlayer = TestFactory.computerPlayer;
@@ -81,17 +80,19 @@ void main() {
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
       var updatedGameContext =
           GameContext(players, [Turn(1, firstPlayer)..card = card]);
-      var takeOrPassAction = TakeOrPassAction(gameContext);
+      var takeOrPassAction = StartTurnAction(gameContext);
 
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
       when(Mocks.gameService.save(any)).thenReturn(gameContext);
 
-      takeOrPass(Mocks.store, takeOrPassAction, Mocks.next);
+      startTurn(Mocks.store, takeOrPassAction, Mocks.next);
 
       verifyInOrder([
         Mocks.cardService.distributeCards(1),
         Mocks.gameService.save(updatedGameContext),
+        Mocks.store.dispatch(SetTurnAction(1)),
         Mocks.store.dispatch(SetTakeOrPassCard(card)),
+        Mocks.store.dispatch(SetPlayersInGame(gameContext)),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.mockNext.next(takeOrPassAction),
       ]);
@@ -149,7 +150,8 @@ void main() {
       when(Mocks.gameService.read()).thenReturn(gameContext);
       when(Mocks.gameService.save(any)).thenReturn(mockedContext);
       when(mockedContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
-      when(mockedContext.players).thenReturn([firstPlayer, TestFactory.realPlayer]);
+      when(mockedContext.players)
+          .thenReturn([firstPlayer, TestFactory.realPlayer]);
 
       passDecision(Mocks.store, action, Mocks.next);
 
@@ -161,40 +163,75 @@ void main() {
         Mocks.mockNext.next(action),
       ]);
     });
-    test(
-        'when nextPlayer returnsNull switch to round 2',
-            () {
-          var card = Card(CardColor.Club, CardHead.Ace);
-          var firstPlayer = TestFactory.computerPlayer;
-          List<Player> players = [
-            Player(TestFactory.cards.sublist(0, 5), Position.Left),
-            firstPlayer,
-            TestFactory.realPlayer,
-            Player(TestFactory.cards.sublist(0, 5), Position.Right),
-          ];
-          var updatedGameContext = GameContext(players, [
-            Turn(1, firstPlayer)
-              ..card = card
-              ..round = 2
-          ]);
-          var action = PassDecisionAction(firstPlayer);
-          GameContext mockedContext = MockGameContext();
 
-          when(Mocks.gameService.read()).thenReturn(mockedContext);
-          when(mockedContext.setDecision(any, any)).thenReturn(mockedContext);
-          when(mockedContext.nextPlayer()).thenReturn(null);
-          when(mockedContext.nextRound()).thenReturn(updatedGameContext);
-          when(Mocks.gameService.save(any)).thenReturn(mockedContext);
+    test('when nextPlayer returns null switch to round 2', () {
+      var card = Card(CardColor.Club, CardHead.Ace);
+      var firstPlayer = TestFactory.computerPlayer;
+      List<Player> players = [
+        Player(TestFactory.cards.sublist(0, 5), Position.Left),
+        firstPlayer,
+        TestFactory.realPlayer,
+        Player(TestFactory.cards.sublist(0, 5), Position.Right),
+      ];
+      var updatedGameContext = GameContext(players, [
+        Turn(1, firstPlayer)
+          ..card = card
+          ..round = 2
+      ]);
+      var action = PassDecisionAction(firstPlayer);
+      GameContext mockedContext = MockGameContext();
 
-          passDecision(Mocks.store, action, Mocks.next);
+      when(Mocks.gameService.read()).thenReturn(mockedContext);
+      when(mockedContext.setDecision(any, any)).thenReturn(mockedContext);
+      when(mockedContext.nextPlayer()).thenReturn(null);
+      when(mockedContext.lastTurn).thenReturn(Turn(1, firstPlayer));
+      when(mockedContext.nextRound()).thenReturn(updatedGameContext);
+      when(Mocks.gameService.save(any)).thenReturn(mockedContext);
 
-          verifyInOrder([
-            Mocks.gameService.read(),
-            Mocks.gameService.save(updatedGameContext),
-            Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
-            Mocks.store.dispatch(SetPlayersInGame(mockedContext)),
-            Mocks.mockNext.next(action),
-          ]);
-        });
+      passDecision(Mocks.store, action, Mocks.next);
+
+      verifyInOrder([
+        Mocks.gameService.read(),
+        Mocks.gameService.save(updatedGameContext),
+        Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
+        Mocks.store.dispatch(SetPlayersInGame(mockedContext)),
+        Mocks.mockNext.next(action),
+      ]);
+    });
+
+    test('when nextPlayer returns null and round is 2 calls next round', () {
+      var card = Card(CardColor.Club, CardHead.Ace);
+      var firstPlayer = TestFactory.computerPlayer;
+      List<Player> players = [
+        Player(TestFactory.cards.sublist(0, 5), Position.Left),
+        firstPlayer,
+        TestFactory.realPlayer,
+        Player(TestFactory.cards.sublist(0, 5), Position.Right),
+      ];
+      var updatedGameContext = GameContext(players, [
+        Turn(1, firstPlayer)
+          ..card = card
+          ..round = 2
+      ]);
+      var action = PassDecisionAction(firstPlayer);
+      GameContext mockedContext = MockGameContext();
+
+      when(Mocks.gameService.read()).thenReturn(mockedContext);
+      when(mockedContext.setDecision(any, any)).thenReturn(mockedContext);
+      when(mockedContext.nextPlayer()).thenReturn(null);
+      when(mockedContext.lastTurn).thenReturn(Turn(1, firstPlayer)..round = 2);
+      when(mockedContext.nextTurn()).thenReturn(updatedGameContext);
+      when(Mocks.gameService.save(any)).thenReturn(updatedGameContext);
+
+      passDecision(Mocks.store, action, Mocks.next);
+
+      verifyInOrder([
+        Mocks.gameService.read(),
+        Mocks.gameService.save(updatedGameContext),
+        Mocks.store.dispatch(StartTurnAction(updatedGameContext)),
+        Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)),
+        Mocks.mockNext.next(action),
+      ]);
+    });
   });
 }

@@ -12,19 +12,7 @@ import 'package:flutter/material.dart';
 
 class AtoupicGame extends BaseGame with HasWidgetsOverlay {
   bool visible = false;
-  int _turn = 1;
-  TextComponent _turnComponent;
   List<PlayerComponent> _players = List();
-
-  AtoupicGame() {
-    TextConfig regular = TextConfig(color: BasicPalette.white.color);
-    _turnComponent = TextComponent('Turn $_turn', config: regular)
-      ..x = 10
-      ..y = 5
-      ..anchor = Anchor.topLeft;
-
-    add(_turnComponent);
-  }
 
   @override
   Color backgroundColor() => Color(0xFF079992);

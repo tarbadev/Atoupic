@@ -83,6 +83,11 @@ class InGameView extends StatelessWidget {
           child: Scaffold(
             key: Key('InGame__Container'),
             backgroundColor: Colors.transparent,
+            body: Text(
+              'Turn ${viewModel.turnCounter}',
+              key: Key('InGame__TurnCounter'),
+              style: TextStyle(fontSize: 18.0, color: Colors.white),
+            ),
           ),
         );
       },
@@ -92,14 +97,17 @@ class InGameView extends StatelessWidget {
 
 class _InGameViewModel {
   final bool showDialog;
+  final int turnCounter;
   final AtoupicCard.Card takeOrPassCard;
   final Function onPassTap;
 
-  _InGameViewModel(this.showDialog, this.takeOrPassCard, this.onPassTap);
+  _InGameViewModel(
+      this.showDialog, this.turnCounter, this.takeOrPassCard, this.onPassTap);
 
   factory _InGameViewModel.create(Store<ApplicationState> store) =>
       _InGameViewModel(
         store.state.showTakeOrPassDialog,
+        store.state.turn,
         store.state.takeOrPassCard,
         () => store.dispatch(PassDecisionAction(store.state.realPlayer)),
       );
