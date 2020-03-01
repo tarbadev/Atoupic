@@ -14,6 +14,7 @@ List<Middleware<ApplicationState>> createApplicationMiddleware() => [
       TypedMiddleware<ApplicationState, TakeOrPassDecisionAction>(
           takeOrPassDecision),
       TypedMiddleware<ApplicationState, PassDecisionAction>(passDecision),
+      TypedMiddleware<ApplicationState, TakeDecisionAction>(takeDecision),
     ];
 
 void startSoloGame(
@@ -64,7 +65,11 @@ void startTurn(
   final CardService cardService = container<CardService>()..initializeCards();
   final GameService gameService = container<GameService>();
 
-  action.gameContext.players.forEach((player) => player.cards = cardService.distributeCards(5));
+  action.gameContext.players
+      .forEach((player) => player.cards = cardService.distributeCards(5));
+  action.gameContext.players
+      .firstWhere((player) => player.isRealPlayer)
+      .initializeCards();
 
   final card = cardService.distributeCards(1).first;
 
@@ -121,6 +126,36 @@ void passDecision(
     store.dispatch(TakeOrPassDecisionAction(nextPlayer));
     store.dispatch(SetPlayersInGame(newGameContext));
   }
+
+  next(action);
+}
+
+void takeDecision(
+  Store<ApplicationState> store,
+  TakeDecisionAction action,
+  NextDispatcher next,
+) {
+  final container = Container();
+  final GameService gameService = container<GameService>();
+  final CardService cardService = container<CardService>();
+
+  var gameContext =
+      gameService.read().setDecision(action.player, Decision.Take);
+
+  action.player.cards.add(gameContext.lastTurn.card);
+  action.player.cards.addAll(cardService.distributeCards(2));
+
+  gameContext.players.forEach((player) {
+    if (player != action.player) {
+      player.cards.addAll(cardService.distributeCards(3));
+    }
+  });
+  gameContext.players
+      .firstWhere((player) => player.isRealPlayer)
+      .initializeCards();
+
+  var newGameContext = gameService.save(gameContext);
+  store.dispatch(SetPlayersInGame(newGameContext));
 
   next(action);
 }

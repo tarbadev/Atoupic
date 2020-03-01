@@ -55,13 +55,21 @@ class TakeOrPassDecisionAction extends Equatable {
   List<Object> get props => [this.player];
 }
 
-class PassDecisionAction extends Equatable {
+class DecisionAction extends Equatable {
   final Player player;
 
-  PassDecisionAction(this.player);
+  DecisionAction(this.player);
 
   @override
   List<Object> get props => [this.player];
+}
+
+class PassDecisionAction extends DecisionAction {
+  PassDecisionAction(Player player) : super(player);
+}
+
+class TakeDecisionAction extends DecisionAction {
+  TakeDecisionAction(Player player) : super(player);
 }
 
 class SetTakeOrPassCard extends Equatable {

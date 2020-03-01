@@ -44,8 +44,10 @@ class InGameView extends StatelessWidget {
                             mainAxisSize: MainAxisSize.max,
                             children: <Widget>[
                               RaisedButton(
+                                key: Key('TakeOrPassDialog__TakeButton'),
                                 color: Color(0xff27ae60),
                                 onPressed: () {
+                                  viewModel.onTakeTap();
                                   Navigator.of(context).pop();
                                 },
                                 child: Text(
@@ -100,15 +102,23 @@ class _InGameViewModel {
   final int turnCounter;
   final AtoupicCard.Card takeOrPassCard;
   final Function onPassTap;
+  final Function onTakeTap;
 
   _InGameViewModel(
-      this.showDialog, this.turnCounter, this.takeOrPassCard, this.onPassTap);
+      this.showDialog, this.turnCounter, this.takeOrPassCard, this.onPassTap, this.onTakeTap);
 
   factory _InGameViewModel.create(Store<ApplicationState> store) =>
       _InGameViewModel(
         store.state.showTakeOrPassDialog,
         store.state.turn,
         store.state.takeOrPassCard,
-        () => store.dispatch(PassDecisionAction(store.state.realPlayer)),
+        () {
+          store.dispatch(ShowTakeOrPassDialogAction(false));
+          store.dispatch(PassDecisionAction(store.state.realPlayer));
+        },
+        () {
+          store.dispatch(ShowTakeOrPassDialogAction(false));
+          store.dispatch(TakeDecisionAction(store.state.realPlayer));
+        },
       );
 }

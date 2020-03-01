@@ -55,7 +55,26 @@ void main() {
 
       var inGameViewTester = InGameViewTester(tester);
       await inGameViewTester.takeOrPass.tapOnPass();
+      verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
       verify(Mocks.store.dispatch(PassDecisionAction(TestFactory.realPlayer)));
+    });
+
+    testWidgets('dispatches a TakeAction on take tap',
+        (WidgetTester tester) async {
+      var inGameView = InGameView();
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        showTakeOrPassDialog: true,
+        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
+        realPlayer: TestFactory.realPlayer,
+      ));
+      await tester.pump();
+
+      var inGameViewTester = InGameViewTester(tester);
+      await inGameViewTester.takeOrPass.tapOnTake();
+      verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
+      verify(Mocks.store.dispatch(TakeDecisionAction(TestFactory.realPlayer)));
     });
   });
 }
