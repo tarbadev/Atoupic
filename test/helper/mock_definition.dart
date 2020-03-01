@@ -1,3 +1,4 @@
+import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
@@ -49,13 +50,14 @@ class Mocks {
     reset(store);
     reset(applicationState);
 
+    final gameContext = GameContext([], [Turn(turn, MockPlayer())..card = takeOrPassCard]);
+
     when(store.state).thenReturn(applicationState);
     when(store.onChange).thenAnswer((_) => Stream.empty());
     when(applicationState.showTakeOrPassDialog)
         .thenReturn(showTakeOrPassDialog);
     when(applicationState.currentView).thenReturn(currentView);
-    when(applicationState.takeOrPassCard).thenReturn(takeOrPassCard);
     when(applicationState.realPlayer).thenReturn(realPlayer);
-    when(applicationState.turn).thenReturn(turn);
+    when(applicationState.gameContext).thenReturn(gameContext);
   }
 }

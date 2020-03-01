@@ -110,8 +110,8 @@ class _InGameViewModel {
   factory _InGameViewModel.create(Store<ApplicationState> store) =>
       _InGameViewModel(
         store.state.showTakeOrPassDialog,
-        store.state.turn,
-        store.state.takeOrPassCard,
+        store.state.gameContext.lastTurn.number,
+        store.state.gameContext.lastTurn.card,
         () {
           store.dispatch(ShowTakeOrPassDialogAction(false));
           store.dispatch(PassDecisionAction(store.state.realPlayer));

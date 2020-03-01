@@ -12,9 +12,7 @@ ApplicationState applicationReducer(ApplicationState state, action) =>
     ApplicationState(
       setShowTakeOrPassDialogReducer(state.showTakeOrPassDialog, action),
       setCurrentViewReducer(state.currentView, action),
-      setTakeOrPassCardReducer(state.takeOrPassCard, action),
       setRealPlayerReducer(state.realPlayer, action),
-      setTurnReducer(state.turn, action),
       setGameContextReducer(state.gameContext, action),
     );
 
@@ -32,24 +30,12 @@ final Reducer<AtoupicView> setCurrentViewReducer = combineReducers([
 AtoupicView _setCurrentView(AtoupicView show, SetCurrentViewAction action) =>
     action.view;
 
-final Reducer<Card> setTakeOrPassCardReducer = combineReducers([
-  TypedReducer<Card, SetTakeOrPassCard>(_setTakeOrPassCard),
-]);
-
-Card _setTakeOrPassCard(Card card, SetTakeOrPassCard action) => action.newCard;
-
 final Reducer<Player> setRealPlayerReducer = combineReducers([
   TypedReducer<Player, SetRealPlayerAction>(_setRealPlayer),
 ]);
 
 Player _setRealPlayer(Player player, SetRealPlayerAction action) =>
     action.player;
-
-final Reducer<int> setTurnReducer = combineReducers([
-  TypedReducer<int, SetTurnAction>(_setTurn),
-]);
-
-int _setTurn(int currentTurn, SetTurnAction action) => action.newTurn;
 
 final Reducer<GameContext> setGameContextReducer = combineReducers([
   TypedReducer<GameContext, SetGameContextAction>(setGameContext),
