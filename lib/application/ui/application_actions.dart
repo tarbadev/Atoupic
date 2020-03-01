@@ -25,11 +25,12 @@ class SetCurrentViewAction extends Equatable {
 
 class SetPlayersInGame extends Equatable {
   final GameContext context;
+  final bool realPlayerCanChooseCard;
 
-  SetPlayersInGame(this.context);
+  SetPlayersInGame(this.context, {this.realPlayerCanChooseCard = false});
 
   @override
-  List<Object> get props => [context];
+  List<Object> get props => [context, realPlayerCanChooseCard];
 }
 
 class StartSoloGameAction extends Equatable {
@@ -116,4 +117,32 @@ class SetGameContextAction extends Equatable {
   String toString() {
     return 'SetGameContextAction{newGameContext: $newGameContext}';
   }
+}
+
+class StartCardRoundAction extends Equatable {
+  final GameContext context;
+
+  StartCardRoundAction(this.context);
+
+  @override
+  List<Object> get props => [context];
+}
+
+class ChooseCardDecisionAction extends Equatable {
+  final GameContext context;
+
+  ChooseCardDecisionAction(this.context);
+
+  @override
+  List<Object> get props => [context];
+}
+
+class SetCardDecisionAction extends Equatable {
+  final Card card;
+  final Player player;
+
+  SetCardDecisionAction(this.card, this.player);
+
+  @override
+  List<Object> get props => [card, player];
 }

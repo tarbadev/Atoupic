@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:flame/anchor.dart';
 import 'package:flame/components/component.dart';
@@ -9,6 +10,7 @@ import 'package:flame/components/mixins/resizable.dart';
 import 'package:flame/components/mixins/tapable.dart';
 import 'package:flame/components/text_box_component.dart';
 import 'package:flame/text_config.dart';
+import 'package:flutter/gestures.dart';
 
 import 'card_component.dart';
 
@@ -39,13 +41,19 @@ class PlayerComponent extends PositionComponent
   final Position position;
   final bool isRealPlayer;
   final bool passed;
+  final CardComponent lastPlayedCard;
+  bool isDown = false;
   PassedCaption _passedCaption;
   bool shouldDestroy = false;
 
-  PlayerComponent(this.cards, this.position, this.isRealPlayer, this.passed) {
+  PlayerComponent(this.cards, this.position, this.isRealPlayer, this.passed,
+      this.lastPlayedCard) {
     _passedCaption = PassedCaption();
     _passedCaption.visible = this.passed;
     this.cards.forEach((card) => add(card));
+    if(this.lastPlayedCard != null) {
+      add(this.lastPlayedCard);
+    }
     add(_passedCaption);
   }
 
@@ -56,7 +64,8 @@ class PlayerComponent extends PositionComponent
 
   @override
   void resize(Size size) {
-    cards.forEach((card) => card.setWidthAndHeightFromTileSize(size.width / 9));
+    var tileSize = size.width / 9;
+    cards.forEach((card) => card.setWidthAndHeightFromTileSize(tileSize));
 
     double cardHeight = cards.first.height;
     double fullDeckWidth =
@@ -96,10 +105,16 @@ class PlayerComponent extends PositionComponent
       card.x = cardX;
       card.y = cardY;
       card.angle = cardAngle;
+      card.fullyDisplayed = index == cards.length - 1;
     });
 
-    if (position == Position.Bottom) {
-    } else if (position == Position.Top) {
+    if (lastPlayedCard != null) {
+      lastPlayedCard.setWidthAndHeightFromTileSize(tileSize * .75);
+      lastPlayedCard.x = size.width / 2 - (lastPlayedCard.width / 2);
+      lastPlayedCard.y = size.height - (cardHeight * .85) - lastPlayedCard.height;
+    }
+
+    if (position == Position.Top) {
       _passedCaption
         ..anchor = Anchor.bottomLeft
         ..x = cards.last.x
@@ -114,13 +129,16 @@ class PlayerComponent extends PositionComponent
         ..x = cards.first.x + cards.first.height * .25
         ..y = cards.first.y - cards.first.width;
     }
+
     super.resize(size);
   }
 
-  static PlayerComponent fromPlayer(Player player, {bool passed = false}) {
+  static PlayerComponent fromPlayer(Player player,
+      {bool passed = false, Function onCardSelected, Card lastPlayed}) {
     List<CardComponent> cards = player.cards
-        .map((card) =>
-            CardComponent.fromCard(card, showBackFace: !player.isRealPlayer))
+        .map((card) => CardComponent.fromCard(card,
+            showBackFace: !player.isRealPlayer,
+            onCardPlayed: () => onCardSelected(card)))
         .toList()
         .cast();
     return PlayerComponent(
@@ -128,6 +146,23 @@ class PlayerComponent extends PositionComponent
       player.position,
       player.isRealPlayer,
       passed,
+      lastPlayed == null ? null : CardComponent.fromCard(lastPlayed),
     );
+  }
+
+  @override
+  void handleTapUp(TapUpDetails details) {
+    if (isRealPlayer && isDown) {
+      isDown = false;
+      super.handleTapUp(details);
+    }
+  }
+
+  @override
+  void handleTapDown(TapDownDetails details) {
+    if (isRealPlayer && !isDown) {
+      isDown = true;
+      super.handleTapDown(details);
+    }
   }
 }

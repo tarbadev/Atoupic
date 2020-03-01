@@ -7,16 +7,20 @@ class Turn extends Equatable {
   final int number;
   final Player firstPlayer;
   Card card;
-  Map<Player, Decision> playerDecisions = Map();
+  Map<Position, Decision> playerDecisions = Map();
+  List<Map<Position, Card>> cardRounds = List();
   int round = 1;
+
+  Map<Position, Card> get lastCardRound => cardRounds.length > 0 ? cardRounds.last : null;
 
   Turn(this.number, this.firstPlayer);
 
   @override
-  List<Object> get props => [number, card, firstPlayer, playerDecisions, round];
+  List<Object> get props =>
+      [number, card, firstPlayer, playerDecisions, round, cardRounds];
 
   @override
   String toString() {
-    return 'Turn{number: $number, firstPlayer: $firstPlayer, card: $card, playerDecisions: $playerDecisions, round: $round}';
+    return 'Turn{number: $number, firstPlayer: $firstPlayer, card: $card, playerDecisions: $playerDecisions, cardRounds: $cardRounds, round: $round}';
   }
 }

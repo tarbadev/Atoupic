@@ -1,16 +1,10 @@
 import 'dart:ui';
 
-import 'package:atoupic/application/domain/entity/player.dart';
-import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:atoupic/game/components/player_component.dart';
-import 'package:flame/anchor.dart';
-import 'package:flame/components/text_component.dart';
 import 'package:flame/game.dart';
-import 'package:flame/palette.dart';
-import 'package:flame/text_config.dart';
 import 'package:flutter/material.dart';
 
-class AtoupicGame extends BaseGame with HasWidgetsOverlay {
+class AtoupicGame extends BaseGame {
   bool visible = false;
   List<PlayerComponent> _players = List();
 

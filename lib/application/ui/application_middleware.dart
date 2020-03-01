@@ -1,3 +1,5 @@
+import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/service/card_service.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
@@ -15,6 +17,10 @@ List<Middleware<ApplicationState>> createApplicationMiddleware() => [
           takeOrPassDecision),
       TypedMiddleware<ApplicationState, PassDecisionAction>(passDecision),
       TypedMiddleware<ApplicationState, TakeDecisionAction>(takeDecision),
+      TypedMiddleware<ApplicationState, StartCardRoundAction>(startCardRound),
+      TypedMiddleware<ApplicationState, ChooseCardDecisionAction>(
+          chooseCardDecision),
+      TypedMiddleware<ApplicationState, SetCardDecisionAction>(setCardDecision),
     ];
 
 void startSoloGame(
@@ -44,12 +50,22 @@ void setPlayersInGame(
 ) {
   final container = Container();
   final AtoupicGame atoupicGame = container.resolve();
+  final bool didTake =
+      action.context.lastTurn.playerDecisions.containsValue(Decision.Take);
 
   atoupicGame.setPlayers(action.context.players
       .map((player) => PlayerComponent.fromPlayer(
             player,
-            passed: action.context.turns.last.playerDecisions[player] ==
-                Decision.Pass,
+            passed: !didTake &&
+                action.context.lastTurn.playerDecisions[player.position] ==
+                    Decision.Pass,
+            onCardSelected: action.realPlayerCanChooseCard
+                ? (Card card) =>
+                    store.dispatch(SetCardDecisionAction(card, player))
+                : null,
+            lastPlayed: action.context.lastTurn.lastCardRound == null
+                ? null
+                : action.context.lastTurn.lastCardRound[player.position],
           ))
       .toList());
 
@@ -152,6 +168,49 @@ void takeDecision(
 
   store.dispatch(SetGameContextAction(gameContext));
   store.dispatch(SetPlayersInGame(gameContext));
+  store.dispatch(StartCardRoundAction(gameContext));
+
+  next(action);
+}
+
+void startCardRound(
+  Store<ApplicationState> store,
+  StartCardRoundAction action,
+  NextDispatcher next,
+) {
+  var newContext = action.context.newCardRound();
+
+  store.dispatch(SetGameContextAction(newContext));
+  store.dispatch(ChooseCardDecisionAction(newContext));
+
+  next(action);
+}
+
+void chooseCardDecision(
+  Store<ApplicationState> store,
+  ChooseCardDecisionAction action,
+  NextDispatcher next,
+) {
+  store.dispatch(
+      SetPlayersInGame(action.context, realPlayerCanChooseCard: true));
+
+  next(action);
+}
+
+void setCardDecision(
+  Store<ApplicationState> store,
+  SetCardDecisionAction action,
+  NextDispatcher next,
+) {
+  final container = Container();
+  final GameService gameService = container<GameService>();
+
+  GameContext gameContext = gameService.read();
+  gameContext = gameContext.setCardDecision(action.card, action.player);
+
+  store.dispatch(SetPlayersInGame(gameContext));
+  store.dispatch(SetGameContextAction(gameContext));
+  store.dispatch(ChooseCardDecisionAction(gameContext));
 
   next(action);
 }

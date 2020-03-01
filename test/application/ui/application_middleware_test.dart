@@ -62,6 +62,71 @@ void main() {
       List<PlayerComponent> capturedList =
           verify(Mocks.atoupicGame.setPlayers(captureAny)).captured[0];
       expect(capturedList.length, gameContext.players.length);
+      expect(
+          capturedList
+              .where((playerComponent) => playerComponent.isRealPlayer)
+              .length,
+          1);
+
+      verify(Mocks.mockNext.next(setGameContextAction));
+    });
+
+    test('sets the last played card', () {
+      var card = TestFactory.cards[0];
+      var firstPlayer = TestFactory.computerPlayer;
+      List<Player> players = [
+        Player(Position.Left)..cards = [],
+        firstPlayer..cards = [],
+        TestFactory.realPlayer..cards = [],
+        Player(Position.Right)..cards = [],
+      ];
+      var gameContext = GameContext(players, [
+        Turn(1, firstPlayer)
+          ..cardRounds = [Map()..[TestFactory.realPlayer.position] = card]
+      ]);
+      var setGameContextAction = SetPlayersInGame(gameContext);
+
+      when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
+
+      setPlayersInGame(Mocks.store, setGameContextAction, Mocks.next);
+
+      List<PlayerComponent> capturedList =
+          verify(Mocks.atoupicGame.setPlayers(captureAny)).captured[0];
+      expect(
+          capturedList
+              .firstWhere((playerComponent) => playerComponent.isRealPlayer)
+              .lastPlayedCard,
+          isNotNull);
+
+      verify(Mocks.mockNext.next(setGameContextAction));
+    });
+
+    test('sets callback when player can play', () {
+      var card = TestFactory.cards[0];
+      var firstPlayer = TestFactory.computerPlayer;
+      List<Player> players = [
+        Player(Position.Left)..cards = [],
+        firstPlayer..cards = [],
+        TestFactory.realPlayer..cards = [TestFactory.cards[0]],
+        Player(Position.Right)..cards = [],
+      ];
+      var gameContext = GameContext(players, [
+        Turn(1, firstPlayer)
+          ..cardRounds = [Map()..[TestFactory.realPlayer.position] = card]
+      ]);
+      var setGameContextAction = SetPlayersInGame(gameContext, realPlayerCanChooseCard: true);
+
+      when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
+
+      setPlayersInGame(Mocks.store, setGameContextAction, Mocks.next);
+
+      List<PlayerComponent> capturedList =
+      verify(Mocks.atoupicGame.setPlayers(captureAny)).captured[0];
+      expect(
+          capturedList
+              .firstWhere((playerComponent) => playerComponent.isRealPlayer)
+              .cards[0].onCardPlayed,
+          isNotNull);
 
       verify(Mocks.mockNext.next(setGameContextAction));
     });
@@ -128,8 +193,7 @@ void main() {
       ]);
     });
 
-    test('orders the cards of the real player',
-        () {
+    test('orders the cards of the real player', () {
       Player mockPlayer = MockPlayer();
       List<Player> players = [
         mockPlayer,
@@ -137,7 +201,8 @@ void main() {
       var gameContext = GameContext(players, [Turn(1, mockPlayer)]);
       var takeOrPassAction = StartTurnAction(gameContext);
 
-      when(Mocks.cardService.distributeCards(any)).thenReturn([Card(CardColor.Club, CardHead.Eight)]);
+      when(Mocks.cardService.distributeCards(any))
+          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
       when(mockPlayer.isRealPlayer).thenReturn(true);
 
       startTurn(Mocks.store, takeOrPassAction, Mocks.next);
@@ -191,7 +256,7 @@ void main() {
       var updatedGameContext = GameContext(players, [
         Turn(1, firstPlayer)
           ..card = card
-          ..playerDecisions[firstPlayer] = Decision.Pass
+          ..playerDecisions[firstPlayer.position] = Decision.Pass
       ]);
       var action = PassDecisionAction(firstPlayer);
       var mockedContext = MockGameContext();
@@ -303,7 +368,7 @@ void main() {
       var updatedGameContext = GameContext(updatedPlayers, [
         Turn(1, firstPlayer)
           ..card = card
-          ..playerDecisions[realPlayer] = Decision.Take
+          ..playerDecisions[realPlayer.position] = Decision.Take
       ]);
       var action = TakeDecisionAction(realPlayer, CardColor.Club);
 
@@ -328,18 +393,87 @@ void main() {
 
     test('orders cards of real player', () {
       Player mockPlayer = MockPlayer();
-      var gameContext =
-      GameContext([mockPlayer], [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
+      var gameContext = GameContext([mockPlayer],
+          [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
       var action = TakeDecisionAction(mockPlayer, CardColor.Club);
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(Mocks.cardService.distributeCards(any)).thenReturn([Card(CardColor.Club, CardHead.Eight)]);
+      when(Mocks.cardService.distributeCards(any))
+          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
       when(mockPlayer.cards).thenReturn([]);
       when(mockPlayer.isRealPlayer).thenReturn(true);
 
       takeDecision(Mocks.store, action, Mocks.next);
 
       verify(mockPlayer.initializeCards());
+    });
+
+    test('dispatches StartCardRound', () {
+      Player mockPlayer = MockPlayer();
+      var gameContext = GameContext([mockPlayer],
+          [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
+      var action = TakeDecisionAction(mockPlayer, CardColor.Club);
+
+      when(Mocks.gameService.read()).thenReturn(gameContext);
+      when(Mocks.cardService.distributeCards(any))
+          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
+      when(mockPlayer.cards).thenReturn([]);
+      when(mockPlayer.isRealPlayer).thenReturn(true);
+
+      takeDecision(Mocks.store, action, Mocks.next);
+
+      verify(Mocks.store.dispatch(StartCardRoundAction(gameContext)));
+    });
+  });
+
+  group('startCardRound', () {
+    test('dispatches a ChooseCardDecision', () {
+      GameContext mockGameContext = MockGameContext();
+      GameContext updatedContext = MockGameContext();
+      var action = StartCardRoundAction(mockGameContext);
+
+      when(mockGameContext.newCardRound()).thenReturn(updatedContext);
+
+      startCardRound(Mocks.store, action, Mocks.next);
+
+      verify(Mocks.store.dispatch(SetGameContextAction(updatedContext)));
+      verify(Mocks.store.dispatch(ChooseCardDecisionAction(updatedContext)));
+      verify(Mocks.mockNext.next(action));
+    });
+  });
+
+  group('chooseCardDecision', () {
+    test('dispatches a ShowRealPlayerDecisionAction', () {
+      var mockGameContext = MockGameContext();
+      var action = ChooseCardDecisionAction(mockGameContext);
+
+      chooseCardDecision(Mocks.store, action, Mocks.next);
+
+      verify(Mocks.store.dispatch(SetPlayersInGame(mockGameContext, realPlayerCanChooseCard: true)));
+      verify(Mocks.mockNext.next(action));
+    });
+  });
+
+  group('setCardDecision', () {
+    test('dispatches a ShowRealPlayerDecisionAction', () {
+      GameContext mockGameContext = MockGameContext();
+      GameContext updatedGameContext = MockGameContext();
+      var card = TestFactory.cards[0];
+      var player = TestFactory.realPlayer;
+      var action = SetCardDecisionAction(card, player);
+
+      when(Mocks.gameService.read()).thenReturn(mockGameContext);
+      when(mockGameContext.setCardDecision(any, any))
+          .thenReturn(updatedGameContext);
+
+      setCardDecision(Mocks.store, action, Mocks.next);
+
+      verify(mockGameContext.setCardDecision(card, player));
+      verify(Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)));
+      verify(Mocks.store.dispatch(SetGameContextAction(updatedGameContext)));
+      verify(
+          Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));
+      verify(Mocks.mockNext.next(action));
     });
   });
 }

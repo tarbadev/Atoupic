@@ -49,7 +49,13 @@ class _MainPage extends StatelessWidget {
           return Stack(
             children: <Widget>[
               _game.widget,
-              currentView,
+              GestureDetector(
+                onTap: _game.onTap,
+                onTapDown: _game.onTapDown,
+                onTapUp: _game.onTapUp,
+                onTapCancel: _game.onTapCancel,
+                child: currentView,
+              ),
             ],
           );
         });
