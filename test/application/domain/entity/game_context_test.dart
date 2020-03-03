@@ -143,7 +143,9 @@ void main() {
         Card card = TestFactory.cards[0];
         var otherCard = TestFactory.cards[2];
         var player = TestFactory.realPlayer..cards = [card, otherCard];
-        var gameContext = GameContext([player], [
+        var gameContext = GameContext([
+          player
+        ], [
           Turn(1, TestFactory.realPlayer)..cardRounds = [Map()]
         ]);
         var newGameContext =
@@ -162,14 +164,98 @@ void main() {
 
     group('newCardRound', () {
       test('stores the players decision', () {
-        var gameContext = GameContext([TestFactory.realPlayer], [
-          Turn(1, TestFactory.realPlayer)..cardRounds = []
-        ]);
+        var gameContext = GameContext([TestFactory.realPlayer],
+            [Turn(1, TestFactory.realPlayer)..cardRounds = []]);
         var newGameContext = gameContext.newCardRound();
         expect(
           newGameContext.turns[0].cardRounds[0],
           isEmpty,
         );
+      });
+    });
+
+    group('nextCardPlayer', () {
+      test('returns firstPlayer when no card played', () {
+        var firstPlayer = TestFactory.computerPlayer;
+        var gameContext = GameContext([
+          TestFactory.realPlayer,
+          firstPlayer
+        ], [
+          Turn(1, firstPlayer)..cardRounds = [Map()]
+        ]);
+        var nextPlayer = gameContext.nextCardPlayer();
+        expect(
+          nextPlayer,
+          firstPlayer,
+        );
+      });
+
+      test('returns next player when firstplayer already played', () {
+        var firstPlayer = TestFactory.computerPlayer;
+        var player = Player(Position.Right);
+        List<Player> players = [
+          Player(Position.Left),
+          firstPlayer,
+          player,
+          TestFactory.realPlayer,
+        ];
+        var gameContext = GameContext(players, [
+          Turn(1, firstPlayer)
+            ..cardRounds = [
+              Map()..[firstPlayer.position] = TestFactory.cards[0]
+            ]
+        ]);
+        var nextPlayer = gameContext.nextCardPlayer();
+        expect(
+          nextPlayer,
+          player,
+        );
+      });
+
+      test(
+          'returns next player when firstplayer already played and firstPlayer is last in list',
+          () {
+        var firstPlayer = TestFactory.computerPlayer;
+        var player = Player(Position.Right);
+        List<Player> players = [
+          player,
+          Player(Position.Left),
+          TestFactory.realPlayer,
+          firstPlayer,
+        ];
+        var gameContext = GameContext(players, [
+          Turn(1, firstPlayer)
+            ..cardRounds = [
+              Map()..[firstPlayer.position] = TestFactory.cards[0]
+            ]
+        ]);
+        var nextPlayer = gameContext.nextCardPlayer();
+        expect(
+          nextPlayer,
+          player,
+        );
+      });
+
+      test('returns null when all cards played', () {
+        var firstPlayer = TestFactory.computerPlayer;
+        var player = Player(Position.Right);
+        List<Player> players = [
+          player,
+          Player(Position.Left),
+          TestFactory.realPlayer,
+          firstPlayer,
+        ];
+        var gameContext = GameContext(players, [
+          Turn(1, firstPlayer)
+            ..cardRounds = [
+              Map()
+                ..[Position.Bottom] = TestFactory.cards[0]
+                ..[Position.Right] = TestFactory.cards[1]
+                ..[Position.Left] = TestFactory.cards[2]
+                ..[Position.Top] = TestFactory.cards[3]
+            ]
+        ]);
+        expect(gameContext.nextCardPlayer(), isNull);
       });
     });
   });

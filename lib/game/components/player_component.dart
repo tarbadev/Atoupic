@@ -51,7 +51,7 @@ class PlayerComponent extends PositionComponent
     _passedCaption = PassedCaption();
     _passedCaption.visible = this.passed;
     this.cards.forEach((card) => add(card));
-    if(this.lastPlayedCard != null) {
+    if (this.lastPlayedCard != null) {
       add(this.lastPlayedCard);
     }
     add(_passedCaption);
@@ -67,9 +67,10 @@ class PlayerComponent extends PositionComponent
     var tileSize = size.width / 9;
     cards.forEach((card) => card.setWidthAndHeightFromTileSize(tileSize));
 
-    double cardHeight = cards.first.height;
+    double cardWidth = tileSize * 1.25;
+    double cardHeight = tileSize * 1.25 * 1.39444;
     double fullDeckWidth =
-        cards.first.width * .25 * (cards.length - 1) + cards.first.width;
+        cardWidth * .25 * (cards.length - 1) + cardWidth;
     double initialX = 0;
     double initialY = 0;
     double cardX = 0;
@@ -82,7 +83,7 @@ class PlayerComponent extends PositionComponent
       initialX = (size.width / 2) - (fullDeckWidth / 2);
       cardY = size.height - (cardHeight * .75);
     } else if (position == Position.Top) {
-      initialX = (size.width / 2) - (fullDeckWidth / 2) + cards.first.width;
+      initialX = (size.width / 2) - (fullDeckWidth / 2) + cardWidth;
       cardY = cardHeight * .25;
       cardAngle = rotation * 2;
     } else if (position == Position.Left) {
@@ -91,15 +92,15 @@ class PlayerComponent extends PositionComponent
       cardAngle = rotation;
     } else if (position == Position.Right) {
       cardX = size.width - cardHeight * .25;
-      initialY = (size.height / 2) - (fullDeckWidth / 2) + cards.first.width;
+      initialY = (size.height / 2) - (fullDeckWidth / 2) + cardWidth;
       cardAngle = -rotation;
     }
 
     cards.asMap().forEach((index, card) {
       if (position == Position.Top || position == Position.Bottom) {
-        cardX = initialX + (cards.first.width * .25 * index);
+        cardX = initialX + (cardWidth * .25 * index);
       } else {
-        cardY = initialY + (cards.first.width * .25 * index);
+        cardY = initialY + (cardWidth * .25 * index);
       }
 
       card.x = cardX;
@@ -108,29 +109,49 @@ class PlayerComponent extends PositionComponent
       card.fullyDisplayed = index == cards.length - 1;
     });
 
-    if (lastPlayedCard != null) {
-      lastPlayedCard.setWidthAndHeightFromTileSize(tileSize * .75);
-      lastPlayedCard.x = size.width / 2 - (lastPlayedCard.width / 2);
-      lastPlayedCard.y = size.height - (cardHeight * .85) - lastPlayedCard.height;
-    }
+    _resizeLastPlayedCard(tileSize, size);
 
     if (position == Position.Top) {
       _passedCaption
         ..anchor = Anchor.bottomLeft
-        ..x = cards.last.x
-        ..y = cards.first.y;
+        ..x = cardX
+        ..y = cardY;
     } else if (position == Position.Left) {
       _passedCaption
         ..anchor = Anchor.bottomLeft
-        ..x = cards.first.x - cards.first.height * .25
-        ..y = cards.first.y;
+        ..x = cardX - cardHeight * .25
+        ..y = cardY - (fullDeckWidth - cardWidth);
     } else if (position == Position.Right) {
       _passedCaption
-        ..x = cards.first.x + cards.first.height * .25
-        ..y = cards.first.y - cards.first.width;
+        ..x = cardX + cardHeight * .25
+        ..y = cardY - fullDeckWidth;
     }
 
     super.resize(size);
+  }
+
+  void _resizeLastPlayedCard(double tileSize, Size size) {
+    if (lastPlayedCard != null) {
+      lastPlayedCard.setWidthAndHeightFromTileSize(tileSize * .75);
+      switch(position){
+        case Position.Top:
+          lastPlayedCard.x = (size.width / 2) - (lastPlayedCard.width / 2);
+          lastPlayedCard.y = (size.height / 2) - (lastPlayedCard.height * 1.5) - 10;
+          break;
+        case Position.Bottom:
+          lastPlayedCard.x = (size.width / 2) - (lastPlayedCard.width / 2);
+          lastPlayedCard.y = (size.height / 2) - (lastPlayedCard.height * .5) + 10;
+          break;
+        case Position.Left:
+          lastPlayedCard.x = (size.width / 2) - (lastPlayedCard.width * 2);
+          lastPlayedCard.y = (size.height / 2) - lastPlayedCard.height;
+          break;
+        case Position.Right:
+          lastPlayedCard.x = (size.width / 2) + lastPlayedCard.width;
+          lastPlayedCard.y = (size.height / 2) - lastPlayedCard.height;
+          break;
+      }
+    }
   }
 
   static PlayerComponent fromPlayer(Player player,

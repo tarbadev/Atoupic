@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/service/card_service.dart';
@@ -11,7 +13,8 @@ import 'package:redux/redux.dart';
 
 List<Middleware<ApplicationState>> createApplicationMiddleware() => [
       TypedMiddleware<ApplicationState, StartSoloGameAction>(startSoloGame),
-      TypedMiddleware<ApplicationState, SetPlayersInGame>(setPlayersInGame),
+      TypedMiddleware<ApplicationState, SetPlayersInGameAction>(
+          setPlayersInGame),
       TypedMiddleware<ApplicationState, StartTurnAction>(startTurn),
       TypedMiddleware<ApplicationState, TakeOrPassDecisionAction>(
           takeOrPassDecision),
@@ -21,6 +24,7 @@ List<Middleware<ApplicationState>> createApplicationMiddleware() => [
       TypedMiddleware<ApplicationState, ChooseCardDecisionAction>(
           chooseCardDecision),
       TypedMiddleware<ApplicationState, SetCardDecisionAction>(setCardDecision),
+      TypedMiddleware<ApplicationState, ChooseCardForAiAction>(chooseCardForAi),
     ];
 
 void startSoloGame(
@@ -45,7 +49,7 @@ void startSoloGame(
 
 void setPlayersInGame(
   Store<ApplicationState> store,
-  SetPlayersInGame action,
+  SetPlayersInGameAction action,
   NextDispatcher next,
 ) {
   final container = Container();
@@ -93,7 +97,7 @@ void startTurn(
   store.dispatch(SetGameContextAction(action.gameContext));
   store.dispatch(SetTurnAction(action.gameContext.lastTurn.number));
   store.dispatch(SetTakeOrPassCard(card));
-  store.dispatch(SetPlayersInGame(action.gameContext));
+  store.dispatch(SetPlayersInGameAction(action.gameContext));
   store.dispatch(TakeOrPassDecisionAction(action.gameContext.nextPlayer()));
 
   next(action);
@@ -137,7 +141,7 @@ void passDecision(
   }
 
   store.dispatch(SetGameContextAction(gameContext));
-  store.dispatch(SetPlayersInGame(gameContext));
+  store.dispatch(SetPlayersInGameAction(gameContext));
 
   next(action);
 }
@@ -167,7 +171,7 @@ void takeDecision(
       .initializeCards();
 
   store.dispatch(SetGameContextAction(gameContext));
-  store.dispatch(SetPlayersInGame(gameContext));
+  store.dispatch(SetPlayersInGameAction(gameContext));
   store.dispatch(StartCardRoundAction(gameContext));
 
   next(action);
@@ -191,8 +195,18 @@ void chooseCardDecision(
   ChooseCardDecisionAction action,
   NextDispatcher next,
 ) {
-  store.dispatch(
-      SetPlayersInGame(action.context, realPlayerCanChooseCard: true));
+  var nextPlayer = action.context.nextCardPlayer();
+
+  if (nextPlayer == null) {
+    store.dispatch(EndCardRoundAction(action.context));
+  } else {
+    if (nextPlayer.isRealPlayer) {
+      store.dispatch(SetPlayersInGameAction(action.context,
+          realPlayerCanChooseCard: true));
+    } else {
+      store.dispatch(ChooseCardForAiAction(nextPlayer));
+    }
+  }
 
   next(action);
 }
@@ -208,9 +222,24 @@ void setCardDecision(
   GameContext gameContext = gameService.read();
   gameContext = gameContext.setCardDecision(action.card, action.player);
 
-  store.dispatch(SetPlayersInGame(gameContext));
+  store.dispatch(SetPlayersInGameAction(gameContext));
   store.dispatch(SetGameContextAction(gameContext));
   store.dispatch(ChooseCardDecisionAction(gameContext));
+
+  next(action);
+}
+
+void chooseCardForAi(
+  Store<ApplicationState> store,
+  ChooseCardForAiAction action,
+  NextDispatcher next,
+) {
+  var player = action.player;
+
+  store.dispatch(SetCardDecisionAction(
+    player.cards[Random().nextInt(player.cards.length)],
+    player,
+  ));
 
   next(action);
 }

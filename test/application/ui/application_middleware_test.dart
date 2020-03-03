@@ -53,7 +53,7 @@ void main() {
         Player(Position.Right)..cards = [],
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
-      var setGameContextAction = SetPlayersInGame(gameContext);
+      var setGameContextAction = SetPlayersInGameAction(gameContext);
 
       when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
 
@@ -84,7 +84,7 @@ void main() {
         Turn(1, firstPlayer)
           ..cardRounds = [Map()..[TestFactory.realPlayer.position] = card]
       ]);
-      var setGameContextAction = SetPlayersInGame(gameContext);
+      var setGameContextAction = SetPlayersInGameAction(gameContext);
 
       when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
 
@@ -114,7 +114,7 @@ void main() {
         Turn(1, firstPlayer)
           ..cardRounds = [Map()..[TestFactory.realPlayer.position] = card]
       ]);
-      var setGameContextAction = SetPlayersInGame(gameContext, realPlayerCanChooseCard: true);
+      var setGameContextAction = SetPlayersInGameAction(gameContext, realPlayerCanChooseCard: true);
 
       when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
 
@@ -157,7 +157,7 @@ void main() {
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
         Mocks.store.dispatch(SetTurnAction(1)),
         Mocks.store.dispatch(SetTakeOrPassCard(card)),
-        Mocks.store.dispatch(SetPlayersInGame(gameContext)),
+        Mocks.store.dispatch(SetPlayersInGameAction(gameContext)),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.mockNext.next(takeOrPassAction),
       ]);
@@ -272,7 +272,7 @@ void main() {
         Mocks.gameService.read(),
         Mocks.store.dispatch(TakeOrPassDecisionAction(TestFactory.realPlayer)),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
-        Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)),
+        Mocks.store.dispatch(SetPlayersInGameAction(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -306,7 +306,7 @@ void main() {
         Mocks.gameService.read(),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
-        Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)),
+        Mocks.store.dispatch(SetPlayersInGameAction(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -340,7 +340,7 @@ void main() {
         Mocks.gameService.read(),
         Mocks.store.dispatch(StartTurnAction(updatedGameContext)),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
-        Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)),
+        Mocks.store.dispatch(SetPlayersInGameAction(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -386,7 +386,7 @@ void main() {
         Mocks.cardService.distributeCards(3),
         Mocks.cardService.distributeCards(3),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
-        Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)),
+        Mocks.store.dispatch(SetPlayersInGameAction(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -443,13 +443,44 @@ void main() {
   });
 
   group('chooseCardDecision', () {
-    test('dispatches a ShowRealPlayerDecisionAction', () {
-      var mockGameContext = MockGameContext();
+    test('dispatches a ShowRealPlayerDecisionAction when next card player is real player', () {
+      GameContext mockGameContext = MockGameContext();
       var action = ChooseCardDecisionAction(mockGameContext);
+
+      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.realPlayer);
 
       chooseCardDecision(Mocks.store, action, Mocks.next);
 
-      verify(Mocks.store.dispatch(SetPlayersInGame(mockGameContext, realPlayerCanChooseCard: true)));
+      verify(mockGameContext.nextCardPlayer());
+      verify(Mocks.store.dispatch(SetPlayersInGameAction(mockGameContext, realPlayerCanChooseCard: true)));
+      verify(Mocks.mockNext.next(action));
+    });
+
+    test('dispatches a ChooseCardForAiAction when next card player is computer player', () {
+      GameContext mockGameContext = MockGameContext();
+      var action = ChooseCardDecisionAction(mockGameContext);
+
+      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.computerPlayer);
+
+      chooseCardDecision(Mocks.store, action, Mocks.next);
+
+      verify(mockGameContext.nextCardPlayer());
+      verify(Mocks.store.dispatch(ChooseCardForAiAction(TestFactory.computerPlayer)));
+      verifyNoMoreInteractions(Mocks.store);
+      verify(Mocks.mockNext.next(action));
+    });
+
+    test('dispatches a EndCardRoundAction when next card player is null', () {
+      GameContext mockGameContext = MockGameContext();
+      var action = ChooseCardDecisionAction(mockGameContext);
+
+      when(mockGameContext.nextCardPlayer()).thenReturn(null);
+
+      chooseCardDecision(Mocks.store, action, Mocks.next);
+
+      verify(mockGameContext.nextCardPlayer());
+      verify(Mocks.store.dispatch(EndCardRoundAction(mockGameContext)));
+      verifyNoMoreInteractions(Mocks.store);
       verify(Mocks.mockNext.next(action));
     });
   });
@@ -469,10 +500,23 @@ void main() {
       setCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.setCardDecision(card, player));
-      verify(Mocks.store.dispatch(SetPlayersInGame(updatedGameContext)));
+      verify(Mocks.store.dispatch(SetPlayersInGameAction(updatedGameContext)));
       verify(Mocks.store.dispatch(SetGameContextAction(updatedGameContext)));
       verify(
           Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));
+      verify(Mocks.mockNext.next(action));
+    });
+  });
+
+  group('chooseCardForAi', () {
+    test('dispatches a SetCardDecisionAction with a random card', () {
+      var card = TestFactory.cards[0];
+      var player = TestFactory.computerPlayer..cards = [card];
+      var action = ChooseCardForAiAction(player);
+
+      chooseCardForAi(Mocks.store, action, Mocks.next);
+
+      verify(Mocks.store.dispatch(SetCardDecisionAction(card, player)));
       verify(Mocks.mockNext.next(action));
     });
   });

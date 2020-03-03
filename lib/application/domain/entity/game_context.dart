@@ -68,4 +68,19 @@ class GameContext extends Equatable {
     lastTurn.cardRounds.add(Map());
     return this;
   }
+
+  Player nextCardPlayer() {
+    if (lastTurn.lastCardRound.length == players.length) {
+      return null;
+    }
+
+    var index =
+        players.indexOf(lastTurn.firstPlayer) + lastTurn.lastCardRound.length;
+
+    if (index >= players.length) {
+      index -= 4;
+    }
+
+    return players[index];
+  }
 }
