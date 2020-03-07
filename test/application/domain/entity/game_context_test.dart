@@ -1,5 +1,6 @@
 import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/cart_round.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
@@ -146,13 +147,14 @@ void main() {
         var gameContext = GameContext([
           player
         ], [
-          Turn(1, TestFactory.realPlayer)..cardRounds = [Map()]
+          Turn(1, TestFactory.realPlayer)
+            ..cardRounds = [CartRound(TestFactory.realPlayer)]
         ]);
         var newGameContext =
             gameContext.setCardDecision(card, TestFactory.realPlayer);
         expect(
           newGameContext.turns[0].cardRounds[0]
-              [TestFactory.realPlayer.position],
+              .playedCards[TestFactory.realPlayer.position],
           card,
         );
         expect(
@@ -163,13 +165,15 @@ void main() {
     });
 
     group('newCardRound', () {
-      test('stores the players decision', () {
-        var gameContext = GameContext([TestFactory.realPlayer],
-            [Turn(1, TestFactory.realPlayer)..cardRounds = []]);
+      test(
+          'when it is the first card round adds a new CardRound with the next player',
+          () {
+        var gameContext = GameContext(
+            [TestFactory.realPlayer], [Turn(1, TestFactory.realPlayer)]);
         var newGameContext = gameContext.newCardRound();
         expect(
           newGameContext.turns[0].cardRounds[0],
-          isEmpty,
+          CartRound(TestFactory.realPlayer),
         );
       });
     });
@@ -181,7 +185,7 @@ void main() {
           TestFactory.realPlayer,
           firstPlayer
         ], [
-          Turn(1, firstPlayer)..cardRounds = [Map()]
+          Turn(1, firstPlayer)..cardRounds = [CartRound(firstPlayer)]
         ]);
         var nextPlayer = gameContext.nextCardPlayer();
         expect(
@@ -201,9 +205,9 @@ void main() {
         ];
         var gameContext = GameContext(players, [
           Turn(1, firstPlayer)
-            ..cardRounds = [
-              Map()..[firstPlayer.position] = TestFactory.cards[0]
-            ]
+            ..cardRounds = [CartRound(firstPlayer)]
+            ..lastCardRound.playedCards[firstPlayer.position] =
+                TestFactory.cards[0]
         ]);
         var nextPlayer = gameContext.nextCardPlayer();
         expect(
@@ -225,9 +229,9 @@ void main() {
         ];
         var gameContext = GameContext(players, [
           Turn(1, firstPlayer)
-            ..cardRounds = [
-              Map()..[firstPlayer.position] = TestFactory.cards[0]
-            ]
+            ..cardRounds = [CartRound(firstPlayer)]
+            ..lastCardRound.playedCards[firstPlayer.position] =
+                TestFactory.cards[0]
         ]);
         var nextPlayer = gameContext.nextCardPlayer();
         expect(
@@ -247,13 +251,11 @@ void main() {
         ];
         var gameContext = GameContext(players, [
           Turn(1, firstPlayer)
-            ..cardRounds = [
-              Map()
-                ..[Position.Bottom] = TestFactory.cards[0]
-                ..[Position.Right] = TestFactory.cards[1]
-                ..[Position.Left] = TestFactory.cards[2]
-                ..[Position.Top] = TestFactory.cards[3]
-            ]
+            ..cardRounds = [CartRound(firstPlayer)]
+            ..lastCardRound.playedCards[Position.Bottom] = TestFactory.cards[0]
+            ..lastCardRound.playedCards[Position.Right] = TestFactory.cards[1]
+            ..lastCardRound.playedCards[Position.Left] = TestFactory.cards[2]
+            ..lastCardRound.playedCards[Position.Top] = TestFactory.cards[3]
         ]);
         expect(gameContext.nextCardPlayer(), isNull);
       });

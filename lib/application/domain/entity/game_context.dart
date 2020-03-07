@@ -1,12 +1,13 @@
 import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/cart_round.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:equatable/equatable.dart';
 
 class GameContext extends Equatable {
   final List<Player> players;
-  List<Turn> turns;
+  final List<Turn> turns;
 
   Turn get lastTurn => turns.last;
 
@@ -58,24 +59,24 @@ class GameContext extends Equatable {
   }
 
   GameContext setCardDecision(Card card, Player player) {
-    lastTurn.lastCardRound[player.position] = card;
+    lastTurn.lastCardRound.playedCards[player.position] = card;
     players.firstWhere((p) => p.position == player.position).cards.remove(card);
 
     return this;
   }
 
   GameContext newCardRound() {
-    lastTurn.cardRounds.add(Map());
+    lastTurn.cardRounds.add(CartRound(lastTurn.firstPlayer));
     return this;
   }
 
   Player nextCardPlayer() {
-    if (lastTurn.lastCardRound.length == players.length) {
+    if (lastTurn.lastCardRound.playedCards.length == players.length) {
       return null;
     }
 
     var index =
-        players.indexOf(lastTurn.firstPlayer) + lastTurn.lastCardRound.length;
+        players.indexOf(lastTurn.firstPlayer) + lastTurn.lastCardRound.playedCards.length;
 
     if (index >= players.length) {
       index -= 4;

@@ -1,4 +1,5 @@
 import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/cart_round.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:equatable/equatable.dart';
@@ -8,10 +9,10 @@ class Turn extends Equatable {
   final Player firstPlayer;
   Card card;
   Map<Position, Decision> playerDecisions = Map();
-  List<Map<Position, Card>> cardRounds = List();
+  List<CartRound> cardRounds = List();
   int round = 1;
 
-  Map<Position, Card> get lastCardRound => cardRounds.length > 0 ? cardRounds.last : null;
+  CartRound get lastCardRound => cardRounds.length > 0 ? cardRounds.last : null;
 
   Turn(this.number, this.firstPlayer);
 

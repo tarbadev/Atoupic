@@ -69,7 +69,7 @@ void setPlayersInGame(
                 : null,
             lastPlayed: action.context.lastTurn.lastCardRound == null
                 ? null
-                : action.context.lastTurn.lastCardRound[player.position],
+                : action.context.lastTurn.lastCardRound.playedCards[player.position],
           ))
       .toList());
 

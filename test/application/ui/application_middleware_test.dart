@@ -1,5 +1,6 @@
 import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/cart_round.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
@@ -16,6 +17,10 @@ import '../../helper/test_factory.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setupDependencyInjectorForTest();
+
+  setUp(() {
+    reset(Mocks.store);
+  });
 
   group('startSoloGame', () {
     test('call gameService to get gameContext and sets in the state', () {
@@ -82,7 +87,8 @@ void main() {
       ];
       var gameContext = GameContext(players, [
         Turn(1, firstPlayer)
-          ..cardRounds = [Map()..[TestFactory.realPlayer.position] = card]
+          ..cardRounds = [CartRound(firstPlayer)]
+          ..lastCardRound.playedCards[TestFactory.realPlayer.position] = card
       ]);
       var setGameContextAction = SetPlayersInGameAction(gameContext);
 
@@ -112,20 +118,23 @@ void main() {
       ];
       var gameContext = GameContext(players, [
         Turn(1, firstPlayer)
-          ..cardRounds = [Map()..[TestFactory.realPlayer.position] = card]
+          ..cardRounds = [CartRound(firstPlayer)]
+          ..lastCardRound.playedCards[TestFactory.realPlayer.position] = card
       ]);
-      var setGameContextAction = SetPlayersInGameAction(gameContext, realPlayerCanChooseCard: true);
+      var setGameContextAction =
+          SetPlayersInGameAction(gameContext, realPlayerCanChooseCard: true);
 
       when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
 
       setPlayersInGame(Mocks.store, setGameContextAction, Mocks.next);
 
       List<PlayerComponent> capturedList =
-      verify(Mocks.atoupicGame.setPlayers(captureAny)).captured[0];
+          verify(Mocks.atoupicGame.setPlayers(captureAny)).captured[0];
       expect(
           capturedList
               .firstWhere((playerComponent) => playerComponent.isRealPlayer)
-              .cards[0].onCardPlayed,
+              .cards[0]
+              .onCardPlayed,
           isNotNull);
 
       verify(Mocks.mockNext.next(setGameContextAction));
@@ -443,7 +452,9 @@ void main() {
   });
 
   group('chooseCardDecision', () {
-    test('dispatches a ShowRealPlayerDecisionAction when next card player is real player', () {
+    test(
+        'dispatches a ShowRealPlayerDecisionAction when next card player is real player',
+        () {
       GameContext mockGameContext = MockGameContext();
       var action = ChooseCardDecisionAction(mockGameContext);
 
@@ -452,20 +463,25 @@ void main() {
       chooseCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.nextCardPlayer());
-      verify(Mocks.store.dispatch(SetPlayersInGameAction(mockGameContext, realPlayerCanChooseCard: true)));
+      verify(Mocks.store.dispatch(SetPlayersInGameAction(mockGameContext,
+          realPlayerCanChooseCard: true)));
       verify(Mocks.mockNext.next(action));
     });
 
-    test('dispatches a ChooseCardForAiAction when next card player is computer player', () {
+    test(
+        'dispatches a ChooseCardForAiAction when next card player is computer player',
+        () {
       GameContext mockGameContext = MockGameContext();
       var action = ChooseCardDecisionAction(mockGameContext);
 
-      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.computerPlayer);
+      when(mockGameContext.nextCardPlayer())
+          .thenReturn(TestFactory.computerPlayer);
 
       chooseCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.nextCardPlayer());
-      verify(Mocks.store.dispatch(ChooseCardForAiAction(TestFactory.computerPlayer)));
+      verify(Mocks.store
+          .dispatch(ChooseCardForAiAction(TestFactory.computerPlayer)));
       verifyNoMoreInteractions(Mocks.store);
       verify(Mocks.mockNext.next(action));
     });
