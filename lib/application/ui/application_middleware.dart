@@ -238,11 +238,16 @@ void chooseCardForAi(
   var context = action.context;
   var player = action.player;
   var lastCardRound = context.lastTurn.lastCardRound;
+  var card;
 
-  var requestedColor =
-      lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
-  var card = player.cards.firstWhere((card) => card.color == requestedColor,
-      orElse: () => player.cards[Random().nextInt(player.cards.length)]);
+  if (player == lastCardRound.firstPlayer) {
+    card = player.cards[Random().nextInt(player.cards.length)];
+  } else {
+    var requestedColor =
+        lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
+    card = player.cards.firstWhere((card) => card.color == requestedColor,
+        orElse: () => player.cards[Random().nextInt(player.cards.length)]);
+  }
 
   store.dispatch(SetCardDecisionAction(
     card,

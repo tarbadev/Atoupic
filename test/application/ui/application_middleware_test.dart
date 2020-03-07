@@ -529,24 +529,28 @@ void main() {
       var gameContext;
       var firstPlayer = TestFactory.realPlayer;
 
-      setUp((){
-        gameContext = GameContext([],
-            [Turn(1, firstPlayer)
-              ..card = Card(CardColor.Club, CardHead.King)
-              ..cardRounds = [CartRound(firstPlayer)..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.King)]
-            ]);
+      setUp(() {
+        gameContext = GameContext([], [
+          Turn(1, firstPlayer)
+            ..cardRounds = [
+              CartRound(firstPlayer)
+                ..playedCards[firstPlayer.position] =
+                    Card(CardColor.Heart, CardHead.King)
+            ]
+        ]);
       });
 
       group('when computer has card of requested color', () {
         test('dispatches a SetCardDecisionAction with card from same color',
             () {
           var card = Card(CardColor.Heart, CardHead.Eight);
-          var player = TestFactory.computerPlayer..cards = [
-            Card(CardColor.Club, CardHead.Eight),
-            Card(CardColor.Spade, CardHead.Eight),
-            Card(CardColor.Diamond, CardHead.Eight),
-            card,
-          ];
+          var player = TestFactory.computerPlayer
+            ..cards = [
+              Card(CardColor.Club, CardHead.Eight),
+              Card(CardColor.Spade, CardHead.Eight),
+              Card(CardColor.Diamond, CardHead.Eight),
+              card,
+            ];
           var action = ChooseCardForAiAction(gameContext, player);
 
           chooseCardForAi(Mocks.store, action, Mocks.next);
@@ -567,6 +571,29 @@ void main() {
           verify(Mocks.store.dispatch(SetCardDecisionAction(card, player)));
           verify(Mocks.mockNext.next(action));
         });
+      });
+    });
+
+    group('when first player', () {
+      var gameContext;
+      var player = TestFactory.realPlayer;
+
+      setUp(() {
+        gameContext = GameContext([], [
+          Turn(1, player)
+            ..cardRounds = [CartRound(player)]
+        ]);
+      });
+
+      test('dispatches a SetCardDecisionAction with a random card', () {
+        var card = Card(CardColor.Club, CardHead.Eight);
+        player.cards = [card];
+        var action = ChooseCardForAiAction(gameContext, player);
+
+        chooseCardForAi(Mocks.store, action, Mocks.next);
+
+        verify(Mocks.store.dispatch(SetCardDecisionAction(card, player)));
+        verify(Mocks.mockNext.next(action));
       });
     });
   });
