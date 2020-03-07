@@ -480,8 +480,8 @@ void main() {
       chooseCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.nextCardPlayer());
-      verify(Mocks.store
-          .dispatch(ChooseCardForAiAction(TestFactory.computerPlayer)));
+      verify(Mocks.store.dispatch(
+          ChooseCardForAiAction(mockGameContext, TestFactory.computerPlayer)));
       verifyNoMoreInteractions(Mocks.store);
       verify(Mocks.mockNext.next(action));
     });
@@ -525,15 +525,49 @@ void main() {
   });
 
   group('chooseCardForAi', () {
-    test('dispatches a SetCardDecisionAction with a random card', () {
-      var card = TestFactory.cards[0];
-      var player = TestFactory.computerPlayer..cards = [card];
-      var action = ChooseCardForAiAction(player);
+    group('when not the first player', () {
+      var gameContext;
+      var firstPlayer = TestFactory.realPlayer;
 
-      chooseCardForAi(Mocks.store, action, Mocks.next);
+      setUp((){
+        gameContext = GameContext([],
+            [Turn(1, firstPlayer)
+              ..card = Card(CardColor.Club, CardHead.King)
+              ..cardRounds = [CartRound(firstPlayer)..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.King)]
+            ]);
+      });
 
-      verify(Mocks.store.dispatch(SetCardDecisionAction(card, player)));
-      verify(Mocks.mockNext.next(action));
+      group('when computer has card of requested color', () {
+        test('dispatches a SetCardDecisionAction with card from same color',
+            () {
+          var card = Card(CardColor.Heart, CardHead.Eight);
+          var player = TestFactory.computerPlayer..cards = [
+            Card(CardColor.Club, CardHead.Eight),
+            Card(CardColor.Spade, CardHead.Eight),
+            Card(CardColor.Diamond, CardHead.Eight),
+            card,
+          ];
+          var action = ChooseCardForAiAction(gameContext, player);
+
+          chooseCardForAi(Mocks.store, action, Mocks.next);
+
+          verify(Mocks.store.dispatch(SetCardDecisionAction(card, player)));
+          verify(Mocks.mockNext.next(action));
+        });
+      });
+
+      group('when computer does not have card of requested color', () {
+        test('dispatches a SetCardDecisionAction with a random card', () {
+          var card = Card(CardColor.Club, CardHead.Eight);
+          var player = TestFactory.computerPlayer..cards = [card];
+          var action = ChooseCardForAiAction(gameContext, player);
+
+          chooseCardForAi(Mocks.store, action, Mocks.next);
+
+          verify(Mocks.store.dispatch(SetCardDecisionAction(card, player)));
+          verify(Mocks.mockNext.next(action));
+        });
+      });
     });
   });
 }

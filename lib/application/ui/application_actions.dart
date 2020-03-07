@@ -157,10 +157,11 @@ class SetCardDecisionAction extends Equatable {
 }
 
 class ChooseCardForAiAction extends Equatable {
+  final GameContext context;
   final Player player;
 
-  ChooseCardForAiAction(this.player);
+  ChooseCardForAiAction(this.context, this.player);
 
   @override
-  List<Object> get props => [player];
+  List<Object> get props => [context, player];
 }
