@@ -10,7 +10,7 @@ import '../../helper/mock_definition.dart';
 void main() {
   setupDependencyInjectorForTest();
 
-  group('setGameContext',(){
+  group('setGameContext', () {
     test('stores the new gameContext in DB and returns the result', () {
       var gameContext = GameContext([], []);
       var action = SetGameContextAction(gameContext);

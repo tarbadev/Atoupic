@@ -9,8 +9,9 @@ import '../../helper/testable_widget.dart';
 import '../../home_view_tester.dart';
 
 void main() {
-  group('HomeView', (){
-    testWidgets('dispatches a SetCurrentViewAction on startSolo tap', (WidgetTester tester) async {
+  group('HomeView', () {
+    testWidgets('dispatches a SetCurrentViewAction on startSolo tap',
+        (WidgetTester tester) async {
       var homeViewTester = HomeViewTester(tester);
 
       await tester.pumpWidget(buildTestableWidget(HomeView()));

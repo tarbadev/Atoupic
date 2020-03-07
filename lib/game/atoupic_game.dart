@@ -20,7 +20,7 @@ class AtoupicGame extends BaseGame {
 
   void setPlayers(List<PlayerComponent> players) {
     _players.forEach((playerComponent) {
-      playerComponent.shouldDestroy = true;
+      playerComponent.setToDestroy();
       components.remove(playerComponent);
     });
 

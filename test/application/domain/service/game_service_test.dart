@@ -72,7 +72,8 @@ void main() {
           [Turn(1, TestFactory.computerPlayer)],
         );
 
-        when(Mocks.gameContextRepository.save(any)).thenReturn(savedGameContext);
+        when(Mocks.gameContextRepository.save(any))
+            .thenReturn(savedGameContext);
 
         expect(gameService.save(gameContext), savedGameContext);
 

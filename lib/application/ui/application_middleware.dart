@@ -71,6 +71,7 @@ void setPlayersInGame(
                 ? null
                 : action.context.lastTurn.lastCardRound
                     .playedCards[player.position],
+            possibleCardsToPlay: action.possibleCardsToPlay,
           ))
       .toList());
 
@@ -202,10 +203,14 @@ void chooseCardDecision(
     store.dispatch(EndCardRoundAction(action.context));
   } else {
     if (nextPlayer.isRealPlayer) {
-      store.dispatch(SetPlayersInGameAction(action.context,
-          realPlayerCanChooseCard: true));
+      store.dispatch(SetPlayersInGameAction(
+        action.context,
+        realPlayerCanChooseCard: true,
+        possibleCardsToPlay: action.context.getPossibleCardsToPlay(nextPlayer),
+      ));
     } else {
-      store.dispatch(ChooseCardForAiAction(action.context, nextPlayer));
+      store.dispatch(ChooseCardForAiAction(
+          action.context.getPossibleCardsToPlay(nextPlayer), nextPlayer));
     }
   }
 
@@ -235,23 +240,12 @@ void chooseCardForAi(
   ChooseCardForAiAction action,
   NextDispatcher next,
 ) {
-  var context = action.context;
-  var player = action.player;
-  var lastCardRound = context.lastTurn.lastCardRound;
-  var card;
-
-  if (player == lastCardRound.firstPlayer) {
-    card = player.cards[Random().nextInt(player.cards.length)];
-  } else {
-    var requestedColor =
-        lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
-    card = player.cards.firstWhere((card) => card.color == requestedColor,
-        orElse: () => player.cards[Random().nextInt(player.cards.length)]);
-  }
+  var card = action
+      .possibleCardsToPlay[Random().nextInt(action.possibleCardsToPlay.length)];
 
   store.dispatch(SetCardDecisionAction(
     card,
-    player,
+    action.player,
   ));
 
   next(action);

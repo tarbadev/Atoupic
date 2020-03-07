@@ -44,7 +44,7 @@ class PlayerComponent extends PositionComponent
   final CardComponent lastPlayedCard;
   bool isDown = false;
   PassedCaption _passedCaption;
-  bool shouldDestroy = false;
+  bool _shouldDestroy = false;
 
   PlayerComponent(this.cards, this.position, this.isRealPlayer, this.passed,
       this.lastPlayedCard) {
@@ -57,9 +57,13 @@ class PlayerComponent extends PositionComponent
     add(_passedCaption);
   }
 
+  void setToDestroy() {
+    _shouldDestroy = true;
+  }
+
   @override
   bool destroy() {
-    return shouldDestroy;
+    return _shouldDestroy;
   }
 
   @override
@@ -69,8 +73,7 @@ class PlayerComponent extends PositionComponent
 
     double cardWidth = tileSize * 1.25;
     double cardHeight = tileSize * 1.25 * 1.39444;
-    double fullDeckWidth =
-        cardWidth * .25 * (cards.length - 1) + cardWidth;
+    double fullDeckWidth = cardWidth * .25 * (cards.length - 1) + cardWidth;
     double initialX = 0;
     double initialY = 0;
     double cardX = 0;
@@ -133,14 +136,16 @@ class PlayerComponent extends PositionComponent
   void _resizeLastPlayedCard(double tileSize, Size size) {
     if (lastPlayedCard != null) {
       lastPlayedCard.setWidthAndHeightFromTileSize(tileSize * .75);
-      switch(position){
+      switch (position) {
         case Position.Top:
           lastPlayedCard.x = (size.width / 2) - (lastPlayedCard.width / 2);
-          lastPlayedCard.y = (size.height / 2) - (lastPlayedCard.height * 1.5) - 10;
+          lastPlayedCard.y =
+              (size.height / 2) - (lastPlayedCard.height * 1.5) - 10;
           break;
         case Position.Bottom:
           lastPlayedCard.x = (size.width / 2) - (lastPlayedCard.width / 2);
-          lastPlayedCard.y = (size.height / 2) - (lastPlayedCard.height * .5) + 10;
+          lastPlayedCard.y =
+              (size.height / 2) - (lastPlayedCard.height * .5) + 10;
           break;
         case Position.Left:
           lastPlayedCard.x = (size.width / 2) - (lastPlayedCard.width * 2);
@@ -154,12 +159,23 @@ class PlayerComponent extends PositionComponent
     }
   }
 
-  static PlayerComponent fromPlayer(Player player,
-      {bool passed = false, Function onCardSelected, Card lastPlayed}) {
+  static PlayerComponent fromPlayer(
+    Player player, {
+    bool passed = false,
+    Function onCardSelected,
+    Card lastPlayed,
+    List<Card> possibleCardsToPlay,
+  }) {
     List<CardComponent> cards = player.cards
-        .map((card) => CardComponent.fromCard(card,
-            showBackFace: !player.isRealPlayer,
-            onCardPlayed: () => onCardSelected(card)))
+        .map((card) => CardComponent.fromCard(
+              card,
+              showBackFace: !player.isRealPlayer,
+              onCardPlayed: player.isRealPlayer && onCardSelected != null
+                  ? () => onCardSelected(card)
+                  : null,
+            )..canBePlayed = possibleCardsToPlay == null
+                ? true
+                : possibleCardsToPlay.contains(card))
         .toList()
         .cast();
     return PlayerComponent(

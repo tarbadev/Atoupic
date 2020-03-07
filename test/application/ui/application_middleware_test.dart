@@ -459,12 +459,18 @@ void main() {
       var action = ChooseCardDecisionAction(mockGameContext);
 
       when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.realPlayer);
+      when(mockGameContext.getPossibleCardsToPlay(any))
+          .thenReturn([TestFactory.cards[0]]);
 
       chooseCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.nextCardPlayer());
-      verify(Mocks.store.dispatch(SetPlayersInGameAction(mockGameContext,
-          realPlayerCanChooseCard: true)));
+      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.realPlayer));
+      verify(Mocks.store.dispatch(SetPlayersInGameAction(
+        mockGameContext,
+        realPlayerCanChooseCard: true,
+        possibleCardsToPlay: [TestFactory.cards[0]],
+      )));
       verify(Mocks.mockNext.next(action));
     });
 
@@ -476,12 +482,16 @@ void main() {
 
       when(mockGameContext.nextCardPlayer())
           .thenReturn(TestFactory.computerPlayer);
+      when(mockGameContext.getPossibleCardsToPlay(any))
+          .thenReturn([TestFactory.cards[0]]);
 
       chooseCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.nextCardPlayer());
-      verify(Mocks.store.dispatch(
-          ChooseCardForAiAction(mockGameContext, TestFactory.computerPlayer)));
+      verify(
+          mockGameContext.getPossibleCardsToPlay(TestFactory.computerPlayer));
+      verify(Mocks.store.dispatch(ChooseCardForAiAction(
+          [TestFactory.cards[0]], TestFactory.computerPlayer)));
       verifyNoMoreInteractions(Mocks.store);
       verify(Mocks.mockNext.next(action));
     });
@@ -525,76 +535,15 @@ void main() {
   });
 
   group('chooseCardForAi', () {
-    group('when not the first player', () {
-      var gameContext;
-      var firstPlayer = TestFactory.realPlayer;
+    test('dispatches a SetCardDecisionAction with a random card', () {
+      var card = Card(CardColor.Club, CardHead.Eight);
+      var player = TestFactory.computerPlayer..cards = [card];
+      var action = ChooseCardForAiAction([card], player);
 
-      setUp(() {
-        gameContext = GameContext([], [
-          Turn(1, firstPlayer)
-            ..cardRounds = [
-              CartRound(firstPlayer)
-                ..playedCards[firstPlayer.position] =
-                    Card(CardColor.Heart, CardHead.King)
-            ]
-        ]);
-      });
+      chooseCardForAi(Mocks.store, action, Mocks.next);
 
-      group('when computer has card of requested color', () {
-        test('dispatches a SetCardDecisionAction with card from same color',
-            () {
-          var card = Card(CardColor.Heart, CardHead.Eight);
-          var player = TestFactory.computerPlayer
-            ..cards = [
-              Card(CardColor.Club, CardHead.Eight),
-              Card(CardColor.Spade, CardHead.Eight),
-              Card(CardColor.Diamond, CardHead.Eight),
-              card,
-            ];
-          var action = ChooseCardForAiAction(gameContext, player);
-
-          chooseCardForAi(Mocks.store, action, Mocks.next);
-
-          verify(Mocks.store.dispatch(SetCardDecisionAction(card, player)));
-          verify(Mocks.mockNext.next(action));
-        });
-      });
-
-      group('when computer does not have card of requested color', () {
-        test('dispatches a SetCardDecisionAction with a random card', () {
-          var card = Card(CardColor.Club, CardHead.Eight);
-          var player = TestFactory.computerPlayer..cards = [card];
-          var action = ChooseCardForAiAction(gameContext, player);
-
-          chooseCardForAi(Mocks.store, action, Mocks.next);
-
-          verify(Mocks.store.dispatch(SetCardDecisionAction(card, player)));
-          verify(Mocks.mockNext.next(action));
-        });
-      });
-    });
-
-    group('when first player', () {
-      var gameContext;
-      var player = TestFactory.realPlayer;
-
-      setUp(() {
-        gameContext = GameContext([], [
-          Turn(1, player)
-            ..cardRounds = [CartRound(player)]
-        ]);
-      });
-
-      test('dispatches a SetCardDecisionAction with a random card', () {
-        var card = Card(CardColor.Club, CardHead.Eight);
-        player.cards = [card];
-        var action = ChooseCardForAiAction(gameContext, player);
-
-        chooseCardForAi(Mocks.store, action, Mocks.next);
-
-        verify(Mocks.store.dispatch(SetCardDecisionAction(card, player)));
-        verify(Mocks.mockNext.next(action));
-      });
+      verify(Mocks.store.dispatch(SetCardDecisionAction(card, player)));
+      verify(Mocks.mockNext.next(action));
     });
   });
 }

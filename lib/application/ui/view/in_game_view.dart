@@ -177,7 +177,7 @@ class ColorChoices extends StatefulWidget {
 
   AtoupicCard.CardColor get selectedColor => _choices.selectedColor;
 
-  ColorChoices(this.colorChoices){
+  ColorChoices(this.colorChoices) {
     _choices = new _ColorChoicesState(colorChoices);
   }
 

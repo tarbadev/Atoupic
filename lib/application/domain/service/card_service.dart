@@ -51,7 +51,7 @@ class CardService {
   List<Card> distributeCards(int count) {
     List<Card> cardsToDistribute = List();
 
-    for(int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
       var card = pile[_random.nextInt(pile.length)];
       cardsToDistribute.add(card);
       pile.remove(card);

@@ -39,11 +39,13 @@ class TakeOrPassDialogElement extends BaseViewTester {
   Future<void> tapOnTake() async => await tester.tap(_takeButtonFinder);
 
   Future<void> tapOnColorChoice(CardColor cardColor) async {
-    var button = (tester.widget(find.byKey(Key('TakeOrPassDialog__ColorChoices'))) as Row)
+    var button = (tester
+            .widget(find.byKey(Key('TakeOrPassDialog__ColorChoices'))) as Row)
         .children
         .firstWhere((container) =>
             (((container as Container).child as RaisedButton).child as Text)
-                .data == cardColor.symbol);
+                .data ==
+            cardColor.symbol);
     return await tester.tap(find.byWidget(button));
   }
 }

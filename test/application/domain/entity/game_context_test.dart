@@ -260,5 +260,71 @@ void main() {
         expect(gameContext.nextCardPlayer(), isNull);
       });
     });
+
+    group('getPossibleCardsToPlay', () {
+      group('when not the first player', () {
+        GameContext gameContext;
+        var firstPlayer = TestFactory.realPlayer;
+
+        setUp(() {
+          gameContext = GameContext([], [
+            Turn(1, firstPlayer)
+              ..cardRounds = [
+                CartRound(firstPlayer)
+                  ..playedCards[firstPlayer.position] =
+                      Card(CardColor.Heart, CardHead.King)
+              ]
+          ]);
+        });
+
+        group('when computer has card of requested color', () {
+          test('returns cards of requested color', () {
+            var card1 = Card(CardColor.Heart, CardHead.Eight);
+            var card2 = Card(CardColor.Heart, CardHead.Seven);
+            var player = TestFactory.computerPlayer
+              ..cards = [
+                Card(CardColor.Club, CardHead.Eight),
+                Card(CardColor.Spade, CardHead.Eight),
+                Card(CardColor.Diamond, CardHead.Eight),
+                card1,
+                card2,
+              ];
+
+            expect(gameContext.getPossibleCardsToPlay(player), [card1, card2]);
+          });
+        });
+
+        group('when computer does not have card of requested color', () {
+          test('dispatches a SetCardDecisionAction with a random card', () {
+            var player = TestFactory.computerPlayer
+              ..cards = [
+                Card(CardColor.Club, CardHead.Eight),
+                Card(CardColor.Spade, CardHead.Eight),
+                Card(CardColor.Diamond, CardHead.Eight),
+              ];
+
+            expect(gameContext.getPossibleCardsToPlay(player), player.cards);
+          });
+        });
+      });
+
+      group('when first player', () {
+        var gameContext;
+        var player = TestFactory.realPlayer;
+
+        setUp(() {
+          gameContext = GameContext([], [
+            Turn(1, player)..cardRounds = [CartRound(player)]
+          ]);
+        });
+
+        test('dispatches a SetCardDecisionAction with a random card', () {
+          var card = Card(CardColor.Club, CardHead.Eight);
+          player.cards = [card];
+
+          expect(gameContext.getPossibleCardsToPlay(player), player.cards);
+        });
+      });
+    });
   });
 }

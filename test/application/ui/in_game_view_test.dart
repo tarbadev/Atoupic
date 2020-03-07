@@ -30,7 +30,8 @@ void main() {
       expect(inGameViewTester.takeOrPass.isVisible, isTrue);
     });
 
-    testWidgets('displays round 2 dialog if showTakeOrPassDialog is true and round = 2',
+    testWidgets(
+        'displays round 2 dialog if showTakeOrPassDialog is true and round = 2',
         (WidgetTester tester) async {
       var inGameView = InGameView();
 
@@ -44,7 +45,8 @@ void main() {
 
       var inGameViewTester = InGameViewTester(tester);
       expect(inGameViewTester.takeOrPass.isVisible, isTrue);
-      expect(inGameViewTester.takeOrPass.colorChoices, [CardColor.Spade, CardColor.Heart, CardColor.Diamond]);
+      expect(inGameViewTester.takeOrPass.colorChoices,
+          [CardColor.Spade, CardColor.Heart, CardColor.Diamond]);
     });
 
     testWidgets('displays current turn number', (WidgetTester tester) async {
@@ -93,7 +95,8 @@ void main() {
       var inGameViewTester = InGameViewTester(tester);
       await inGameViewTester.takeOrPass.tapOnTake();
       verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
-      verify(Mocks.store.dispatch(TakeDecisionAction(TestFactory.realPlayer, CardColor.Club)));
+      verify(Mocks.store.dispatch(
+          TakeDecisionAction(TestFactory.realPlayer, CardColor.Club)));
     });
 
     testWidgets('dispatches a TakeAction on round 2 take tap',
@@ -113,7 +116,8 @@ void main() {
       await inGameViewTester.takeOrPass.tapOnColorChoice(CardColor.Heart);
       await inGameViewTester.takeOrPass.tapOnTake();
       verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
-      verify(Mocks.store.dispatch(TakeDecisionAction(TestFactory.realPlayer, CardColor.Heart)));
+      verify(Mocks.store.dispatch(
+          TakeDecisionAction(TestFactory.realPlayer, CardColor.Heart)));
     });
   });
 }

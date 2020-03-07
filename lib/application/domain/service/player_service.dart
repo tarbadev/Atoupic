@@ -1,7 +1,4 @@
 import 'package:atoupic/application/domain/entity/player.dart';
-import 'package:kiwi/kiwi.dart';
-
-import 'card_service.dart';
 
 class PlayerService {
   Player buildRealPlayer() {

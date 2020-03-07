@@ -24,7 +24,7 @@ abstract class ApplicationInjector {
   @Register.singleton(GameContextRepository)
   void configureAnnotations();
 
-  void configureInstances(){
+  void configureInstances() {
     final _store = Store<ApplicationState>(
       applicationReducer,
       initialState: ApplicationState.initial(),

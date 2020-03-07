@@ -21,7 +21,6 @@ class Background extends PositionComponent with Resizable {
     canvas.drawRect(rect, paint);
   }
 
-
   @override
   void resize(Size size) {
     rect = Rect.fromLTWH(

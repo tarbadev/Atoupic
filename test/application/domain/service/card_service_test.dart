@@ -19,7 +19,9 @@ void main() {
       expect(listEquals(cardService.pile, TestFactory.cards), isTrue);
     });
 
-    test('distributeCards returns the number of cards specified and removes them from the pile', () {
+    test(
+        'distributeCards returns the number of cards specified and removes them from the pile',
+        () {
       var cards = cardService.distributeCards(10);
 
       expect(cardService.pile.length, 22);
