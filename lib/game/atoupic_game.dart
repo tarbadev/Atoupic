@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:atoupic/application/domain/entity/card.dart';
@@ -97,5 +98,12 @@ class AtoupicGame extends BaseGame {
     playerComponent.cards.remove(playedCard);
     playerComponent.lastPlayedCard = playedCard;
     playedCard.revealCard();
+  }
+
+  void resetLastPlayedCards() {
+    _players.forEach((player) {
+      player.lastPlayedCard.shouldDestroy = true;
+      player.lastPlayedCard = null;
+    });
   }
 }

@@ -21,6 +21,7 @@ List<Middleware<ApplicationState>> createApplicationMiddleware() => [
           chooseCardDecision),
       TypedMiddleware<ApplicationState, SetCardDecisionAction>(setCardDecision),
       TypedMiddleware<ApplicationState, ChooseCardForAiAction>(chooseCardForAi),
+      TypedMiddleware<ApplicationState, EndCardRoundAction>(endCardRound),
     ];
 
 void startSoloGame(
@@ -231,6 +232,21 @@ void chooseCardForAi(
     card,
     action.player,
   ));
+
+  next(action);
+}
+
+void endCardRound(
+  Store<ApplicationState> store,
+  EndCardRoundAction action,
+  NextDispatcher next,
+) {
+  final container = Container();
+  final AtoupicGame atoupicGame = container<AtoupicGame>();
+
+  atoupicGame.resetLastPlayedCards();
+
+  store.dispatch(StartCardRoundAction(action.context));
 
   next(action);
 }

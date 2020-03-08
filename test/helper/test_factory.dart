@@ -1,4 +1,6 @@
+import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 
 abstract class TestFactory {
@@ -43,4 +45,13 @@ abstract class TestFactory {
 
   static Player realPlayerWithCards(List<Card> cards) =>
       Player(Position.Bottom, isRealPlayer: true)..cards = cards;
+
+  static GameContext get gameContext => GameContext([
+        Player(Position.Left),
+        Player(Position.Top),
+        Player(Position.Right),
+        realPlayer
+      ], [
+        Turn(1, Player(Position.Top))
+      ]);
 }

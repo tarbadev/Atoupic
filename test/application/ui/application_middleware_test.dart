@@ -460,4 +460,17 @@ void main() {
       verify(Mocks.mockNext.next(action));
     });
   });
+
+  group('endCardRound', () {
+    test('resets the last played cards in game', () {
+      GameContext mockContext = MockGameContext();
+      var action = EndCardRoundAction(mockContext);
+
+      endCardRound(Mocks.store, action, Mocks.next);
+
+      verify(Mocks.atoupicGame.resetLastPlayedCards());
+      verify(Mocks.store.dispatch(StartCardRoundAction(mockContext)));
+      verify(Mocks.mockNext.next(action));
+    });
+  });
 }
