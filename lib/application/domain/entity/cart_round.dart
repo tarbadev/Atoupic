@@ -10,4 +10,9 @@ class CartRound extends Equatable {
 
   @override
   List<Object> get props => [playedCards, firstPlayer];
+
+  @override
+  String toString() {
+    return 'CartRound{playedCards: $playedCards, firstPlayer: $firstPlayer}';
+  }
 }

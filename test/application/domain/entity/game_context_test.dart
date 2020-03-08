@@ -176,6 +176,50 @@ void main() {
           CartRound(TestFactory.realPlayer),
         );
       });
+
+      group('when it is not the first card round', () {
+        test('adds a new CardRound with the highest card player', () {
+          var gameContext = TestFactory.gameContext
+            ..lastTurn.cardRounds = [
+              CartRound(Player(Position.Top))
+                ..playedCards[TestFactory.realPlayer.position] =
+                    Card(CardColor.Heart, CardHead.Eight)
+                ..playedCards[Position.Right] =
+                    Card(CardColor.Heart, CardHead.King)
+                ..playedCards[Position.Left] =
+                    Card(CardColor.Club, CardHead.Ace)
+                ..playedCards[Position.Top] =
+                    Card(CardColor.Heart, CardHead.Nine),
+            ];
+          var newGameContext = gameContext.newCardRound();
+          expect(
+            newGameContext.turns[0].cardRounds[1],
+            CartRound(Player(Position.Right)),
+          );
+        });
+
+        test(
+            'and only card of the requested color adds a new CardRound with the first player',
+            () {
+          var gameContext = TestFactory.gameContext
+            ..lastTurn.cardRounds = [
+              CartRound(Player(Position.Top))
+                ..playedCards[TestFactory.realPlayer.position] =
+                    Card(CardColor.Heart, CardHead.Eight)
+                ..playedCards[Position.Right] =
+                    Card(CardColor.Spade, CardHead.King)
+                ..playedCards[Position.Left] =
+                    Card(CardColor.Club, CardHead.Ace)
+                ..playedCards[Position.Top] =
+                    Card(CardColor.Diamond, CardHead.Nine),
+            ];
+          var newGameContext = gameContext.newCardRound();
+          expect(
+            newGameContext.turns[0].cardRounds[1],
+            CartRound(Player(Position.Top)),
+          );
+        });
+      });
     });
 
     group('nextCardPlayer', () {
@@ -185,12 +229,12 @@ void main() {
           TestFactory.realPlayer,
           firstPlayer
         ], [
-          Turn(1, firstPlayer)..cardRounds = [CartRound(firstPlayer)]
+          Turn(1, firstPlayer)..cardRounds = [CartRound(firstPlayer), CartRound(TestFactory.realPlayer)]
         ]);
         var nextPlayer = gameContext.nextCardPlayer();
         expect(
           nextPlayer,
-          firstPlayer,
+          TestFactory.realPlayer,
         );
       });
 

@@ -66,7 +66,27 @@ class GameContext extends Equatable {
   }
 
   GameContext newCardRound() {
-    lastTurn.cardRounds.add(CartRound(lastTurn.firstPlayer));
+    var cartRound;
+    if (lastTurn.cardRounds.isEmpty) {
+      cartRound = CartRound(lastTurn.firstPlayer);
+      lastTurn.cardRounds.add(cartRound);
+    } else {
+      var lastCardRound = lastTurn.lastCardRound;
+      var requestedColor =
+          lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
+      var highestCardPosition = lastCardRound.playedCards.entries
+          .where((entry) => entry.value.color == requestedColor)
+          .reduce((entry1, entry2) =>
+              entry1.value.head.order > entry2.value.head.order
+                  ? entry1
+                  : entry2)
+          .key;
+      cartRound = CartRound(players
+          .firstWhere((player) => player.position == highestCardPosition));
+    }
+
+    lastTurn.cardRounds.add(cartRound);
+
     return this;
   }
 
@@ -75,7 +95,7 @@ class GameContext extends Equatable {
       return null;
     }
 
-    var index = players.indexOf(lastTurn.firstPlayer) +
+    var index = players.indexOf(lastTurn.lastCardRound.firstPlayer) +
         lastTurn.lastCardRound.playedCards.length;
 
     if (index >= players.length) {
