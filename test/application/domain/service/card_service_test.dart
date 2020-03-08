@@ -16,7 +16,7 @@ void main() {
       cardService.initializeCards();
 
       expect(cardService.pile.length, 32);
-      expect(listEquals(cardService.pile, TestFactory.cards), isTrue);
+      expect(cardService.pile, TestFactory.cards);
     });
 
     test(

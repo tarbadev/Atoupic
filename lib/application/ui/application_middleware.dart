@@ -58,7 +58,7 @@ void startTurn(
       .forEach((player) => player.cards = cardService.distributeCards(5));
   action.gameContext.players
       .firstWhere((player) => player.isRealPlayer)
-      .initializeCards();
+      .sortCards();
 
   action.gameContext.players.forEach(
       (player) => atoupicGame.addPlayerCards(player.cards, player.position));
@@ -149,7 +149,7 @@ void takeDecision(
   });
   var realPlayer =
       gameContext.players.firstWhere((player) => player.isRealPlayer);
-  realPlayer.initializeCards();
+  realPlayer.sortCards(trumpColor: action.color);
 
   atoupicGame.resetPlayersPassed();
   atoupicGame.resetRealPlayersCards(realPlayer.cards);

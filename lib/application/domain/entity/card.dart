@@ -80,6 +80,29 @@ extension CardHeadExtension on CardHead {
         return 0;
     }
   }
+
+  int get trumpOrder {
+    switch (this) {
+      case CardHead.Seven:
+        return 0;
+      case CardHead.Eight:
+        return 1;
+      case CardHead.Queen:
+        return 2;
+      case CardHead.King:
+        return 3;
+      case CardHead.Ten:
+        return 4;
+      case CardHead.Ace:
+        return 5;
+      case CardHead.Nine:
+        return 6;
+      case CardHead.Jack:
+        return 7;
+      default:
+        return 0;
+    }
+  }
 }
 
 class Card extends Equatable {

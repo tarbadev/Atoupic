@@ -12,40 +12,10 @@ class CardService {
   }
 
   initializeCards() {
-    pile = [
-      Card(CardColor.Spade, CardHead.Seven),
-      Card(CardColor.Spade, CardHead.Eight),
-      Card(CardColor.Spade, CardHead.Nine),
-      Card(CardColor.Spade, CardHead.Ten),
-      Card(CardColor.Spade, CardHead.Jack),
-      Card(CardColor.Spade, CardHead.Queen),
-      Card(CardColor.Spade, CardHead.King),
-      Card(CardColor.Spade, CardHead.Ace),
-      Card(CardColor.Heart, CardHead.Seven),
-      Card(CardColor.Heart, CardHead.Eight),
-      Card(CardColor.Heart, CardHead.Nine),
-      Card(CardColor.Heart, CardHead.Ten),
-      Card(CardColor.Heart, CardHead.Jack),
-      Card(CardColor.Heart, CardHead.Queen),
-      Card(CardColor.Heart, CardHead.King),
-      Card(CardColor.Heart, CardHead.Ace),
-      Card(CardColor.Diamond, CardHead.Seven),
-      Card(CardColor.Diamond, CardHead.Eight),
-      Card(CardColor.Diamond, CardHead.Nine),
-      Card(CardColor.Diamond, CardHead.Ten),
-      Card(CardColor.Diamond, CardHead.Jack),
-      Card(CardColor.Diamond, CardHead.Queen),
-      Card(CardColor.Diamond, CardHead.King),
-      Card(CardColor.Diamond, CardHead.Ace),
-      Card(CardColor.Club, CardHead.Seven),
-      Card(CardColor.Club, CardHead.Eight),
-      Card(CardColor.Club, CardHead.Nine),
-      Card(CardColor.Club, CardHead.Ten),
-      Card(CardColor.Club, CardHead.Jack),
-      Card(CardColor.Club, CardHead.Queen),
-      Card(CardColor.Club, CardHead.King),
-      Card(CardColor.Club, CardHead.Ace),
-    ];
+    pile = CardColor.values
+        .map((color) =>
+            CardHead.values.map((head) => Card(color, head)).toList())
+        .reduce((list1, list2) => list1..addAll(list2));
   }
 
   List<Card> distributeCards(int count) {

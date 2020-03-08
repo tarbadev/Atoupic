@@ -20,25 +20,23 @@ class Player extends Equatable {
     return 'Player{isRealPlayer: $isRealPlayer, position: $position, cards: $cards}';
   }
 
-  void initializeCards() {
-    if (isRealPlayer) {
-      this.sortCards();
-    }
-  }
-
-  int compareCards(Card card1, Card card2) {
-    return card2.head.order.compareTo(card1.head.order);
-  }
-
-  void sortCards() {
+  void sortCards({CardColor trumpColor}) {
     var cardsByColor = groupBy(cards, (Card card) => card.color);
-    cardsByColor.values
-        .forEach((unSortedCards) => unSortedCards.sort(compareCards));
+    cardsByColor.entries
+        .forEach((entry) => entry.value.sort(entry.key == trumpColor ? compareTrumpCards : compareCards));
     cards = new List();
     CardColor.values.forEach((color) {
       if (cardsByColor.containsKey(color)) {
         cards.addAll(cardsByColor[color]);
       }
     });
+  }
+
+  int compareCards(Card card1, Card card2) {
+    return card2.head.order.compareTo(card1.head.order);
+  }
+
+  int compareTrumpCards(Card card1, Card card2) {
+    return card2.head.trumpOrder.compareTo(card1.head.trumpOrder);
   }
 }

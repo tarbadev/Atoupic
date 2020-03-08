@@ -128,7 +128,7 @@ void main() {
       startTurn(Mocks.store, takeOrPassAction, Mocks.next);
 
       verifyInOrder([
-        mockPlayer.initializeCards(),
+        mockPlayer.sortCards(),
       ]);
     });
   });
@@ -327,7 +327,7 @@ void main() {
 
       takeDecision(Mocks.store, action, Mocks.next);
 
-      verify(mockPlayer.initializeCards());
+      verify(mockPlayer.sortCards(trumpColor: CardColor.Club));
       verify(Mocks.atoupicGame.resetRealPlayersCards([
         Card(CardColor.Club, CardHead.King),
         Card(CardColor.Club, CardHead.Eight),
