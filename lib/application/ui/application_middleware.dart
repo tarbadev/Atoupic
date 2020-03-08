@@ -137,6 +137,7 @@ void takeDecision(
   var takerCards = cardService.distributeCards(2);
   action.player.cards.addAll(takerCards);
 
+  atoupicGame.setTrumpColor(action.color, action.player.position);
   atoupicGame.addPlayerCards(takerCards, action.player.position);
 
   gameContext.players.forEach((player) {

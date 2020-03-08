@@ -350,6 +350,24 @@ void main() {
 
       verify(Mocks.store.dispatch(StartCardRoundAction(gameContext)));
     });
+
+    test('sets the trump color in game', () {
+      Player mockPlayer = MockPlayer();
+      var gameContext = GameContext([mockPlayer],
+          [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
+      var action = TakeDecisionAction(mockPlayer, CardColor.Club);
+
+      when(Mocks.gameService.read()).thenReturn(gameContext);
+      when(Mocks.cardService.distributeCards(any))
+          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
+      when(mockPlayer.cards).thenReturn([]);
+      when(mockPlayer.position).thenReturn(Position.Right);
+      when(mockPlayer.isRealPlayer).thenReturn(true);
+
+      takeDecision(Mocks.store, action, Mocks.next);
+
+      verify(Mocks.atoupicGame.setTrumpColor(CardColor.Club, Position.Right));
+    });
   });
 
   group('startCardRound', () {

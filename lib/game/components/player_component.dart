@@ -2,59 +2,34 @@ import 'dart:ui';
 
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/game/components/passed_caption.dart';
+import 'package:atoupic/game/components/trump_color.dart';
 import 'package:flame/anchor.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/components/composed_component.dart';
 import 'package:flame/components/mixins/has_game_ref.dart';
 import 'package:flame/components/mixins/resizable.dart';
 import 'package:flame/components/mixins/tapable.dart';
-import 'package:flame/components/text_box_component.dart';
-import 'package:flame/text_config.dart';
 import 'package:flutter/gestures.dart';
 
 import 'card_component.dart';
 
-class PassedCaption extends TextBoxComponent {
-  bool visible = false;
-
-  PassedCaption() : super('Passed   ', config: TextConfig(fontSize: 18)) {
-    anchor = Anchor.bottomRight;
-  }
-
-  @override
-  void render(Canvas canvas) {
-    if (visible) {
-      super.render(canvas);
-    }
-  }
-
-  @override
-  void drawBackground(Canvas c) {
-    final Rect rect = Rect.fromLTWH(0, 0, width, height);
-    c.drawRect(rect, Paint()..color = const Color(0xFFFFFFFF));
-  }
-}
-
 class PlayerComponent extends PositionComponent
     with HasGameRef, Tapable, Resizable, ComposedComponent {
   final Player player;
-  final List<CardComponent> cards;
+  final List<CardComponent> cards = List();
   final Position position;
   final bool isRealPlayer;
   CardComponent lastPlayedCard;
   bool isDown = false;
   PassedCaption _passedCaption;
   bool _shouldDestroy = false;
+  TrumpColor _trumpColor;
 
   set passed(bool newPassed) => _passedCaption.visible = newPassed;
 
-  PlayerComponent(this.player, this.cards, this.position, this.isRealPlayer,
-      this.lastPlayedCard) {
+  PlayerComponent(this.player, this.position, this.isRealPlayer) {
     _passedCaption = PassedCaption();
-    this.cards.forEach((card) => add(card));
-    if (this.lastPlayedCard != null) {
-      add(this.lastPlayedCard);
-    }
     add(_passedCaption);
   }
 
@@ -114,7 +89,13 @@ class PlayerComponent extends PositionComponent
     });
 
     _resizeLastPlayedCard(tileSize, size);
+    _resizeTrumpColor(cardX, initialX, size, cardY, fullDeckWidth, cardWidth);
+    _resizePassedCaption(cardX, cardY, cardHeight, fullDeckWidth, cardWidth);
 
+    super.resize(size);
+  }
+
+  void _resizePassedCaption(double cardX, double cardY, double cardHeight, double fullDeckWidth, double cardWidth) {
     if (position == Position.Top) {
       _passedCaption
         ..anchor = Anchor.bottomLeft
@@ -130,8 +111,44 @@ class PlayerComponent extends PositionComponent
         ..x = cardX + cardHeight * .25
         ..y = cardY - fullDeckWidth;
     }
+  }
 
-    super.resize(size);
+  void _resizeTrumpColor(
+    double cardX,
+    double initialX,
+    Size size,
+    double cardY,
+    double fullDeckWidth,
+    double cardWidth,
+  ) {
+    if (_trumpColor != null) {
+      switch (position) {
+        case Position.Top:
+          _trumpColor
+            ..anchor = Anchor.topLeft
+            ..x = cardX + 10
+            ..y = 0;
+          break;
+        case Position.Bottom:
+          _trumpColor
+            ..anchor = Anchor.bottomRight
+            ..x = initialX - 10
+            ..y = size.height;
+          break;
+        case Position.Left:
+          _trumpColor
+            ..anchor = Anchor.bottomLeft
+            ..x = 0
+            ..y = cardY - (fullDeckWidth - cardWidth) - 10;
+          break;
+        case Position.Right:
+          _trumpColor
+            ..anchor = Anchor.bottomRight
+            ..x = size.width
+            ..y = cardY - fullDeckWidth - 10;
+          break;
+      }
+    }
   }
 
   void _resizeLastPlayedCard(double tileSize, Size size) {
@@ -161,41 +178,11 @@ class PlayerComponent extends PositionComponent
     }
   }
 
-  static PlayerComponent fromDomainPlayer(Player player) {
+  static PlayerComponent fromPlayer(Player player) {
     return PlayerComponent(
       player,
-      [],
       player.position,
       player.isRealPlayer,
-      null,
-    );
-  }
-
-  static PlayerComponent fromPlayer(
-    Player player, {
-    bool passed = false,
-    Function onCardSelected,
-    Card lastPlayed,
-    List<Card> possibleCardsToPlay,
-  }) {
-    List<CardComponent> cards = player.cards
-        .map((card) => CardComponent.fromCard(
-              card,
-              showBackFace: !player.isRealPlayer,
-              onCardPlayed: player.isRealPlayer && onCardSelected != null
-                  ? () => onCardSelected(card)
-                  : null,
-            )..canBePlayed = possibleCardsToPlay == null
-                ? true
-                : possibleCardsToPlay.contains(card))
-        .toList()
-        .cast();
-    return PlayerComponent(
-      player,
-      cards,
-      player.position,
-      player.isRealPlayer,
-      lastPlayed == null ? null : CardComponent.fromCard(lastPlayed),
     );
   }
 
@@ -222,5 +209,10 @@ class PlayerComponent extends PositionComponent
 
   void setCardsOnTapCallback(Function(Card card) callback) {
     cards.forEach((card) => card.onCardPlayed = () => callback(card.card));
+  }
+
+  void displayTrumpColor(CardColor color) {
+    _trumpColor = TrumpColor(color);
+    add(_trumpColor);
   }
 }

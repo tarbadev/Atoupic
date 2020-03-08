@@ -28,7 +28,7 @@ class AtoupicGame extends BaseGame {
 
   void setDomainPlayers(List<Player> players) {
     players
-        .map((player) => PlayerComponent.fromDomainPlayer(player))
+        .map((player) => PlayerComponent.fromPlayer(player))
         .forEach((player) {
       if (player.isRealPlayer) {
         _realPlayer = player;
@@ -105,5 +105,11 @@ class AtoupicGame extends BaseGame {
       player.lastPlayedCard.shouldDestroy = true;
       player.lastPlayedCard = null;
     });
+  }
+
+  void setTrumpColor(CardColor color, Position position) {
+    var playerComponent =
+    _players.firstWhere((player) => player.position == position);
+    playerComponent.displayTrumpColor(color);
   }
 }
