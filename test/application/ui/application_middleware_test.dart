@@ -40,104 +40,12 @@ void main() {
 
       verifyInOrder([
         Mocks.gameService.startSoloGame(),
+        Mocks.atoupicGame.setDomainPlayers(players),
+        Mocks.atoupicGame.visible = true,
         Mocks.store.dispatch(SetRealPlayerAction(TestFactory.realPlayer)),
         Mocks.store.dispatch(StartTurnAction(gameContext)),
-        Mocks.atoupicGame.visible = true,
         Mocks.mockNext.next(startSoloGameAction),
       ]);
-    });
-  });
-
-  group('setPlayersInGame', () {
-    test('sets the players in game', () {
-      var firstPlayer = TestFactory.computerPlayer;
-      List<Player> players = [
-        Player(Position.Left)..cards = [],
-        firstPlayer..cards = [],
-        TestFactory.realPlayer..cards = [],
-        Player(Position.Right)..cards = [],
-      ];
-      var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
-      var setGameContextAction = SetPlayersInGameAction(gameContext);
-
-      when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
-
-      setPlayersInGame(Mocks.store, setGameContextAction, Mocks.next);
-
-      List<PlayerComponent> capturedList =
-          verify(Mocks.atoupicGame.setPlayers(captureAny)).captured[0];
-      expect(capturedList.length, gameContext.players.length);
-      expect(
-          capturedList
-              .where((playerComponent) => playerComponent.isRealPlayer)
-              .length,
-          1);
-
-      verify(Mocks.mockNext.next(setGameContextAction));
-    });
-
-    test('sets the last played card', () {
-      var card = TestFactory.cards[0];
-      var firstPlayer = TestFactory.computerPlayer;
-      List<Player> players = [
-        Player(Position.Left)..cards = [],
-        firstPlayer..cards = [],
-        TestFactory.realPlayer..cards = [],
-        Player(Position.Right)..cards = [],
-      ];
-      var gameContext = GameContext(players, [
-        Turn(1, firstPlayer)
-          ..cardRounds = [CartRound(firstPlayer)]
-          ..lastCardRound.playedCards[TestFactory.realPlayer.position] = card
-      ]);
-      var setGameContextAction = SetPlayersInGameAction(gameContext);
-
-      when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
-
-      setPlayersInGame(Mocks.store, setGameContextAction, Mocks.next);
-
-      List<PlayerComponent> capturedList =
-          verify(Mocks.atoupicGame.setPlayers(captureAny)).captured[0];
-      expect(
-          capturedList
-              .firstWhere((playerComponent) => playerComponent.isRealPlayer)
-              .lastPlayedCard,
-          isNotNull);
-
-      verify(Mocks.mockNext.next(setGameContextAction));
-    });
-
-    test('sets callback when player can play', () {
-      var card = TestFactory.cards[0];
-      var firstPlayer = TestFactory.computerPlayer;
-      List<Player> players = [
-        Player(Position.Left)..cards = [],
-        firstPlayer..cards = [],
-        TestFactory.realPlayer..cards = [TestFactory.cards[0]],
-        Player(Position.Right)..cards = [],
-      ];
-      var gameContext = GameContext(players, [
-        Turn(1, firstPlayer)
-          ..cardRounds = [CartRound(firstPlayer)]
-          ..lastCardRound.playedCards[TestFactory.realPlayer.position] = card
-      ]);
-      var setGameContextAction =
-          SetPlayersInGameAction(gameContext, realPlayerCanChooseCard: true);
-
-      when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
-
-      setPlayersInGame(Mocks.store, setGameContextAction, Mocks.next);
-
-      List<PlayerComponent> capturedList =
-          verify(Mocks.atoupicGame.setPlayers(captureAny)).captured[0];
-      expect(
-          capturedList
-              .firstWhere((playerComponent) => playerComponent.isRealPlayer)
-              .cards[0]
-              .onCardPlayed,
-          isNotNull);
-
-      verify(Mocks.mockNext.next(setGameContextAction));
     });
   });
 
@@ -148,8 +56,8 @@ void main() {
       List<Player> players = [
         Player(Position.Left),
         firstPlayer,
-        TestFactory.realPlayer,
         Player(Position.Right),
+        TestFactory.realPlayer,
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
       var updatedGameContext =
@@ -162,11 +70,14 @@ void main() {
 
       verifyInOrder([
         Mocks.cardService.initializeCards(),
+        Mocks.atoupicGame.addPlayerCards([card], Position.Left),
+        Mocks.atoupicGame.addPlayerCards([card], Position.Top),
+        Mocks.atoupicGame.addPlayerCards([card], Position.Right),
+        Mocks.atoupicGame.addPlayerCards([card], Position.Bottom),
         Mocks.cardService.distributeCards(1),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
         Mocks.store.dispatch(SetTurnAction(1)),
         Mocks.store.dispatch(SetTakeOrPassCard(card)),
-        Mocks.store.dispatch(SetPlayersInGameAction(gameContext)),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.mockNext.next(takeOrPassAction),
       ]);
@@ -280,8 +191,8 @@ void main() {
       verifyInOrder([
         Mocks.gameService.read(),
         Mocks.store.dispatch(TakeOrPassDecisionAction(TestFactory.realPlayer)),
+        Mocks.atoupicGame.setPlayerPassed(action.player.position),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
-        Mocks.store.dispatch(SetPlayersInGameAction(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -315,7 +226,6 @@ void main() {
         Mocks.gameService.read(),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
-        Mocks.store.dispatch(SetPlayersInGameAction(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -349,7 +259,6 @@ void main() {
         Mocks.gameService.read(),
         Mocks.store.dispatch(StartTurnAction(updatedGameContext)),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
-        Mocks.store.dispatch(SetPlayersInGameAction(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -391,11 +300,15 @@ void main() {
       verifyInOrder([
         Mocks.gameService.read(),
         Mocks.cardService.distributeCards(2),
+        Mocks.atoupicGame.addPlayerCards([card], realPlayer.position),
         Mocks.cardService.distributeCards(3),
+        Mocks.atoupicGame.addPlayerCards([card], Position.Left),
         Mocks.cardService.distributeCards(3),
+        Mocks.atoupicGame.addPlayerCards([card], firstPlayer.position),
         Mocks.cardService.distributeCards(3),
+        Mocks.atoupicGame.addPlayerCards([card], Position.Right),
+        Mocks.atoupicGame.resetPlayersPassed(),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
-        Mocks.store.dispatch(SetPlayersInGameAction(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -415,6 +328,10 @@ void main() {
       takeDecision(Mocks.store, action, Mocks.next);
 
       verify(mockPlayer.initializeCards());
+      verify(Mocks.atoupicGame.resetRealPlayersCards([
+        Card(CardColor.Club, CardHead.King),
+        Card(CardColor.Club, CardHead.Eight),
+      ]));
     });
 
     test('dispatches StartCardRound', () {
@@ -466,11 +383,7 @@ void main() {
 
       verify(mockGameContext.nextCardPlayer());
       verify(mockGameContext.getPossibleCardsToPlay(TestFactory.realPlayer));
-      verify(Mocks.store.dispatch(SetPlayersInGameAction(
-        mockGameContext,
-        realPlayerCanChooseCard: true,
-        possibleCardsToPlay: [TestFactory.cards[0]],
-      )));
+      verify(Mocks.atoupicGame.realPlayerCanChooseCard(true, possiblePlayableCards: [TestFactory.cards[0]]));
       verify(Mocks.mockNext.next(action));
     });
 
@@ -512,7 +425,7 @@ void main() {
   });
 
   group('setCardDecision', () {
-    test('dispatches a ShowRealPlayerDecisionAction', () {
+    test('stores the card played and updates UI', () {
       GameContext mockGameContext = MockGameContext();
       GameContext updatedGameContext = MockGameContext();
       var card = TestFactory.cards[0];
@@ -526,7 +439,8 @@ void main() {
       setCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.setCardDecision(card, player));
-      verify(Mocks.store.dispatch(SetPlayersInGameAction(updatedGameContext)));
+      verify(Mocks.atoupicGame.setLastCardPlayed(card, player.position));
+      verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
       verify(Mocks.store.dispatch(SetGameContextAction(updatedGameContext)));
       verify(
           Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));

@@ -8,11 +8,13 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/gestures.dart';
 
 class CardComponent extends SpriteComponent with Resizable, Tapable {
-  final String _spriteFileName;
-  final Function onCardPlayed;
+  String _spriteFileName;
+  final Card card;
+  Function onCardPlayed;
   final Paint maskPaint = Paint()..color = Color(0x88000000);
   bool fullyDisplayed = false;
   bool canBePlayed = false;
+  bool shouldDestroy = false;
 
   @override
   Rect toRect() {
@@ -21,7 +23,12 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
     return Rect.fromLTWH(fullRect.left, fullRect.top, width, fullRect.height);
   }
 
-  CardComponent(this._spriteFileName, this.onCardPlayed) {
+  @override
+  bool destroy() {
+    return shouldDestroy;
+  }
+
+  CardComponent(this._spriteFileName, this.onCardPlayed, this.card) {
     sprite = Sprite(_spriteFileName);
   }
 
@@ -52,16 +59,25 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
     Function onCardPlayed,
   }) {
     return CardComponent(
-        showBackFace
-            ? 'cards/BackFace.png'
-            : 'cards/${card.color.folder}/${card.head.fileName}',
-        onCardPlayed);
+      showBackFace
+          ? 'cards/BackFace.png'
+          : 'cards/${card.color.folder}/${card.head.fileName}',
+      onCardPlayed,
+      card,
+    );
   }
 
   @override
   void onTapUp(TapUpDetails details) {
-    if (canBePlayed) {
+    if (onCardPlayed != null && canBePlayed) {
       onCardPlayed();
+    }
+  }
+
+  void revealCard() {
+    if (_spriteFileName == 'cards/BackFace.png') {
+      _spriteFileName = 'cards/${card.color.folder}/${card.head.fileName}';
+      sprite = Sprite(_spriteFileName);
     }
   }
 }

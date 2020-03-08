@@ -37,19 +37,20 @@ class PassedCaption extends TextBoxComponent {
 
 class PlayerComponent extends PositionComponent
     with HasGameRef, Tapable, Resizable, ComposedComponent {
+  final Player player;
   final List<CardComponent> cards;
   final Position position;
   final bool isRealPlayer;
-  final bool passed;
-  final CardComponent lastPlayedCard;
+  CardComponent lastPlayedCard;
   bool isDown = false;
   PassedCaption _passedCaption;
   bool _shouldDestroy = false;
 
-  PlayerComponent(this.cards, this.position, this.isRealPlayer, this.passed,
+  set passed(bool newPassed) => _passedCaption.visible = newPassed;
+
+  PlayerComponent(this.player, this.cards, this.position, this.isRealPlayer,
       this.lastPlayedCard) {
     _passedCaption = PassedCaption();
-    _passedCaption.visible = this.passed;
     this.cards.forEach((card) => add(card));
     if (this.lastPlayedCard != null) {
       add(this.lastPlayedCard);
@@ -136,6 +137,7 @@ class PlayerComponent extends PositionComponent
   void _resizeLastPlayedCard(double tileSize, Size size) {
     if (lastPlayedCard != null) {
       lastPlayedCard.setWidthAndHeightFromTileSize(tileSize * .75);
+      lastPlayedCard.angle = 0;
       switch (position) {
         case Position.Top:
           lastPlayedCard.x = (size.width / 2) - (lastPlayedCard.width / 2);
@@ -159,6 +161,16 @@ class PlayerComponent extends PositionComponent
     }
   }
 
+  static PlayerComponent fromDomainPlayer(Player player) {
+    return PlayerComponent(
+      player,
+      [],
+      player.position,
+      player.isRealPlayer,
+      null,
+    );
+  }
+
   static PlayerComponent fromPlayer(
     Player player, {
     bool passed = false,
@@ -179,10 +191,10 @@ class PlayerComponent extends PositionComponent
         .toList()
         .cast();
     return PlayerComponent(
+      player,
       cards,
       player.position,
       player.isRealPlayer,
-      passed,
       lastPlayed == null ? null : CardComponent.fromCard(lastPlayed),
     );
   }
@@ -201,5 +213,14 @@ class PlayerComponent extends PositionComponent
       isDown = true;
       super.handleTapDown(details);
     }
+  }
+
+  void addCards(List<CardComponent> newCards) {
+    cards.addAll(newCards);
+    newCards.forEach((newCard) => add(newCard));
+  }
+
+  void setCardsOnTapCallback(Function(Card card) callback) {
+    cards.forEach((card) => card.onCardPlayed = () => callback(card.card));
   }
 }

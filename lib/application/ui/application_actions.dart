@@ -23,19 +23,6 @@ class SetCurrentViewAction extends Equatable {
   List<Object> get props => [view];
 }
 
-class SetPlayersInGameAction extends Equatable {
-  final GameContext context;
-  final bool realPlayerCanChooseCard;
-  final List<Card> possibleCardsToPlay;
-
-  SetPlayersInGameAction(this.context,
-      {this.realPlayerCanChooseCard = false, this.possibleCardsToPlay});
-
-  @override
-  List<Object> get props =>
-      [context, realPlayerCanChooseCard, possibleCardsToPlay];
-}
-
 class StartSoloGameAction extends Equatable {
   @override
   List<Object> get props => ['StartSoloGameAction'];
