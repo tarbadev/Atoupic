@@ -219,6 +219,29 @@ void main() {
             CartRound(Player(Position.Top)),
           );
         });
+
+        test(
+            'and requested color is trump color adds a new CardRound with the highest card player',
+            () {
+          var gameContext = TestFactory.gameContext
+            ..lastTurn.trumpColor = CardColor.Club
+            ..lastTurn.cardRounds = [
+              CartRound(Player(Position.Top))
+                ..playedCards[TestFactory.realPlayer.position] =
+                    Card(CardColor.Heart, CardHead.Eight)
+                ..playedCards[Position.Right] =
+                    Card(CardColor.Heart, CardHead.King)
+                ..playedCards[Position.Left] =
+                    Card(CardColor.Club, CardHead.Ace)
+                ..playedCards[Position.Top] =
+                    Card(CardColor.Heart, CardHead.Nine),
+            ];
+          var newGameContext = gameContext.newCardRound();
+          expect(
+            newGameContext.turns[0].cardRounds[1],
+            CartRound(Player(Position.Left)),
+          );
+        });
       });
     });
 
@@ -229,7 +252,11 @@ void main() {
           TestFactory.realPlayer,
           firstPlayer
         ], [
-          Turn(1, firstPlayer)..cardRounds = [CartRound(firstPlayer), CartRound(TestFactory.realPlayer)]
+          Turn(1, firstPlayer)
+            ..cardRounds = [
+              CartRound(firstPlayer),
+              CartRound(TestFactory.realPlayer)
+            ]
         ]);
         var nextPlayer = gameContext.nextCardPlayer();
         expect(

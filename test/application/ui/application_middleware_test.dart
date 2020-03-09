@@ -366,6 +366,8 @@ void main() {
 
       takeDecision(Mocks.store, action, Mocks.next);
 
+      expect(gameContext.lastTurn.trumpColor, CardColor.Club);
+
       verify(Mocks.atoupicGame.setTrumpColor(CardColor.Club, Position.Right));
     });
   });

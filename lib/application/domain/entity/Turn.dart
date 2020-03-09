@@ -11,6 +11,7 @@ class Turn extends Equatable {
   Map<Position, Decision> playerDecisions = Map();
   List<CartRound> cardRounds = List();
   int round = 1;
+  CardColor trumpColor;
 
   CartRound get lastCardRound => cardRounds.length > 0 ? cardRounds.last : null;
 
