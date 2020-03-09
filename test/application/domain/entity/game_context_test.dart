@@ -340,6 +340,7 @@ void main() {
         setUp(() {
           gameContext = GameContext([], [
             Turn(1, firstPlayer)
+              ..trumpColor = CardColor.Spade
               ..cardRounds = [
                 CartRound(firstPlayer)
                   ..playedCards[firstPlayer.position] =
@@ -375,6 +376,56 @@ void main() {
               ];
 
             expect(gameContext.getPossibleCardsToPlay(player), player.cards);
+          });
+
+          group('and has trump color', () {
+            test('returns all trump cards', () {
+              var player = TestFactory.computerPlayer
+                ..cards = [
+                  Card(CardColor.Club, CardHead.Eight),
+                  Card(CardColor.Spade, CardHead.Eight),
+                  Card(CardColor.Diamond, CardHead.Eight),
+                ];
+
+              expect(gameContext.getPossibleCardsToPlay(player),
+                  [Card(CardColor.Spade, CardHead.Eight)]);
+            });
+
+            group('and trump cards have already been played', () {
+              test(
+                  'and player does not have higher card returns all trump cards',
+                  () {
+                gameContext.lastTurn.lastCardRound
+                  ..playedCards[Position.Left] =
+                      Card(CardColor.Spade, CardHead.Nine);
+                var player = TestFactory.computerPlayer
+                  ..cards = [
+                    Card(CardColor.Club, CardHead.Eight),
+                    Card(CardColor.Spade, CardHead.Eight),
+                    Card(CardColor.Diamond, CardHead.Eight),
+                  ];
+
+                expect(gameContext.getPossibleCardsToPlay(player),
+                    [Card(CardColor.Spade, CardHead.Eight)]);
+              });
+
+              test(
+                  'and player has higher card returns all higher trump cards',
+                  () {
+                gameContext.lastTurn.lastCardRound
+                  ..playedCards[Position.Left] =
+                      Card(CardColor.Spade, CardHead.Nine);
+                var player = TestFactory.computerPlayer
+                  ..cards = [
+                    Card(CardColor.Club, CardHead.Eight),
+                    Card(CardColor.Spade, CardHead.Eight),
+                    Card(CardColor.Spade, CardHead.Jack),
+                  ];
+
+                expect(gameContext.getPossibleCardsToPlay(player),
+                    [Card(CardColor.Spade, CardHead.Jack)]);
+              });
+            });
           });
         });
       });

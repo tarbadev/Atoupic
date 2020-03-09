@@ -131,7 +131,24 @@ class GameContext extends Equatable {
       if (cardsForColor.length > 0) {
         return cardsForColor;
       } else {
-        return player.cards;
+        var trumpCards =
+            player.cards.where((card) => card.color == lastTurn.trumpColor);
+        if (trumpCards.isEmpty) {
+          return player.cards;
+        } else {
+          var playedTrumpCards = lastCardRound.playedCards.values
+              .where((card) => card.color == lastTurn.trumpColor);
+          if (playedTrumpCards.isEmpty) {
+            return trumpCards.toList();
+          } else {
+            var higherTrumpCards = trumpCards.where((card) =>
+                !playedTrumpCards.any((playedCard) =>
+                    playedCard.head.trumpOrder > card.head.trumpOrder));
+            return higherTrumpCards.isEmpty
+                ? trumpCards.toList()
+                : higherTrumpCards.toList();
+          }
+        }
       }
     }
   }
