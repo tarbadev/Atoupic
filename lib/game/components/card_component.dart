@@ -8,6 +8,7 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/gestures.dart';
 
 class CardComponent extends SpriteComponent with Resizable, Tapable {
+  final int animationDuration = 500;
   String _spriteFileName;
   final Card card;
   Function onCardPlayed;
@@ -15,12 +16,15 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
   bool fullyDisplayed = false;
   bool canBePlayed = false;
   bool shouldDestroy = false;
+  bool animatePlayedCard = false;
+  DateTime animateStart;
+  Rect playedCardTarget;
+  double tileSize;
 
-  @override
-  Rect toRect() {
-    var fullRect = super.toRect();
-    var width = fullyDisplayed ? fullRect.width : fullRect.width * .25;
-    return Rect.fromLTWH(fullRect.left, fullRect.top, width, fullRect.height);
+  Function onAnimationDoneCallback;
+
+  CardComponent(this._spriteFileName, this.onCardPlayed, this.card) {
+    sprite = Sprite(_spriteFileName);
   }
 
   @override
@@ -28,8 +32,11 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
     return shouldDestroy;
   }
 
-  CardComponent(this._spriteFileName, this.onCardPlayed, this.card) {
-    sprite = Sprite(_spriteFileName);
+  @override
+  Rect toRect() {
+    var fullRect = super.toRect();
+    var width = fullyDisplayed ? fullRect.width : fullRect.width * .25;
+    return Rect.fromLTWH(fullRect.left, fullRect.top, width, fullRect.height);
   }
 
   @override
@@ -48,9 +55,56 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
     }
   }
 
+  @override
+  void onTapUp(TapUpDetails details) {
+    if (onCardPlayed != null && canBePlayed) {
+      onCardPlayed();
+    }
+  }
+
+  @override
+  void update(double t) {
+    super.update(t);
+    if (animatePlayedCard && playedCardTarget != null) {
+      int difference = DateTime.now().difference(animateStart).inMilliseconds;
+      var differencePercent = difference / animationDuration;
+      if (differencePercent > 1) {
+        differencePercent = 1;
+      }
+
+      var currentRect = toRect();
+      Offset toTarget = Offset(
+        (playedCardTarget.left - currentRect.left) * differencePercent,
+        (playedCardTarget.top - currentRect.top) * differencePercent,
+      );
+      Rect newRect = toRect().shift(toTarget);
+
+      x = newRect.left;
+      y = newRect.top;
+      width -= (width - playedCardTarget.width) * differencePercent;
+      height -= (height - playedCardTarget.height) * differencePercent;
+
+      if (x == playedCardTarget.left &&
+          y == playedCardTarget.top &&
+          width == playedCardTarget.width &&
+          height == playedCardTarget.height) {
+        animatePlayedCard = false;
+        onAnimationDoneCallback();
+      }
+    }
+  }
+
   void setWidthAndHeightFromTileSize(double tileSize) {
+    this.tileSize = tileSize;
     width = tileSize * 1.25;
     height = tileSize * 1.25 * 1.39444;
+  }
+
+  void revealCard() {
+    if (_spriteFileName == 'cards/BackFace.png') {
+      _spriteFileName = 'cards/${card.color.folder}/${card.head.fileName}';
+      sprite = Sprite(_spriteFileName);
+    }
   }
 
   static CardComponent fromCard(
@@ -65,19 +119,5 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
       onCardPlayed,
       card,
     );
-  }
-
-  @override
-  void onTapUp(TapUpDetails details) {
-    if (onCardPlayed != null && canBePlayed) {
-      onCardPlayed();
-    }
-  }
-
-  void revealCard() {
-    if (_spriteFileName == 'cards/BackFace.png') {
-      _spriteFileName = 'cards/${card.color.folder}/${card.head.fileName}';
-      sprite = Sprite(_spriteFileName);
-    }
   }
 }

@@ -90,14 +90,12 @@ class AtoupicGame extends BaseGame {
     }
   }
 
-  void setLastCardPlayed(Card card, Position position) {
+  void setLastCardPlayed(Card card, Position position, Function onAnimationDoneCallback) {
     var playerComponent =
         _players.firstWhere((player) => player.position == position);
     var playedCard = playerComponent.cards
         .firstWhere((cardComponent) => cardComponent.card == card);
-    playerComponent.cards.remove(playedCard);
-    playerComponent.lastPlayedCard = playedCard;
-    playedCard.revealCard();
+    playerComponent.playCard(playedCard, onAnimationDoneCallback);
   }
 
   void resetLastPlayedCards() {

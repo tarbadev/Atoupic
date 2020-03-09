@@ -371,7 +371,6 @@ void main() {
             var player = TestFactory.computerPlayer
               ..cards = [
                 Card(CardColor.Club, CardHead.Eight),
-                Card(CardColor.Spade, CardHead.Eight),
                 Card(CardColor.Diamond, CardHead.Eight),
               ];
 

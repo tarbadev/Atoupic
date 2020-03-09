@@ -459,11 +459,11 @@ void main() {
       setCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.setCardDecision(card, player));
-      verify(Mocks.atoupicGame.setLastCardPlayed(card, player.position));
-      verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
+      Function callBack = verify(Mocks.atoupicGame.setLastCardPlayed(card, player.position, captureAny)).captured.single;
       verify(Mocks.store.dispatch(SetGameContextAction(updatedGameContext)));
-      verify(
-          Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));
+      verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
+      callBack();
+      verify(Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));
       verify(Mocks.mockNext.next(action));
     });
   });
