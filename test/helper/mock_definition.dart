@@ -13,6 +13,7 @@ import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 
 class MockAtoupicGame extends Mock implements AtoupicGame {}
+class MockTurn extends Mock implements Turn {}
 
 class MockCardService extends Mock implements CardService {}
 
@@ -54,6 +55,7 @@ class Mocks {
     Card takeOrPassCard,
     Player realPlayer,
     Turn lastTurn,
+    TurnResult turnResult,
   }) {
     reset(store);
     reset(applicationState);
@@ -70,5 +72,6 @@ class Mocks {
     when(applicationState.currentView).thenReturn(currentView);
     when(applicationState.realPlayer).thenReturn(realPlayer);
     when(applicationState.gameContext).thenReturn(gameContext);
+    when(applicationState.turnResult).thenReturn(turnResult);
   }
 }

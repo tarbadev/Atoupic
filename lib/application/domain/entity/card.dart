@@ -103,6 +103,40 @@ extension CardHeadExtension on CardHead {
         return 0;
     }
   }
+
+  int get points {
+    switch (this) {
+      case CardHead.Seven:
+        return 0;
+      case CardHead.Eight:
+        return 0;
+      case CardHead.Nine:
+        return 0;
+      case CardHead.Jack:
+        return 2;
+      case CardHead.Queen:
+        return 3;
+      case CardHead.King:
+        return 4;
+      case CardHead.Ten:
+        return 10;
+      case CardHead.Ace:
+        return 11;
+      default:
+        return 0;
+    }
+  }
+
+  int get trumpPoints {
+    switch (this) {
+      case CardHead.Nine:
+        return 14;
+      case CardHead.Jack:
+        return 20;
+      default:
+        return points;
+    }
+  }
 }
 
 class Card extends Equatable {

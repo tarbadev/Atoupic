@@ -22,6 +22,7 @@ List<Middleware<ApplicationState>> createApplicationMiddleware() => [
       TypedMiddleware<ApplicationState, SetCardDecisionAction>(setCardDecision),
       TypedMiddleware<ApplicationState, ChooseCardForAiAction>(chooseCardForAi),
       TypedMiddleware<ApplicationState, EndCardRoundAction>(endCardRound),
+      TypedMiddleware<ApplicationState, EndTurnAction>(endTurn),
     ];
 
 void startSoloGame(
@@ -251,7 +252,24 @@ void endCardRound(
 
   atoupicGame.resetLastPlayedCards();
 
-  store.dispatch(StartCardRoundAction(action.context));
+  if (action.context.lastTurn.cardRounds.length < 8) {
+    store.dispatch(StartCardRoundAction(action.context));
+  } else {
+    store.dispatch(EndTurnAction(action.context));
+  }
+
+  next(action);
+}
+
+void endTurn(
+  Store<ApplicationState> store,
+  EndTurnAction action,
+  NextDispatcher next,
+) {
+  action.context.lastTurn.calculatePoints(action.context.players);
+
+  store.dispatch(SetGameContextAction(action.context));
+  store.dispatch(SetTurnResultAction(action.context.lastTurn.turnResult));
 
   next(action);
 }

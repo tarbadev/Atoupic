@@ -1,3 +1,4 @@
+import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
@@ -13,6 +14,7 @@ ApplicationState applicationReducer(ApplicationState state, action) =>
       setCurrentViewReducer(state.currentView, action),
       setRealPlayerReducer(state.realPlayer, action),
       setGameContextReducer(state.gameContext, action),
+      setTurnResultReducer(state.turnResult, action),
     );
 
 final Reducer<bool> setShowTakeOrPassDialogReducer = combineReducers([
@@ -45,3 +47,10 @@ GameContext setGameContext(
   SetGameContextAction action,
 ) =>
     Container().resolve<GameService>().save(action.newGameContext);
+
+final Reducer<TurnResult> setTurnResultReducer = combineReducers([
+  TypedReducer<TurnResult, SetTurnResultAction>(_setTurnResult),
+]);
+
+TurnResult _setTurnResult(TurnResult turnResult, SetTurnResultAction action) =>
+    action.turnResult;

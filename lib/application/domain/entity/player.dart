@@ -5,6 +5,12 @@ import 'card.dart';
 
 enum Position { Top, Bottom, Left, Right }
 
+extension PositionExtension on Position {
+  bool get isVertical {
+    return this == Position.Bottom || this == Position.Top;
+  }
+}
+
 class Player extends Equatable {
   final bool isRealPlayer;
   final Position position;

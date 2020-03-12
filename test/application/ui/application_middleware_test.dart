@@ -6,7 +6,6 @@ import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/application_middleware.dart';
-import 'package:atoupic/game/components/player_component.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -135,7 +134,6 @@ void main() {
 
   group('takeOrPassDecision', () {
     test('when player is not real dispatch PassDecisionAction', () {
-      var card = Card(CardColor.Club, CardHead.Ace);
       var action = TakeOrPassDecisionAction(TestFactory.computerPlayer);
 
       takeOrPassDecision(Mocks.store, action, Mocks.next);
@@ -147,7 +145,6 @@ void main() {
     });
 
     test('when player is real dispatch ShowTakeOrPassDialogAction', () {
-      var card = Card(CardColor.Club, CardHead.Ace);
       var action = TakeOrPassDecisionAction(TestFactory.realPlayer);
 
       takeOrPassDecision(Mocks.store, action, Mocks.next);
@@ -403,7 +400,8 @@ void main() {
 
       verify(mockGameContext.nextCardPlayer());
       verify(mockGameContext.getPossibleCardsToPlay(TestFactory.realPlayer));
-      verify(Mocks.atoupicGame.realPlayerCanChooseCard(true, possiblePlayableCards: [TestFactory.cards[0]]));
+      verify(Mocks.atoupicGame.realPlayerCanChooseCard(true,
+          possiblePlayableCards: [TestFactory.cards[0]]));
       verify(Mocks.mockNext.next(action));
     });
 
@@ -459,11 +457,15 @@ void main() {
       setCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.setCardDecision(card, player));
-      Function callBack = verify(Mocks.atoupicGame.setLastCardPlayed(card, player.position, captureAny)).captured.single;
+      Function callBack = verify(Mocks.atoupicGame
+              .setLastCardPlayed(card, player.position, captureAny))
+          .captured
+          .single;
       verify(Mocks.store.dispatch(SetGameContextAction(updatedGameContext)));
       verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
       callBack();
-      verify(Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));
+      verify(
+          Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));
       verify(Mocks.mockNext.next(action));
     });
   });
@@ -482,14 +484,59 @@ void main() {
   });
 
   group('endCardRound', () {
-    test('resets the last played cards in game', () {
+    test('resets the last played cards in game and start a new round', () {
       GameContext mockContext = MockGameContext();
       var action = EndCardRoundAction(mockContext);
 
+      when(mockContext.lastTurn).thenReturn(Turn(1, TestFactory.realPlayer));
       endCardRound(Mocks.store, action, Mocks.next);
 
       verify(Mocks.atoupicGame.resetLastPlayedCards());
       verify(Mocks.store.dispatch(StartCardRoundAction(mockContext)));
+      verify(Mocks.mockNext.next(action));
+    });
+
+    test(
+        'when all rounds played resets the last played cards in game and ends turn',
+        () {
+      List<CartRound> cardRounds = List();
+
+      for (int i = 0; i <= 7; i++) {
+        cardRounds.add(CartRound(Player(Position.Top))
+          ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
+          ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
+          ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
+          ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Seven));
+      }
+
+      expect(cardRounds.length, 8);
+
+      GameContext gameContext = TestFactory.gameContext
+        ..lastTurn.cardRounds = cardRounds;
+      var action = EndCardRoundAction(gameContext);
+
+      endCardRound(Mocks.store, action, Mocks.next);
+
+      verify(Mocks.atoupicGame.resetLastPlayedCards());
+      verify(Mocks.store.dispatch(EndTurnAction(gameContext)));
+      verify(Mocks.mockNext.next(action));
+    });
+  });
+
+  group('endTurn', () {
+    test('calculates the points and displays the result', () {
+      Turn mockTurn = MockTurn();
+      GameContext gameContext = TestFactory.gameContext..turns[0] = mockTurn;
+      var action = EndTurnAction(gameContext);
+      var turnResult = TestFactory.turnResult;
+
+      when(mockTurn.turnResult).thenReturn(turnResult);
+
+      endTurn(Mocks.store, action, Mocks.next);
+
+      verify(mockTurn.calculatePoints(gameContext.players));
+      verify(Mocks.store.dispatch(SetTurnResultAction(turnResult)));
+      verify(Mocks.store.dispatch(SetGameContextAction(gameContext)));
       verify(Mocks.mockNext.next(action));
     });
   });

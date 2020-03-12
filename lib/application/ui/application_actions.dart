@@ -1,3 +1,4 @@
+import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
@@ -127,6 +128,15 @@ class EndCardRoundAction extends Equatable {
   List<Object> get props => [context];
 }
 
+class EndTurnAction extends Equatable {
+  final GameContext context;
+
+  EndTurnAction(this.context);
+
+  @override
+  List<Object> get props => [context];
+}
+
 class ChooseCardDecisionAction extends Equatable {
   final GameContext context;
 
@@ -158,5 +168,19 @@ class ChooseCardForAiAction extends Equatable {
   @override
   String toString() {
     return 'ChooseCardForAiAction{possibleCardsToPlay: $possibleCardsToPlay, player: $player}';
+  }
+}
+
+class SetTurnResultAction extends Equatable {
+  final TurnResult turnResult;
+
+  SetTurnResultAction(this.turnResult);
+
+  @override
+  List<Object> get props => [turnResult];
+
+  @override
+  String toString() {
+    return 'SetTurnResultAction{turnResult: $turnResult}';
   }
 }

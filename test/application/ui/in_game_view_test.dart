@@ -1,5 +1,6 @@
 import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/view/in_game_view.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -118,6 +119,24 @@ void main() {
       verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
       verify(Mocks.store.dispatch(
           TakeDecisionAction(TestFactory.realPlayer, CardColor.Heart)));
+    });
+
+    testWidgets('displays dialog when turnResult is not null',
+        (WidgetTester tester) async {
+      var inGameView = InGameView();
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        turnResult: TestFactory.turnResult,
+      ));
+      await tester.pump();
+
+      var inGameViewTester = InGameViewTester(tester);
+      expect(inGameViewTester.turnResult.isVisible, isTrue);
+      expect(inGameViewTester.turnResult.taker, Position.Left);
+      expect(inGameViewTester.turnResult.win, isTrue);
+      expect(inGameViewTester.turnResult.takerScore, 102);
+      expect(inGameViewTester.turnResult.opponentScore, 50);
     });
   });
 }

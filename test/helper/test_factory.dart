@@ -1,7 +1,9 @@
 import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
+import 'package:atoupic/application/domain/entity/cart_round.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/service/game_service.dart';
 
 abstract class TestFactory {
   static List<Card> get cards => [
@@ -46,6 +48,8 @@ abstract class TestFactory {
   static Player realPlayerWithCards(List<Card> cards) =>
       Player(Position.Bottom, isRealPlayer: true)..cards = cards;
 
+  static TurnResult get turnResult => TurnResult(Player(Position.Left), 102, 50, Result.Success, 102, 50);
+
   static GameContext get gameContext => GameContext([
         Player(Position.Left),
         Player(Position.Top),
@@ -54,4 +58,24 @@ abstract class TestFactory {
       ], [
         Turn(1, Player(Position.Top))
       ]);
+
+  static GameContext get finishedTurnGameContext =>
+      gameContext
+        ..lastTurn.playerDecisions[Position.Top] = Decision.Take
+        ..lastTurn.card = Card(CardColor.Spade, CardHead.Ten)
+        ..lastTurn.trumpColor = CardColor.Spade
+        ..lastTurn.cardRounds = fullGamePlayed;
+
+  static List<CartRound> get fullGamePlayed => [
+        CartRound(Player(Position.Top))
+          ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
+          ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
+          ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
+          ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Seven),
+        CartRound(Player(Position.Top))
+          ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Nine)
+          ..playedCards[Position.Right] = Card(CardColor.Club, CardHead.Eight)
+          ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
+          ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Seven),
+      ];
 }

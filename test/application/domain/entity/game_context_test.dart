@@ -171,6 +171,7 @@ void main() {
         var gameContext = GameContext(
             [TestFactory.realPlayer], [Turn(1, TestFactory.realPlayer)]);
         var newGameContext = gameContext.newCardRound();
+        expect(newGameContext.turns[0].cardRounds.length, 1);
         expect(
           newGameContext.turns[0].cardRounds[0],
           CartRound(TestFactory.realPlayer),
