@@ -61,7 +61,7 @@ void main() {
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
       var updatedGameContext =
           GameContext(players, [Turn(1, firstPlayer)..card = card]);
-      var takeOrPassAction = StartTurnAction(gameContext);
+      var takeOrPassAction = StartTurnAction(gameContext, turnAlreadyCreated: true);
 
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
 
@@ -94,12 +94,12 @@ void main() {
         Player(Position.Right),
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
-      var takeOrPassAction = StartTurnAction(gameContext);
+      var action = StartTurnAction(gameContext);
 
       when(mockPlayer.isRealPlayer).thenReturn(false);
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
 
-      startTurn(Mocks.store, takeOrPassAction, Mocks.next);
+      startTurn(Mocks.store, action, Mocks.next);
 
       verifyInOrder([
         Mocks.cardService.distributeCards(5),
@@ -129,6 +129,47 @@ void main() {
       verifyInOrder([
         mockPlayer.sortCards(),
       ]);
+    });
+
+    test('create enxt turn and resets the cards in game', () {
+      Player mockPlayer = MockPlayer();
+      GameContext gameContext = MockGameContext();
+      List<Player> players = [
+        mockPlayer,
+      ];
+      var newGameContext = GameContext(players, [Turn(1, mockPlayer)]);
+      var takeOrPassAction = StartTurnAction(gameContext);
+
+      when(Mocks.cardService.distributeCards(any))
+          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
+      when(mockPlayer.isRealPlayer).thenReturn(true);
+      when(gameContext.players).thenReturn(players);
+      when(gameContext.nextTurn()).thenReturn(newGameContext);
+
+      startTurn(Mocks.store, takeOrPassAction, Mocks.next);
+
+      verify(Mocks.atoupicGame.resetPlayersCards());
+      verify(gameContext.nextTurn());
+    });
+
+    test('when turn already created does not call nextTurn()', () {
+      Player mockPlayer = MockPlayer();
+      GameContext gameContext = MockGameContext();
+      List<Player> players = [
+        mockPlayer,
+      ];
+      var takeOrPassAction = StartTurnAction(gameContext, turnAlreadyCreated: true);
+
+      when(Mocks.cardService.distributeCards(any))
+          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
+      when(mockPlayer.isRealPlayer).thenReturn(true);
+      when(gameContext.players).thenReturn(players);
+      when(gameContext.lastTurn).thenReturn(Turn(1, mockPlayer));
+
+      startTurn(Mocks.store, takeOrPassAction, Mocks.next);
+
+      verify(Mocks.atoupicGame.resetPlayersCards());
+      verifyNever(gameContext.nextTurn());
     });
   });
 
@@ -254,8 +295,7 @@ void main() {
 
       verifyInOrder([
         Mocks.gameService.read(),
-        Mocks.store.dispatch(StartTurnAction(updatedGameContext)),
-        Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
+        Mocks.store.dispatch(SetGameContextAction(mockedContext)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -325,7 +365,7 @@ void main() {
       takeDecision(Mocks.store, action, Mocks.next);
 
       verify(mockPlayer.sortCards(trumpColor: CardColor.Club));
-      verify(Mocks.atoupicGame.resetRealPlayersCards([
+      verify(Mocks.atoupicGame.replaceRealPlayersCards([
         Card(CardColor.Club, CardHead.King),
         Card(CardColor.Club, CardHead.Eight),
       ]));

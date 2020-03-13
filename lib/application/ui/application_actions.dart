@@ -31,8 +31,9 @@ class StartSoloGameAction extends Equatable {
 
 class StartTurnAction extends Equatable {
   final GameContext gameContext;
+  final bool turnAlreadyCreated;
 
-  StartTurnAction(this.gameContext);
+  StartTurnAction(this.gameContext, {this.turnAlreadyCreated = false});
 
   @override
   List<Object> get props => [gameContext];

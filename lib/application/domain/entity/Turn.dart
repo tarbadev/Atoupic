@@ -72,8 +72,6 @@ class Turn extends Equatable {
       verticalScore,
     );
 
-    print('Result: $turnResult');
-
     this.turnResult = turnResult;
   }
 

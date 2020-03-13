@@ -12,13 +12,11 @@ import 'package:redux/redux.dart';
 List<Middleware<ApplicationState>> createApplicationMiddleware() => [
       TypedMiddleware<ApplicationState, StartSoloGameAction>(startSoloGame),
       TypedMiddleware<ApplicationState, StartTurnAction>(startTurn),
-      TypedMiddleware<ApplicationState, TakeOrPassDecisionAction>(
-          takeOrPassDecision),
+      TypedMiddleware<ApplicationState, TakeOrPassDecisionAction>(takeOrPassDecision),
       TypedMiddleware<ApplicationState, PassDecisionAction>(passDecision),
       TypedMiddleware<ApplicationState, TakeDecisionAction>(takeDecision),
       TypedMiddleware<ApplicationState, StartCardRoundAction>(startCardRound),
-      TypedMiddleware<ApplicationState, ChooseCardDecisionAction>(
-          chooseCardDecision),
+      TypedMiddleware<ApplicationState, ChooseCardDecisionAction>(chooseCardDecision),
       TypedMiddleware<ApplicationState, SetCardDecisionAction>(setCardDecision),
       TypedMiddleware<ApplicationState, ChooseCardForAiAction>(chooseCardForAi),
       TypedMiddleware<ApplicationState, EndCardRoundAction>(endCardRound),
@@ -39,9 +37,9 @@ void startSoloGame(
   atoupicGame.setDomainPlayers(gameContext.players);
   atoupicGame.visible = true;
 
-  store.dispatch(SetRealPlayerAction(
-      gameContext.players.firstWhere((player) => player.isRealPlayer)));
-  store.dispatch(StartTurnAction(gameContext));
+  store.dispatch(
+      SetRealPlayerAction(gameContext.players.firstWhere((player) => player.isRealPlayer)));
+  store.dispatch(StartTurnAction(gameContext, turnAlreadyCreated: true));
 
   next(action);
 }
@@ -55,23 +53,25 @@ void startTurn(
   final AtoupicGame atoupicGame = container.resolve();
   final CardService cardService = container<CardService>()..initializeCards();
 
-  action.gameContext.players
-      .forEach((player) => player.cards = cardService.distributeCards(5));
-  action.gameContext.players
-      .firstWhere((player) => player.isRealPlayer)
-      .sortCards();
+  GameContext gameContext =
+      action.turnAlreadyCreated ? action.gameContext : action.gameContext.nextTurn();
 
-  action.gameContext.players.forEach(
-      (player) => atoupicGame.addPlayerCards(player.cards, player.position));
+  atoupicGame.resetPlayersCards();
+
+  gameContext.players.forEach((player) => player.cards = cardService.distributeCards(5));
+  gameContext.players.firstWhere((player) => player.isRealPlayer).sortCards();
+
+  gameContext.players
+      .forEach((player) => atoupicGame.addPlayerCards(player.cards, player.position));
 
   final card = cardService.distributeCards(1).first;
 
-  action.gameContext.lastTurn.card = card;
+  gameContext.lastTurn.card = card;
 
-  store.dispatch(SetGameContextAction(action.gameContext));
-  store.dispatch(SetTurnAction(action.gameContext.lastTurn.number));
+  store.dispatch(SetGameContextAction(gameContext));
+  store.dispatch(SetTurnAction(gameContext.lastTurn.number));
   store.dispatch(SetTakeOrPassCard(card));
-  store.dispatch(TakeOrPassDecisionAction(action.gameContext.nextPlayer()));
+  store.dispatch(TakeOrPassDecisionAction(gameContext.nextPlayer()));
 
   next(action);
 }
@@ -99,11 +99,9 @@ void passDecision(
   final AtoupicGame atoupicGame = container.resolve();
   final GameService gameService = container<GameService>();
 
-  var gameContext =
-      gameService.read().setDecision(action.player, Decision.Pass);
+  var gameContext = gameService.read().setDecision(action.player, Decision.Pass);
   var nextPlayer = gameContext.nextPlayer();
   if (nextPlayer == null && gameContext.lastTurn.round == 2) {
-    gameContext = gameContext.nextTurn();
     store.dispatch(StartTurnAction(gameContext));
   } else {
     if (nextPlayer == null) {
@@ -131,8 +129,7 @@ void takeDecision(
   final GameService gameService = container<GameService>();
   final CardService cardService = container<CardService>();
 
-  var gameContext =
-      gameService.read().setDecision(action.player, Decision.Take);
+  var gameContext = gameService.read().setDecision(action.player, Decision.Take);
 
   action.player.cards.add(gameContext.lastTurn.card);
   var takerCards = cardService.distributeCards(2);
@@ -149,12 +146,11 @@ void takeDecision(
       atoupicGame.addPlayerCards(newCards, player.position);
     }
   });
-  var realPlayer =
-      gameContext.players.firstWhere((player) => player.isRealPlayer);
+  var realPlayer = gameContext.players.firstWhere((player) => player.isRealPlayer);
   realPlayer.sortCards(trumpColor: action.color);
 
   atoupicGame.resetPlayersPassed();
-  atoupicGame.resetRealPlayersCards(realPlayer.cards);
+  atoupicGame.replaceRealPlayersCards(realPlayer.cards);
 
   store.dispatch(SetGameContextAction(gameContext));
   store.dispatch(StartCardRoundAction(gameContext));
@@ -190,12 +186,11 @@ void chooseCardDecision(
       AtoupicGame atoupicGame = container.resolve();
       atoupicGame.realPlayerCanChooseCard(
         true,
-        possiblePlayableCards:
-            action.context.getPossibleCardsToPlay(nextPlayer),
+        possiblePlayableCards: action.context.getPossibleCardsToPlay(nextPlayer),
       );
     } else {
-      store.dispatch(ChooseCardForAiAction(
-          action.context.getPossibleCardsToPlay(nextPlayer), nextPlayer));
+      store.dispatch(
+          ChooseCardForAiAction(action.context.getPossibleCardsToPlay(nextPlayer), nextPlayer));
     }
   }
 
@@ -231,8 +226,7 @@ void chooseCardForAi(
   ChooseCardForAiAction action,
   NextDispatcher next,
 ) {
-  var card = action
-      .possibleCardsToPlay[Random().nextInt(action.possibleCardsToPlay.length)];
+  var card = action.possibleCardsToPlay[Random().nextInt(action.possibleCardsToPlay.length)];
 
   store.dispatch(SetCardDecisionAction(
     card,

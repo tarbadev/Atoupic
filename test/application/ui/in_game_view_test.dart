@@ -138,5 +138,24 @@ void main() {
       expect(inGameViewTester.turnResult.takerScore, 102);
       expect(inGameViewTester.turnResult.opponentScore, 50);
     });
+
+    testWidgets('dispatches a StartTurnAction and resets turn result when pressing Next',
+        (WidgetTester tester) async {
+      var inGameView = InGameView();
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        turnResult: TestFactory.turnResult,
+      ));
+      await tester.pump();
+
+      var inGameViewTester = InGameViewTester(tester);
+      expect(inGameViewTester.turnResult.isVisible, isTrue);
+
+      await inGameViewTester.turnResult.tapOnNext();
+
+      verify(Mocks.store.dispatch(SetTurnResultAction(null)));
+      verify(Mocks.store.dispatch(StartTurnAction(Mocks.gameContext)));
+    });
   });
 }

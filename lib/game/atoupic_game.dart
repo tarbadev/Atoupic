@@ -26,9 +26,7 @@ class AtoupicGame extends BaseGame {
   }
 
   void setDomainPlayers(List<Player> players) {
-    players
-        .map((player) => PlayerComponent.fromPlayer(player))
-        .forEach((player) {
+    players.map((player) => PlayerComponent.fromPlayer(player)).forEach((player) {
       if (player.isRealPlayer) {
         _realPlayer = player;
       }
@@ -42,15 +40,13 @@ class AtoupicGame extends BaseGame {
   }
 
   void addPlayerCards(List<Card> cards, Position position) {
-    var playerComponent =
-        _players.firstWhere((player) => player.position == position);
+    var playerComponent = _players.firstWhere((player) => player.position == position);
     _addPlayerCards(playerComponent, cards);
   }
 
   void _addPlayerCards(PlayerComponent playerComponent, List<Card> cards) {
     playerComponent.addCards(cards
-        .map((card) => CardComponent.fromCard(card,
-            showBackFace: !playerComponent.isRealPlayer))
+        .map((card) => CardComponent.fromCard(card, showBackFace: !playerComponent.isRealPlayer))
         .toList());
   }
 
@@ -63,24 +59,19 @@ class AtoupicGame extends BaseGame {
     _players.forEach((player) => player.passed = false);
   }
 
-  void resetRealPlayersCards(List<Card> cards) {
-    _realPlayer.cards.forEach((card) {
-      card.shouldDestroy = true;
-    });
-    _realPlayer.cards.clear();
+  void replaceRealPlayersCards(List<Card> cards) {
+    _resetPlayerCards(_realPlayer);
     _addPlayerCards(_realPlayer, cards);
   }
 
-  void realPlayerCanChooseCard(bool canChooseCard,
-      {List<Card> possiblePlayableCards}) {
+  void realPlayerCanChooseCard(bool canChooseCard, {List<Card> possiblePlayableCards}) {
     if (canChooseCard) {
       final container = Container();
       final Store<ApplicationState> store = container.resolve();
-      _realPlayer.setCardsOnTapCallback((card) =>
-          store.dispatch(SetCardDecisionAction(card, _realPlayer.player)));
+      _realPlayer.setCardsOnTapCallback(
+          (card) => store.dispatch(SetCardDecisionAction(card, _realPlayer.player)));
       _realPlayer.cards.forEach((cardComponent) =>
-      cardComponent.canBePlayed =
-          possiblePlayableCards.contains(cardComponent.card));
+          cardComponent.canBePlayed = possiblePlayableCards.contains(cardComponent.card));
     } else {
       _realPlayer.cards.forEach((cardComponent) {
         cardComponent.canBePlayed = false;
@@ -90,10 +81,9 @@ class AtoupicGame extends BaseGame {
   }
 
   void setLastCardPlayed(Card card, Position position, Function onAnimationDoneCallback) {
-    var playerComponent =
-        _players.firstWhere((player) => player.position == position);
-    var playedCard = playerComponent.cards
-        .firstWhere((cardComponent) => cardComponent.card == card);
+    var playerComponent = _players.firstWhere((player) => player.position == position);
+    var playedCard =
+        playerComponent.cards.firstWhere((cardComponent) => cardComponent.card == card);
     playerComponent.playCard(playedCard, onAnimationDoneCallback);
   }
 
@@ -105,8 +95,18 @@ class AtoupicGame extends BaseGame {
   }
 
   void setTrumpColor(CardColor color, Position position) {
-    var playerComponent =
-    _players.firstWhere((player) => player.position == position);
+    var playerComponent = _players.firstWhere((player) => player.position == position);
     playerComponent.displayTrumpColor(color);
+  }
+  
+  void resetPlayersCards() {
+    _players.forEach((player) => _resetPlayerCards(player));
+  }
+
+  void _resetPlayerCards(PlayerComponent player) {
+    player.cards.forEach((card) {
+        card.shouldDestroy = true;
+      });
+    player.cards.clear();
   }
 }

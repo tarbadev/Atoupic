@@ -20,10 +20,6 @@ class InGameViewTester extends BaseViewTester {
 class TakeOrPassDialogElement extends BaseViewTester {
   TakeOrPassDialogElement(tester) : super(tester);
 
-  Finder get _passButtonFinder => find.byKey(Key('TakeOrPassDialog__PassButton'));
-
-  Finder get _takeButtonFinder => find.byKey(Key('TakeOrPassDialog__TakeButton'));
-
   bool get isVisible => widgetExists('TakeOrPassDialog');
 
   List<CardColor> get colorChoices =>
@@ -33,9 +29,9 @@ class TakeOrPassDialogElement extends BaseViewTester {
           .map((symbol) => CardColor.values.firstWhere((cardColor) => cardColor.symbol == symbol))
           .toList();
 
-  Future<void> tapOnPass() async => await tester.tap(_passButtonFinder);
+  Future<void> tapOnPass() async => await tapOnButtonByKey('TakeOrPassDialog__PassButton');
 
-  Future<void> tapOnTake() async => await tester.tap(_takeButtonFinder);
+  Future<void> tapOnTake() async => await tapOnButtonByKey('TakeOrPassDialog__TakeButton');
 
   Future<void> tapOnColorChoice(CardColor cardColor) async {
     var button = (tester.widget(find.byKey(Key('TakeOrPassDialog__ColorChoices'))) as Row)
@@ -57,6 +53,8 @@ class TurnResultElement extends BaseViewTester {
   int get takerScore => int.parse(getTextByKey('TurnResultDialog__TakerScore'));
 
   int get opponentScore => int.parse(getTextByKey('TurnResultDialog__OpponentScore'));
+
+  Future<void> tapOnNext() async => await tapOnButtonByKey('TurnResultDialog__NextButton');
 
   Position get taker {
     var takerPosition = getTextByKey('TurnResultDialog__Taker');

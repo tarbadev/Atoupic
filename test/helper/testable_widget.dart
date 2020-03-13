@@ -14,7 +14,8 @@ Widget buildTestableWidget(
   AtoupicView currentView = AtoupicView.Home,
   AtoupicCard.Card takeOrPassCard,
   Player realPlayer,
-  Turn lastTurn, TurnResult turnResult,
+  Turn lastTurn,
+  TurnResult turnResult,
 }) {
   Mocks.setupMockStore(
     showTakeOrPassDialog: showTakeOrPassDialog,

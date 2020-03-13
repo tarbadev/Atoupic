@@ -19,7 +19,7 @@ class InGameView extends StatelessWidget {
           displayTakeOrPassDialog(context, viewModel);
         }
         if (viewModel.turnResultDisplay != null) {
-          displayTurnResultDialog(context, viewModel.turnResultDisplay);
+          displayTurnResultDialog(context, viewModel.turnResultDisplay, viewModel.onTurnResultNext);
         }
         return Container(
           child: Scaffold(
@@ -122,7 +122,8 @@ class InGameView extends StatelessWidget {
     );
   }
 
-  void displayTurnResultDialog(BuildContext context, TurnResultDisplay turnResultDisplay) async {
+  void displayTurnResultDialog(
+      BuildContext context, TurnResultDisplay turnResultDisplay, Function onNextPressed) async {
     SchedulerBinding.instance.addPostFrameCallback(
       (_) => showDialog(
         context: context,
@@ -144,7 +145,9 @@ class InGameView extends StatelessWidget {
                     key: Key('TurnResultDialog__Taker'),
                     style: TextStyle(fontSize: 22.0),
                   ),
-                  Divider(color: Colors.transparent,),
+                  Divider(
+                    color: Colors.transparent,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -166,6 +169,14 @@ class InGameView extends StatelessWidget {
                       ),
                     ],
                   ),
+                  SimpleDialogOption(
+                    key: Key('TurnResultDialog__NextButton'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onNextPressed();
+                    },
+                    child: Text('Next'),
+                  ),
                 ],
               ),
             ),
@@ -185,6 +196,7 @@ class _InGameViewModel {
   final Function onPassTap;
   final Function onTakeTap;
   final TurnResultDisplay turnResultDisplay;
+  final Function onTurnResultNext;
 
   _InGameViewModel(
     this.showDialog,
@@ -195,6 +207,7 @@ class _InGameViewModel {
     this.onPassTap,
     this.onTakeTap,
     this.turnResultDisplay,
+    this.onTurnResultNext,
   );
 
   factory _InGameViewModel.create(Store<ApplicationState> store) {
@@ -230,6 +243,10 @@ class _InGameViewModel {
       store.state.turnResult == null
           ? null
           : TurnResultDisplay.fromTurnResult(store.state.turnResult),
+      () {
+        store.dispatch(SetTurnResultAction(null));
+        store.dispatch(StartTurnAction(store.state.gameContext));
+      },
     );
   }
 }
