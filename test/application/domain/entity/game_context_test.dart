@@ -365,6 +365,27 @@ void main() {
 
             expect(gameContext.getPossibleCardsToPlay(player), [card1, card2]);
           });
+          test('and requested color is trump returns cards of higher card', () {
+            gameContext.lastTurn
+                ..trumpColor = CardColor.Spade
+                ..cardRounds = [
+                  CartRound(firstPlayer)
+                    ..playedCards[firstPlayer.position] =
+                    Card(CardColor.Spade, CardHead.King)
+                ];
+            var card1 = Card(CardColor.Spade, CardHead.Ace);
+            var card2 = Card(CardColor.Spade, CardHead.Jack);
+            var player = TestFactory.computerPlayer
+              ..cards = [
+                Card(CardColor.Club, CardHead.Eight),
+                Card(CardColor.Spade, CardHead.Eight),
+                Card(CardColor.Diamond, CardHead.Eight),
+                card1,
+                card2,
+              ];
+
+            expect(gameContext.getPossibleCardsToPlay(player), [card1, card2]);
+          });
         });
 
         group('when computer does not have card of requested color', () {

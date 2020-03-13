@@ -31,8 +31,7 @@ class GameContext extends Equatable {
       return null;
     }
     final lastTurnFirstPlayer = lastTurn.firstPlayer;
-    var index =
-        players.indexOf(lastTurnFirstPlayer) + lastTurn.playerDecisions.length;
+    var index = players.indexOf(lastTurnFirstPlayer) + lastTurn.playerDecisions.length;
 
     if (index >= players.length) {
       index -= 4;
@@ -100,29 +99,32 @@ class GameContext extends Equatable {
     if (player == lastCardRound.firstPlayer) {
       return player.cards;
     } else {
-      var requestedColor =
-          lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
-      var cardsForColor =
-          player.cards.where((card) => card.color == requestedColor).toList();
+      var requestedColor = lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
+      var cardsForColor = player.cards.where((card) => card.color == requestedColor).toList();
+      if (requestedColor == lastTurn.trumpColor) {
+        var highestTrumpPlayedValue = lastCardRound.playedCards.values
+            .where((card) => card.color == lastTurn.trumpColor)
+            .reduce((card1, card2) => card1.head.trumpOrder > card2.head.trumpOrder ? card1 : card2)
+            .head
+            .trumpOrder;
+        cardsForColor =
+            cardsForColor.where((card) => card.head.trumpOrder > highestTrumpPlayedValue).toList();
+      }
       if (cardsForColor.length > 0) {
         return cardsForColor;
       } else {
-        var trumpCards =
-            player.cards.where((card) => card.color == lastTurn.trumpColor);
+        var trumpCards = player.cards.where((card) => card.color == lastTurn.trumpColor);
         if (trumpCards.isEmpty) {
           return player.cards;
         } else {
-          var playedTrumpCards = lastCardRound.playedCards.values
-              .where((card) => card.color == lastTurn.trumpColor);
+          var playedTrumpCards =
+              lastCardRound.playedCards.values.where((card) => card.color == lastTurn.trumpColor);
           if (playedTrumpCards.isEmpty) {
             return trumpCards.toList();
           } else {
-            var higherTrumpCards = trumpCards.where((card) =>
-                !playedTrumpCards.any((playedCard) =>
-                    playedCard.head.trumpOrder > card.head.trumpOrder));
-            return higherTrumpCards.isEmpty
-                ? trumpCards.toList()
-                : higherTrumpCards.toList();
+            var higherTrumpCards = trumpCards.where((card) => !playedTrumpCards
+                .any((playedCard) => playedCard.head.trumpOrder > card.head.trumpOrder));
+            return higherTrumpCards.isEmpty ? trumpCards.toList() : higherTrumpCards.toList();
           }
         }
       }
