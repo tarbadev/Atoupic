@@ -109,4 +109,8 @@ class AtoupicGame extends BaseGame {
       });
     player.cards.clear();
   }
+
+  void resetTrumpColor() {
+    _players.forEach((player) => player.resetTrumpColor());
+  }
 }

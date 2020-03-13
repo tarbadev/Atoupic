@@ -150,6 +150,7 @@ void main() {
 
       verify(Mocks.atoupicGame.resetPlayersPassed());
       verify(Mocks.atoupicGame.resetPlayersCards());
+      verify(Mocks.atoupicGame.resetTrumpColor());
       verify(gameContext.nextTurn());
     });
 

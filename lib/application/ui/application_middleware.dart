@@ -57,6 +57,7 @@ void startTurn(
       action.turnAlreadyCreated ? action.gameContext : action.gameContext.nextTurn();
 
   atoupicGame.resetPlayersPassed();
+  atoupicGame.resetTrumpColor();
   atoupicGame.resetPlayersCards();
 
   gameContext.players.forEach((player) => player.cards = cardService.distributeCards(5));

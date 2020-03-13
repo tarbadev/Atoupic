@@ -232,4 +232,11 @@ class PlayerComponent extends PositionComponent
     cardToPlay.onAnimationDoneCallback = onAnimationDoneCallback;
     cardToPlay.revealCard();
   }
+
+  void resetTrumpColor() {
+    if (_trumpColor != null){
+      _trumpColor.shouldDestroy = true;
+      _trumpColor = null;
+    }
+  }
 }

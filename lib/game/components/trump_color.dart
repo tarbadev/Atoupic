@@ -7,6 +7,7 @@ import 'package:flame/text_config.dart';
 
 class TrumpColor extends TextBoxComponent {
   final CardColor color;
+  bool shouldDestroy = false;
 
   TrumpColor(this.color)
       : super(
@@ -21,9 +22,14 @@ class TrumpColor extends TextBoxComponent {
     final Rect rect = Rect.fromLTWH(0, 0, width, height);
     c.drawRect(rect, Paint()..color = const Color(0xFFFFFFFF));
     var borderPaint = Paint()
-          ..color = Color(0xFF000000)
-          ..style = PaintingStyle.stroke;
+      ..color = Color(0xFF000000)
+      ..style = PaintingStyle.stroke;
     c.drawRect(rect, borderPaint);
     c.drawRect(rect.deflate(1), borderPaint);
+  }
+
+  @override
+  bool destroy() {
+    return shouldDestroy;
   }
 }
