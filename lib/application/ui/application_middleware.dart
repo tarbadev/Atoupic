@@ -56,6 +56,7 @@ void startTurn(
   GameContext gameContext =
       action.turnAlreadyCreated ? action.gameContext : action.gameContext.nextTurn();
 
+  atoupicGame.resetPlayersPassed();
   atoupicGame.resetPlayersCards();
 
   gameContext.players.forEach((player) => player.cards = cardService.distributeCards(5));
@@ -99,20 +100,21 @@ void passDecision(
   final AtoupicGame atoupicGame = container.resolve();
   final GameService gameService = container<GameService>();
 
+  atoupicGame.setPlayerPassed(action.player.position);
+
   var gameContext = gameService.read().setDecision(action.player, Decision.Pass);
   var nextPlayer = gameContext.nextPlayer();
   if (nextPlayer == null && gameContext.lastTurn.round == 2) {
     store.dispatch(StartTurnAction(gameContext));
   } else {
     if (nextPlayer == null) {
+      atoupicGame.resetPlayersPassed();
       gameContext = gameContext.nextRound();
       nextPlayer = gameContext.nextPlayer();
     }
 
     store.dispatch(TakeOrPassDecisionAction(nextPlayer));
   }
-
-  atoupicGame.setPlayerPassed(action.player.position);
 
   store.dispatch(SetGameContextAction(gameContext));
 

@@ -131,7 +131,7 @@ void main() {
       ]);
     });
 
-    test('create enxt turn and resets the cards in game', () {
+    test('create next turn and resets the game', () {
       Player mockPlayer = MockPlayer();
       GameContext gameContext = MockGameContext();
       List<Player> players = [
@@ -148,6 +148,7 @@ void main() {
 
       startTurn(Mocks.store, takeOrPassAction, Mocks.next);
 
+      verify(Mocks.atoupicGame.resetPlayersPassed());
       verify(Mocks.atoupicGame.resetPlayersCards());
       verify(gameContext.nextTurn());
     });
@@ -227,9 +228,9 @@ void main() {
       passDecision(Mocks.store, action, Mocks.next);
 
       verifyInOrder([
+        Mocks.atoupicGame.setPlayerPassed(action.player.position),
         Mocks.gameService.read(),
         Mocks.store.dispatch(TakeOrPassDecisionAction(TestFactory.realPlayer)),
-        Mocks.atoupicGame.setPlayerPassed(action.player.position),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
         Mocks.mockNext.next(action),
       ]);
@@ -262,6 +263,7 @@ void main() {
 
       verifyInOrder([
         Mocks.gameService.read(),
+        Mocks.atoupicGame.resetPlayersPassed(),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
         Mocks.mockNext.next(action),
