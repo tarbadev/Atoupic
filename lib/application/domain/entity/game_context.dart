@@ -99,17 +99,7 @@ class GameContext extends Equatable {
     if (player == lastCardRound.firstPlayer) {
       return player.cards;
     } else {
-      var requestedColor = lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
-      var cardsForColor = player.cards.where((card) => card.color == requestedColor).toList();
-      if (requestedColor == lastTurn.trumpColor) {
-        var highestTrumpPlayedValue = lastCardRound.playedCards.values
-            .where((card) => card.color == lastTurn.trumpColor)
-            .reduce((card1, card2) => card1.head.trumpOrder > card2.head.trumpOrder ? card1 : card2)
-            .head
-            .trumpOrder;
-        cardsForColor =
-            cardsForColor.where((card) => card.head.trumpOrder > highestTrumpPlayedValue).toList();
-      }
+      List<Card> cardsForColor = _getCardsOfRequestedColor(lastCardRound, player);
       if (cardsForColor.length > 0) {
         return cardsForColor;
       } else {
@@ -120,6 +110,9 @@ class GameContext extends Equatable {
           var playedTrumpCards =
               lastCardRound.playedCards.values.where((card) => card.color == lastTurn.trumpColor);
           if (playedTrumpCards.isEmpty) {
+            if (lastTurn.getCardRoundWinner(lastCardRound).isVertical == player.position.isVertical) {
+              return player.cards;
+            }
             return trumpCards.toList();
           } else {
             var higherTrumpCards = trumpCards.where((card) => !playedTrumpCards
@@ -129,5 +122,20 @@ class GameContext extends Equatable {
         }
       }
     }
+  }
+
+  List<Card> _getCardsOfRequestedColor(CartRound lastCardRound, Player player) {
+    var requestedColor = lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
+    var cardsForColor = player.cards.where((card) => card.color == requestedColor).toList();
+    if (requestedColor == lastTurn.trumpColor) {
+      var highestTrumpPlayedValue = lastCardRound.playedCards.values
+          .where((card) => card.color == lastTurn.trumpColor)
+          .reduce((card1, card2) => card1.head.trumpOrder > card2.head.trumpOrder ? card1 : card2)
+          .head
+          .trumpOrder;
+      cardsForColor =
+          cardsForColor.where((card) => card.head.trumpOrder > highestTrumpPlayedValue).toList();
+    }
+    return cardsForColor;
   }
 }

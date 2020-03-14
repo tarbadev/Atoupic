@@ -20,10 +20,8 @@ void main() {
           TestFactory.realPlayer
         ];
         var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
-        var newGameContext =
-            gameContext.setDecision(firstPlayer, Decision.Pass);
-        expect(newGameContext.turns[0].playerDecisions[firstPlayer.position],
-            Decision.Pass);
+        var newGameContext = gameContext.setDecision(firstPlayer, Decision.Pass);
+        expect(newGameContext.turns[0].playerDecisions[firstPlayer.position], Decision.Pass);
       });
     });
 
@@ -48,9 +46,9 @@ void main() {
           firstPlayer,
           TestFactory.realPlayer,
         ];
-        var gameContext = GameContext(players, [
-          Turn(1, firstPlayer)
-            ..playerDecisions[firstPlayer.position] = Decision.Pass
+        var gameContext = GameContext(
+            players, [Turn(1, firstPlayer)
+          ..playerDecisions[firstPlayer.position] = Decision.Pass
         ]);
         expect(gameContext.nextPlayer(), TestFactory.realPlayer);
       });
@@ -63,9 +61,9 @@ void main() {
           Player(Position.Right),
           firstPlayer,
         ];
-        var gameContext = GameContext(players, [
-          Turn(1, firstPlayer)
-            ..playerDecisions[firstPlayer.position] = Decision.Pass
+        var gameContext = GameContext(
+            players, [Turn(1, firstPlayer)
+          ..playerDecisions[firstPlayer.position] = Decision.Pass
         ]);
         expect(gameContext.nextPlayer(), TestFactory.realPlayer);
       });
@@ -124,16 +122,14 @@ void main() {
     group('nextTurn', () {
       test('returns new gameContext with new turn and first player', () {
         var turn = Turn(1, TestFactory.computerPlayer);
-        var gameContext = GameContext(
-            [TestFactory.computerPlayer, TestFactory.realPlayer], [turn]);
+        var gameContext = GameContext([TestFactory.computerPlayer, TestFactory.realPlayer], [turn]);
         var newGameContext = gameContext.nextTurn();
         expect(newGameContext.turns[1], Turn(2, TestFactory.realPlayer));
       });
 
       test('when first player is last in players list', () {
         var turn = Turn(1, TestFactory.computerPlayer);
-        var gameContext = GameContext(
-            [TestFactory.realPlayer, TestFactory.computerPlayer], [turn]);
+        var gameContext = GameContext([TestFactory.realPlayer, TestFactory.computerPlayer], [turn]);
         var newGameContext = gameContext.nextTurn();
         expect(newGameContext.turns[1], Turn(2, TestFactory.realPlayer));
       });
@@ -150,11 +146,9 @@ void main() {
           Turn(1, TestFactory.realPlayer)
             ..cardRounds = [CartRound(TestFactory.realPlayer)]
         ]);
-        var newGameContext =
-            gameContext.setCardDecision(card, TestFactory.realPlayer);
+        var newGameContext = gameContext.setCardDecision(card, TestFactory.realPlayer);
         expect(
-          newGameContext.turns[0].cardRounds[0]
-              .playedCards[TestFactory.realPlayer.position],
+          newGameContext.turns[0].cardRounds[0].playedCards[TestFactory.realPlayer.position],
           card,
         );
         expect(
@@ -165,11 +159,8 @@ void main() {
     });
 
     group('newCardRound', () {
-      test(
-          'when it is the first card round adds a new CardRound with the next player',
-          () {
-        var gameContext = GameContext(
-            [TestFactory.realPlayer], [Turn(1, TestFactory.realPlayer)]);
+      test('when it is the first card round adds a new CardRound with the next player', () {
+        var gameContext = GameContext([TestFactory.realPlayer], [Turn(1, TestFactory.realPlayer)]);
         var newGameContext = gameContext.newCardRound();
         expect(newGameContext.turns[0].cardRounds.length, 1);
         expect(
@@ -184,13 +175,10 @@ void main() {
             ..lastTurn.cardRounds = [
               CartRound(Player(Position.Top))
                 ..playedCards[TestFactory.realPlayer.position] =
-                    Card(CardColor.Heart, CardHead.Eight)
-                ..playedCards[Position.Right] =
-                    Card(CardColor.Heart, CardHead.King)
-                ..playedCards[Position.Left] =
-                    Card(CardColor.Club, CardHead.Ace)
-                ..playedCards[Position.Top] =
-                    Card(CardColor.Heart, CardHead.Nine),
+                Card(CardColor.Heart, CardHead.Eight)
+                ..playedCards[Position.Right] = Card(CardColor.Heart, CardHead.King)
+                ..playedCards[Position.Left] = Card(CardColor.Club, CardHead.Ace)
+                ..playedCards[Position.Top] = Card(CardColor.Heart, CardHead.Nine),
             ];
           var newGameContext = gameContext.newCardRound();
           expect(
@@ -199,20 +187,15 @@ void main() {
           );
         });
 
-        test(
-            'and only card of the requested color adds a new CardRound with the first player',
-            () {
+        test('and only card of the requested color adds a new CardRound with the first player', () {
           var gameContext = TestFactory.gameContext
             ..lastTurn.cardRounds = [
               CartRound(Player(Position.Top))
                 ..playedCards[TestFactory.realPlayer.position] =
-                    Card(CardColor.Heart, CardHead.Eight)
-                ..playedCards[Position.Right] =
-                    Card(CardColor.Spade, CardHead.King)
-                ..playedCards[Position.Left] =
-                    Card(CardColor.Club, CardHead.Ace)
-                ..playedCards[Position.Top] =
-                    Card(CardColor.Diamond, CardHead.Nine),
+                Card(CardColor.Heart, CardHead.Eight)
+                ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
+                ..playedCards[Position.Left] = Card(CardColor.Club, CardHead.Ace)
+                ..playedCards[Position.Top] = Card(CardColor.Diamond, CardHead.Nine),
             ];
           var newGameContext = gameContext.newCardRound();
           expect(
@@ -221,28 +204,24 @@ void main() {
           );
         });
 
-        test(
-            'and requested color is trump color adds a new CardRound with the highest card player',
-            () {
-          var gameContext = TestFactory.gameContext
-            ..lastTurn.trumpColor = CardColor.Club
-            ..lastTurn.cardRounds = [
-              CartRound(Player(Position.Top))
-                ..playedCards[TestFactory.realPlayer.position] =
+        test('and requested color is trump color adds a new CardRound with the highest card player',
+                () {
+              var gameContext = TestFactory.gameContext
+                ..lastTurn.trumpColor = CardColor.Club
+                ..lastTurn.cardRounds = [
+                  CartRound(Player(Position.Top))
+                    ..playedCards[TestFactory.realPlayer.position] =
                     Card(CardColor.Heart, CardHead.Eight)
-                ..playedCards[Position.Right] =
-                    Card(CardColor.Heart, CardHead.King)
-                ..playedCards[Position.Left] =
-                    Card(CardColor.Club, CardHead.Ace)
-                ..playedCards[Position.Top] =
-                    Card(CardColor.Heart, CardHead.Nine),
-            ];
-          var newGameContext = gameContext.newCardRound();
-          expect(
-            newGameContext.turns[0].cardRounds[1],
-            CartRound(Player(Position.Left)),
-          );
-        });
+                    ..playedCards[Position.Right] = Card(CardColor.Heart, CardHead.King)
+                    ..playedCards[Position.Left] = Card(CardColor.Club, CardHead.Ace)
+                    ..playedCards[Position.Top] = Card(CardColor.Heart, CardHead.Nine),
+                ];
+              var newGameContext = gameContext.newCardRound();
+              expect(
+                newGameContext.turns[0].cardRounds[1],
+                CartRound(Player(Position.Left)),
+              );
+            });
       });
     });
 
@@ -254,10 +233,7 @@ void main() {
           firstPlayer
         ], [
           Turn(1, firstPlayer)
-            ..cardRounds = [
-              CartRound(firstPlayer),
-              CartRound(TestFactory.realPlayer)
-            ]
+            ..cardRounds = [CartRound(firstPlayer), CartRound(TestFactory.realPlayer)]
         ]);
         var nextPlayer = gameContext.nextCardPlayer();
         expect(
@@ -278,8 +254,7 @@ void main() {
         var gameContext = GameContext(players, [
           Turn(1, firstPlayer)
             ..cardRounds = [CartRound(firstPlayer)]
-            ..lastCardRound.playedCards[firstPlayer.position] =
-                TestFactory.cards[0]
+            ..lastCardRound.playedCards[firstPlayer.position] = TestFactory.cards[0]
         ]);
         var nextPlayer = gameContext.nextCardPlayer();
         expect(
@@ -288,29 +263,27 @@ void main() {
         );
       });
 
-      test(
-          'returns next player when firstplayer already played and firstPlayer is last in list',
-          () {
-        var firstPlayer = TestFactory.computerPlayer;
-        var player = Player(Position.Right);
-        List<Player> players = [
-          player,
-          Player(Position.Left),
-          TestFactory.realPlayer,
-          firstPlayer,
-        ];
-        var gameContext = GameContext(players, [
-          Turn(1, firstPlayer)
-            ..cardRounds = [CartRound(firstPlayer)]
-            ..lastCardRound.playedCards[firstPlayer.position] =
-                TestFactory.cards[0]
-        ]);
-        var nextPlayer = gameContext.nextCardPlayer();
-        expect(
-          nextPlayer,
-          player,
-        );
-      });
+      test('returns next player when firstplayer already played and firstPlayer is last in list',
+              () {
+            var firstPlayer = TestFactory.computerPlayer;
+            var player = Player(Position.Right);
+            List<Player> players = [
+              player,
+              Player(Position.Left),
+              TestFactory.realPlayer,
+              firstPlayer,
+            ];
+            var gameContext = GameContext(players, [
+              Turn(1, firstPlayer)
+                ..cardRounds = [CartRound(firstPlayer)]
+                ..lastCardRound.playedCards[firstPlayer.position] = TestFactory.cards[0]
+            ]);
+            var nextPlayer = gameContext.nextCardPlayer();
+            expect(
+              nextPlayer,
+              player,
+            );
+          });
 
       test('returns null when all cards played', () {
         var firstPlayer = TestFactory.computerPlayer;
@@ -344,13 +317,12 @@ void main() {
               ..trumpColor = CardColor.Spade
               ..cardRounds = [
                 CartRound(firstPlayer)
-                  ..playedCards[firstPlayer.position] =
-                      Card(CardColor.Heart, CardHead.King)
+                  ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.King)
               ]
           ]);
         });
 
-        group('when computer has card of requested color', () {
+        group('when has card of requested color', () {
           test('returns cards of requested color', () {
             var card1 = Card(CardColor.Heart, CardHead.Eight);
             var card2 = Card(CardColor.Heart, CardHead.Seven);
@@ -367,12 +339,11 @@ void main() {
           });
           test('and requested color is trump returns cards of higher card', () {
             gameContext.lastTurn
-                ..trumpColor = CardColor.Spade
-                ..cardRounds = [
-                  CartRound(firstPlayer)
-                    ..playedCards[firstPlayer.position] =
-                    Card(CardColor.Spade, CardHead.King)
-                ];
+              ..trumpColor = CardColor.Spade
+              ..cardRounds = [
+                CartRound(firstPlayer)
+                  ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.King)
+              ];
             var card1 = Card(CardColor.Spade, CardHead.Ace);
             var card2 = Card(CardColor.Spade, CardHead.Jack);
             var player = TestFactory.computerPlayer
@@ -388,8 +359,8 @@ void main() {
           });
         });
 
-        group('when computer does not have card of requested color', () {
-          test('dispatches a SetCardDecisionAction with a random card', () {
+        group('when does not have card of requested color', () {
+          test('returns all cards', () {
             var player = TestFactory.computerPlayer
               ..cards = [
                 Card(CardColor.Club, CardHead.Eight),
@@ -401,6 +372,8 @@ void main() {
 
           group('and has trump color', () {
             test('returns all trump cards', () {
+              gameContext.lastTurn.lastCardRound.playedCards[Position.Left] = Card(CardColor.Heart,
+                  CardHead.Ace);
               var player = TestFactory.computerPlayer
                 ..cards = [
                   Card(CardColor.Club, CardHead.Eight),
@@ -412,13 +385,24 @@ void main() {
                   [Card(CardColor.Spade, CardHead.Eight)]);
             });
 
-            group('and trump cards have already been played', () {
-              test(
-                  'and player does not have higher card returns all trump cards',
-                  () {
+            group('and partner is winning round', () {
+              test('returns all cards', () {
                 gameContext.lastTurn.lastCardRound
-                  ..playedCards[Position.Left] =
-                      Card(CardColor.Spade, CardHead.Nine);
+                  ..playedCards[Position.Bottom] = Card(CardColor.Club, CardHead.Ace);
+                var cards = [
+                  Card(CardColor.Spade, CardHead.Eight),
+                  Card(CardColor.Diamond, CardHead.Eight),
+                ];
+                var player = TestFactory.computerPlayer..cards = cards;
+
+                expect(gameContext.getPossibleCardsToPlay(player), cards);
+              });
+            });
+
+            group('and trump cards have already been played', () {
+              test('and player does not have higher card returns all trump cards', () {
+                gameContext.lastTurn.lastCardRound
+                  ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Nine);
                 var player = TestFactory.computerPlayer
                   ..cards = [
                     Card(CardColor.Club, CardHead.Eight),
@@ -430,12 +414,9 @@ void main() {
                     [Card(CardColor.Spade, CardHead.Eight)]);
               });
 
-              test(
-                  'and player has higher card returns all higher trump cards',
-                  () {
+              test('and player has higher card returns all higher trump cards', () {
                 gameContext.lastTurn.lastCardRound
-                  ..playedCards[Position.Left] =
-                      Card(CardColor.Spade, CardHead.Nine);
+                  ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Nine);
                 var player = TestFactory.computerPlayer
                   ..cards = [
                     Card(CardColor.Club, CardHead.Eight),
@@ -457,7 +438,8 @@ void main() {
 
         setUp(() {
           gameContext = GameContext([], [
-            Turn(1, player)..cardRounds = [CartRound(player)]
+            Turn(1, player)
+              ..cardRounds = [CartRound(player)]
           ]);
         });
 
