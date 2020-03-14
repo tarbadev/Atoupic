@@ -11,29 +11,37 @@ class AiService {
 
   Card chooseCard(List<Card> cards, Turn turn, bool isVertical) {
     var lastCardRound = turn.lastCardRound;
-    var highestCardByColor = _getHighestCardByColor(turn);
-    var winningCards = cards.where((card) => highestCardByColor.values.contains(card));
-    if (winningCards.isEmpty) {
-      if (lastCardRound.playedCards.isEmpty) {
-        return _getLowestCard(cards);
+    var winningCards = _getWinningCards(turn, cards);
+
+    if (lastCardRound.playedCards.isEmpty) {
+      return _winningCardOrLowestCard(winningCards, cards);
+    } else {
+      var requestedColor = lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
+      var cardRoundWinner = turn.getCardRoundWinner(lastCardRound);
+      var isPartnerWinning = cardRoundWinner.key.isVertical == isVertical;
+      if (isPartnerWinning) {
+        return _getBestCard(cards, requestedColor == turn.trumpColor);
       } else {
-        var requestedColor = lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
-        var cardRoundWinner = turn.getCardRoundWinner(lastCardRound);
-        var isPartnerWinning = cardRoundWinner.key.isVertical == isVertical;
-        if (isPartnerWinning) {
-          return _getBestCard(cards, requestedColor == turn.trumpColor);
-        } else {
+        if (cardRoundWinner.value.color == turn.trumpColor) {
           return _getLowestCard(cards);
+        } else {
+          return _winningCardOrLowestCard(winningCards, cards);
         }
       }
-    } else {
-      return winningCards.first;
     }
   }
 
-  Card _getLowestCard(List<Card> cards) {
-    return cards
-            .reduce((card1, card2) => card1.head.order <= card2.head.order ? card1 : card2);
+  Iterable<Card> _getWinningCards(Turn turn, List<Card> cards) {
+    var highestCardByColor = _getHighestCardByColor(turn);
+    var winningCards = cards.where((card) => highestCardByColor.values.contains(card));
+    return winningCards;
+  }
+
+  Card _winningCardOrLowestCard(Iterable<Card> winningCards, List<Card> cards) =>
+      winningCards.isEmpty ? _getLowestCard(cards) : winningCards.first;
+
+  Card _getLowestCard(Iterable<Card> cards) {
+    return cards.reduce((card1, card2) => card1.head.order <= card2.head.order ? card1 : card2);
   }
 
   Map<CardColor, Card> _getHighestCardByColor(Turn turn) {
