@@ -68,6 +68,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.King),
               ];
               var turn = Turn(1, firstPlayer)
+                ..trumpColor = CardColor.Spade
                 ..cardRounds = [
                   CartRound(firstPlayer)
                     ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Ace)
@@ -75,6 +76,25 @@ void main() {
                 ];
 
               expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.King));
+            });
+
+            group('when partner cut the round', () {
+              test('returns highest card', () {
+                var cards = [
+                  Card(CardColor.Heart, CardHead.Jack),
+                  Card(CardColor.Heart, CardHead.Queen),
+                  Card(CardColor.Heart, CardHead.King),
+                ];
+                var turn = Turn(1, firstPlayer)
+                  ..trumpColor = CardColor.Spade
+                  ..cardRounds = [
+                    CartRound(Player(Position.Left))
+                      ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ace)
+                      ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.Seven)
+                  ];
+
+                expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.King));
+              });
             });
           });
         });

@@ -17,10 +17,11 @@ class AiService {
       if (lastCardRound.playedCards.isEmpty) {
         return _getLowestCard(cards);
       } else {
+        var requestedColor = lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
         var cardRoundWinner = turn.getCardRoundWinner(lastCardRound);
         var isPartnerWinning = cardRoundWinner.key.isVertical == isVertical;
         if (isPartnerWinning) {
-          return _getBestCard(cards, cardRoundWinner.value.color == turn.trumpColor);
+          return _getBestCard(cards, requestedColor == turn.trumpColor);
         } else {
           return _getLowestCard(cards);
         }
