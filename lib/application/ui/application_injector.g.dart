@@ -13,6 +13,7 @@ class _$ApplicationInjector extends ApplicationInjector {
     container.registerSingleton((c) => CardService());
     container.registerFactory((c) => PlayerService());
     container.registerFactory((c) => GameService(c<GameContextRepository>()));
+    container.registerFactory((c) => AiService(c<CardService>()));
     container.registerSingleton((c) => GameContextRepository());
   }
 }
