@@ -3,6 +3,7 @@ import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/cart_round.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/ai_service.dart';
+import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -13,6 +14,9 @@ void main() {
   group('AiService', () {
     Player firstPlayer = TestFactory.realPlayer;
     AiService aiService;
+    var turn = Turn(1, firstPlayer)
+      ..trumpColor = CardColor.Spade
+      ..playerDecisions[Position.Left] = Decision.Take;
 
     setUp(() {
       aiService = AiService(Mocks.cardService);
@@ -29,8 +33,7 @@ void main() {
               Card(CardColor.Heart, CardHead.Queen),
               Card(CardColor.Heart, CardHead.Ace),
             ];
-            var turn = Turn(1, firstPlayer)
-              ..cardRounds = [
+            turn.cardRounds = [
                 CartRound(firstPlayer)
                   ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
                   ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
@@ -46,9 +49,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.Ten),
                 Card(CardColor.Heart, CardHead.Ace),
               ];
-              var turn = Turn(1, firstPlayer)
-              ..trumpColor = CardColor.Spade
-                ..cardRounds = [
+              turn.cardRounds = [
                   CartRound(firstPlayer)
                     ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.Nine)
                 ];
@@ -67,8 +68,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.Ten),
                 Card(CardColor.Heart, CardHead.King),
               ];
-              var turn = Turn(1, firstPlayer)
-                ..cardRounds = [
+              turn.cardRounds = [
                   CartRound(firstPlayer)
                     ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
                     ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Queen)
@@ -86,9 +86,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.Queen),
                 Card(CardColor.Heart, CardHead.King),
               ];
-              var turn = Turn(1, firstPlayer)
-                ..trumpColor = CardColor.Spade
-                ..cardRounds = [
+              turn.cardRounds = [
                   CartRound(firstPlayer)
                     ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Ace)
                     ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
@@ -104,21 +102,25 @@ void main() {
                   Card(CardColor.Heart, CardHead.Queen),
                   Card(CardColor.Heart, CardHead.King),
                 ];
-                var turn = Turn(1, firstPlayer)
-                  ..trumpColor = CardColor.Spade
-                  ..cardRounds = [
+                turn.cardRounds = [
                     CartRound(Player(Position.Left))
                       ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ace)
                       ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.Seven)
                   ];
 
-                expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.King));
+                expect(
+                    aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.King));
               });
             });
           });
         });
       });
+
       group('when first card to play', () {
+        setUp(() {
+          turn.cardRounds = [CartRound(firstPlayer)];
+        });
+
         group('when has a card that can win the round', () {
           test('returns highest card', () {
             var cards = [
@@ -126,9 +128,34 @@ void main() {
               Card(CardColor.Heart, CardHead.Queen),
               Card(CardColor.Heart, CardHead.Ace),
             ];
-            var turn = Turn(1, firstPlayer)..cardRounds = [CartRound(firstPlayer)];
 
             expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.Ace));
+          });
+
+          group('when is not in the team taker', () {
+            test('returns highest non trump card', () {
+              var cards = [
+                Card(CardColor.Spade, CardHead.Jack),
+                Card(CardColor.Heart, CardHead.Eight),
+                Card(CardColor.Heart, CardHead.Queen),
+                Card(CardColor.Heart, CardHead.Ace),
+              ];
+
+              expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.Ace));
+            });
+          });
+
+          group('when is in the team taker', () {
+            test('returns highest trump card', () {
+              var cards = [
+                Card(CardColor.Heart, CardHead.Eight),
+                Card(CardColor.Heart, CardHead.Queen),
+                Card(CardColor.Heart, CardHead.Ace),
+                Card(CardColor.Spade, CardHead.Jack),
+              ];
+
+              expect(aiService.chooseCard(cards, turn, false), Card(CardColor.Spade, CardHead.Jack));
+            });
           });
         });
 
@@ -143,7 +170,6 @@ void main() {
               Card(CardColor.Club, CardHead.Seven),
               Card(CardColor.Club, CardHead.King),
             ];
-            var turn = Turn(1, firstPlayer)..cardRounds = [CartRound(firstPlayer)];
 
             expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Spade, CardHead.Seven));
           });
