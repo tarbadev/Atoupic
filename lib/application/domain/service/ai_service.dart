@@ -15,19 +15,24 @@ class AiService {
     var winningCards = cards.where((card) => highestCardByColor.values.contains(card));
     if (winningCards.isEmpty) {
       if (lastCardRound.playedCards.isEmpty) {
+        return _getLowestCard(cards);
       } else {
         var cardRoundWinner = turn.getCardRoundWinner(lastCardRound);
         var isPartnerWinning = cardRoundWinner.key.isVertical == isVertical;
         if (isPartnerWinning) {
           return _getBestCard(cards, cardRoundWinner.value.color == turn.trumpColor);
         } else {
-          return cards
-              .reduce((card1, card2) => card1.head.order < card2.head.order ? card1 : card2);
+          return _getLowestCard(cards);
         }
       }
     } else {
       return winningCards.first;
     }
+  }
+
+  Card _getLowestCard(List<Card> cards) {
+    return cards
+            .reduce((card1, card2) => card1.head.order <= card2.head.order ? card1 : card2);
   }
 
   Map<CardColor, Card> _getHighestCardByColor(Turn turn) {
