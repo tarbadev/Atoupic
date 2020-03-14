@@ -16,9 +16,17 @@ class AiService {
     var didCurrentTeamTake = _didCurrentTeamTake(turn, isVertical);
 
     if (lastCardRound.playedCards.isEmpty) {
-      winningCards = winningCards.where((card) => (card.color == turn.trumpColor) == didCurrentTeamTake);
+      if (didCurrentTeamTake && winningCards.isEmpty) {
+        return _getBestCard(_filterCardsByTrump(cards, turn.trumpColor, true), true);
+      } else if (didCurrentTeamTake) {
+        winningCards = _filterCardsByTrump(winningCards, turn.trumpColor, true);
+      } else {
+        winningCards = _filterCardsByTrump(winningCards, turn.trumpColor, false);
+      }
 
-      return _winningCardOrLowestCard(winningCards, cards);
+      return winningCards.isEmpty
+          ? _getLowestCard(cards)
+          : winningCards.first;
     } else {
       var requestedColor = lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
       var cardRoundWinner = turn.getCardRoundWinner(lastCardRound);
@@ -35,12 +43,15 @@ class AiService {
     }
   }
 
+  Iterable<Card> _filterCardsByTrump(Iterable<Card> cards, CardColor trumpColor, bool justTrumpColor) =>
+      cards.where((card) => (card.color == trumpColor) == justTrumpColor);
+
   bool _didCurrentTeamTake(Turn turn, bool isVertical) {
     return turn.playerDecisions.entries
-          .firstWhere((entry) => entry.value == Decision.Take)
-          .key
-          .isVertical ==
-      isVertical;
+        .firstWhere((entry) => entry.value == Decision.Take)
+        .key
+        .isVertical ==
+        isVertical;
   }
 
   Iterable<Card> _getWinningCards(Turn turn, List<Card> cards) {
@@ -50,25 +61,33 @@ class AiService {
   }
 
   Card _winningCardOrLowestCard(Iterable<Card> winningCards, List<Card> cards) =>
-      winningCards.isEmpty ? _getLowestCard(cards) : winningCards.first;
+      winningCards.isEmpty
+          ? _getLowestCard(cards)
+          : winningCards.first;
 
   Card _getLowestCard(Iterable<Card> cards) {
-    return cards.reduce((card1, card2) => card1.head.order <= card2.head.order ? card1 : card2);
+    return cards.reduce((card1, card2) =>
+    card1.head.order <= card2.head.order
+        ? card1
+        : card2);
   }
 
   Map<CardColor, Card> _getHighestCardByColor(Turn turn) {
     Map<CardColor, Card> resultMap = Map();
     var allPlayedCards = turn.cardRounds
         .map((cardRound) => cardRound.playedCards.values)
-        .reduce((cards1, cards2) => cards1.toList()..addAll(cards2));
+        .reduce((cards1, cards2) =>
+    cards1.toList()
+      ..addAll(cards2));
 
     var remainingCards = _cardService.getAllCards()
       ..removeWhere((card) => allPlayedCards.contains(card));
 
     Map<CardColor, Iterable<Card>> cardsByColor =
-        groupBy(remainingCards, (playedCard) => playedCard.color);
+    groupBy(remainingCards, (playedCard) => playedCard.color);
     cardsByColor.keys.forEach(
-        (color) => resultMap[color] = _getBestCard(cardsByColor[color], color == turn.trumpColor));
+            (color) =>
+        resultMap[color] = _getBestCard(cardsByColor[color], color == turn.trumpColor));
 
     return resultMap;
   }
@@ -76,9 +95,15 @@ class AiService {
   Card _getBestCard(Iterable<Card> cards, bool isTrumpColor) {
     if (isTrumpColor) {
       return cards
-          .reduce((card1, card2) => card1.head.trumpOrder > card2.head.trumpOrder ? card1 : card2);
+          .reduce((card1, card2) =>
+      card1.head.trumpOrder > card2.head.trumpOrder
+          ? card1
+          : card2);
     } else {
-      return cards.reduce((card1, card2) => card1.head.order > card2.head.order ? card1 : card2);
+      return cards.reduce((card1, card2) =>
+      card1.head.order > card2.head.order
+          ? card1
+          : card2);
     }
   }
 }

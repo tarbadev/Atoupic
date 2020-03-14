@@ -34,10 +34,10 @@ void main() {
               Card(CardColor.Heart, CardHead.Ace),
             ];
             turn.cardRounds = [
-                CartRound(firstPlayer)
-                  ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
-                  ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
-              ];
+              CartRound(firstPlayer)
+                ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
+                ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
+            ];
 
             expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.Ace));
           });
@@ -50,9 +50,9 @@ void main() {
                 Card(CardColor.Heart, CardHead.Ace),
               ];
               turn.cardRounds = [
-                  CartRound(firstPlayer)
-                    ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.Nine)
-                ];
+                CartRound(firstPlayer)
+                  ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.Nine)
+              ];
 
               expect(
                   aiService.chooseCard(cards, turn, false), Card(CardColor.Heart, CardHead.Eight));
@@ -69,10 +69,10 @@ void main() {
                 Card(CardColor.Heart, CardHead.King),
               ];
               turn.cardRounds = [
-                  CartRound(firstPlayer)
-                    ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
-                    ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Queen)
-                ];
+                CartRound(firstPlayer)
+                  ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
+                  ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Queen)
+              ];
 
               expect(
                   aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.Eight));
@@ -87,10 +87,10 @@ void main() {
                 Card(CardColor.Heart, CardHead.King),
               ];
               turn.cardRounds = [
-                  CartRound(firstPlayer)
-                    ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Ace)
-                    ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
-                ];
+                CartRound(firstPlayer)
+                  ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Ace)
+                  ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
+              ];
 
               expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.King));
             });
@@ -103,10 +103,10 @@ void main() {
                   Card(CardColor.Heart, CardHead.King),
                 ];
                 turn.cardRounds = [
-                    CartRound(Player(Position.Left))
-                      ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ace)
-                      ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.Seven)
-                  ];
+                  CartRound(Player(Position.Left))
+                    ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ace)
+                    ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.Seven)
+                ];
 
                 expect(
                     aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.King));
@@ -154,24 +154,45 @@ void main() {
                 Card(CardColor.Spade, CardHead.Jack),
               ];
 
-              expect(aiService.chooseCard(cards, turn, false), Card(CardColor.Spade, CardHead.Jack));
+              expect(
+                  aiService.chooseCard(cards, turn, false), Card(CardColor.Spade, CardHead.Jack));
             });
           });
         });
 
         group('when does not have a card that can win the round', () {
-          test('returns lowest card', () {
-            var cards = [
-              Card(CardColor.Heart, CardHead.Eight),
-              Card(CardColor.Heart, CardHead.Queen),
-              Card(CardColor.Heart, CardHead.Ten),
-              Card(CardColor.Spade, CardHead.Seven),
-              Card(CardColor.Spade, CardHead.Queen),
-              Card(CardColor.Club, CardHead.Seven),
-              Card(CardColor.Club, CardHead.King),
-            ];
+          group('when not in taker team', () {
+            test('returns lowest card', () {
+              var cards = [
+                Card(CardColor.Heart, CardHead.Eight),
+                Card(CardColor.Heart, CardHead.Queen),
+                Card(CardColor.Heart, CardHead.Ten),
+                Card(CardColor.Spade, CardHead.Seven),
+                Card(CardColor.Spade, CardHead.Queen),
+                Card(CardColor.Club, CardHead.Seven),
+                Card(CardColor.Club, CardHead.King),
+              ];
 
-            expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Spade, CardHead.Seven));
+              expect(
+                  aiService.chooseCard(cards, turn, true), Card(CardColor.Spade, CardHead.Seven));
+            });
+
+            group('when in taker team', () {
+              test('returns highest trump card', () {
+                var cards = [
+                  Card(CardColor.Heart, CardHead.Eight),
+                  Card(CardColor.Heart, CardHead.Queen),
+                  Card(CardColor.Heart, CardHead.Ten),
+                  Card(CardColor.Spade, CardHead.Seven),
+                  Card(CardColor.Spade, CardHead.Queen),
+                  Card(CardColor.Club, CardHead.Seven),
+                  Card(CardColor.Club, CardHead.King),
+                ];
+
+                expect(aiService.chooseCard(cards, turn, false),
+                    Card(CardColor.Spade, CardHead.Queen));
+              });
+            });
           });
         });
       });
