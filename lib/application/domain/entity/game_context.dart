@@ -69,7 +69,7 @@ class GameContext extends Equatable {
     if (lastTurn.cardRounds.isEmpty) {
       cartRound = CartRound(lastTurn.firstPlayer);
     } else {
-      var highestCardPosition = lastTurn.getCardRoundWinner(lastTurn.lastCardRound);
+      var highestCardPosition = lastTurn.getCardRoundWinnerPosition(lastTurn.lastCardRound);
       cartRound = CartRound(players.firstWhere((player) => player.position == highestCardPosition));
     }
 
@@ -110,7 +110,7 @@ class GameContext extends Equatable {
           var playedTrumpCards =
               lastCardRound.playedCards.values.where((card) => card.color == lastTurn.trumpColor);
           if (playedTrumpCards.isEmpty) {
-            if (lastTurn.getCardRoundWinner(lastCardRound).isVertical == player.position.isVertical) {
+            if (lastTurn.getCardRoundWinnerPosition(lastCardRound).isVertical == player.position.isVertical) {
               return player.cards;
             }
             return trumpCards.toList();

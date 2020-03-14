@@ -12,10 +12,7 @@ class CardService {
   }
 
   initializeCards() {
-    pile = CardColor.values
-        .map((color) =>
-            CardHead.values.map((head) => Card(color, head)).toList())
-        .reduce((list1, list2) => list1..addAll(list2));
+    pile = getAllCards();
   }
 
   List<Card> distributeCards(int count) {
@@ -28,5 +25,12 @@ class CardService {
     }
 
     return cardsToDistribute;
+  }
+
+  List<Card> getAllCards() {
+    return CardColor.values
+        .map((color) =>
+        CardHead.values.map((head) => Card(color, head)).toList())
+        .reduce((list1, list2) => list1..addAll(list2));
   }
 }

@@ -38,7 +38,7 @@ class Turn extends Equatable {
     var verticalPoints = 0;
 
     cardRounds.asMap().forEach((index, cardRound) {
-      Position winnerPosition = getCardRoundWinner(cardRound);
+      Position winnerPosition = getCardRoundWinnerPosition(cardRound);
       var isLastRound = index == cardRounds.length - 1;
       if (winnerPosition.isVertical) {
         verticalPoints += _calculateRoundPoints(isLastRound, cardRound);
@@ -88,29 +88,29 @@ class Turn extends Equatable {
     return points;
   }
 
-  Position getCardRoundWinner(CartRound cartRound) {
+  Position getCardRoundWinnerPosition(CartRound cartRound) => getCardRoundWinner(cartRound).key;
+
+  MapEntry<Position, Card> getCardRoundWinner(CartRound cartRound) {
     var requestedColor =
         cartRound.playedCards[cartRound.firstPlayer.position].color;
     var trumpCards = cartRound.playedCards.entries
         .where((entry) => entry.value.color == trumpColor);
-    var highestCardPosition;
+    var winner;
     if (trumpCards.isEmpty) {
-      highestCardPosition = cartRound.playedCards.entries
+      winner = cartRound.playedCards.entries
           .where((entry) => entry.value.color == requestedColor)
           .reduce((entry1, entry2) =>
               entry1.value.head.order > entry2.value.head.order
                   ? entry1
-                  : entry2)
-          .key;
+                  : entry2);
     } else {
-      highestCardPosition = trumpCards
+      winner = trumpCards
           .reduce((entry1, entry2) =>
               entry1.value.head.trumpOrder > entry2.value.head.trumpOrder
                   ? entry1
-                  : entry2)
-          .key;
+                  : entry2);
     }
-    return highestCardPosition;
+    return winner;
   }
 }
 
