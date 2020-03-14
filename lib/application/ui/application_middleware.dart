@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:atoupic/application/domain/entity/game_context.dart';
+import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/service/ai_service.dart';
 import 'package:atoupic/application/domain/service/card_service.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
@@ -184,16 +186,22 @@ void chooseCardDecision(
   if (nextPlayer == null) {
     store.dispatch(EndCardRoundAction(action.context));
   } else {
+    final container = Container();
+    var possibleCardsToPlay = action.context.getPossibleCardsToPlay(nextPlayer);
     if (nextPlayer.isRealPlayer) {
-      final container = Container();
       AtoupicGame atoupicGame = container.resolve();
       atoupicGame.realPlayerCanChooseCard(
         true,
-        possiblePlayableCards: action.context.getPossibleCardsToPlay(nextPlayer),
+        possiblePlayableCards: possibleCardsToPlay,
       );
     } else {
-      store.dispatch(
-          ChooseCardForAiAction(action.context.getPossibleCardsToPlay(nextPlayer), nextPlayer));
+      AiService aiService = container.resolve();
+      var chosenCard = aiService.chooseCard(
+        possibleCardsToPlay,
+        action.context.lastTurn,
+        nextPlayer.position.isVertical,
+      );
+      store.dispatch(SetCardDecisionAction(chosenCard, nextPlayer));
     }
   }
 

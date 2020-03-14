@@ -59,8 +59,7 @@ void main() {
         TestFactory.realPlayer,
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
-      var updatedGameContext =
-          GameContext(players, [Turn(1, firstPlayer)..card = card]);
+      var updatedGameContext = GameContext(players, [Turn(1, firstPlayer)..card = card]);
       var takeOrPassAction = StartTurnAction(gameContext, turnAlreadyCreated: true);
 
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
@@ -82,8 +81,7 @@ void main() {
       ]);
     });
 
-    test('distributes 5 cards to each players before getting one for the turn',
-        () {
+    test('distributes 5 cards to each players before getting one for the turn', () {
       var card = Card(CardColor.Club, CardHead.Ace);
       var firstPlayer = TestFactory.computerPlayer;
       Player mockPlayer = MockPlayer();
@@ -211,8 +209,7 @@ void main() {
         TestFactory.realPlayer,
         Player(Position.Right),
       ];
-      var gameContext =
-          GameContext(players, [Turn(1, firstPlayer)..card = card]);
+      var gameContext = GameContext(players, [Turn(1, firstPlayer)..card = card]);
       var updatedGameContext = GameContext(players, [
         Turn(1, firstPlayer)
           ..card = card
@@ -223,8 +220,7 @@ void main() {
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
       when(mockedContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
-      when(mockedContext.players)
-          .thenReturn([firstPlayer, TestFactory.realPlayer]);
+      when(mockedContext.players).thenReturn([firstPlayer, TestFactory.realPlayer]);
 
       passDecision(Mocks.store, action, Mocks.next);
 
@@ -321,8 +317,7 @@ void main() {
         TestFactory.realPlayer..cards = [card, card],
         Player(Position.Right)..cards = [card],
       ];
-      var gameContext =
-          GameContext(players, [Turn(1, firstPlayer)..card = card]);
+      var gameContext = GameContext(players, [Turn(1, firstPlayer)..card = card]);
       var updatedGameContext = GameContext(updatedPlayers, [
         Turn(1, firstPlayer)
           ..card = card
@@ -355,8 +350,8 @@ void main() {
 
     test('orders cards of real player', () {
       Player mockPlayer = MockPlayer();
-      var gameContext = GameContext([mockPlayer],
-          [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
+      var gameContext = GameContext(
+          [mockPlayer], [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
       var action = TakeDecisionAction(mockPlayer, CardColor.Club);
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
@@ -376,8 +371,8 @@ void main() {
 
     test('dispatches StartCardRound', () {
       Player mockPlayer = MockPlayer();
-      var gameContext = GameContext([mockPlayer],
-          [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
+      var gameContext = GameContext(
+          [mockPlayer], [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
       var action = TakeDecisionAction(mockPlayer, CardColor.Club);
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
@@ -393,8 +388,8 @@ void main() {
 
     test('sets the trump color in game', () {
       Player mockPlayer = MockPlayer();
-      var gameContext = GameContext([mockPlayer],
-          [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
+      var gameContext = GameContext(
+          [mockPlayer], [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
       var action = TakeDecisionAction(mockPlayer, CardColor.Club);
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
@@ -429,43 +424,41 @@ void main() {
   });
 
   group('chooseCardDecision', () {
-    test(
-        'dispatches a ShowRealPlayerDecisionAction when next card player is real player',
-        () {
+    test('dispatches a ShowRealPlayerDecisionAction when next card player is real player', () {
       GameContext mockGameContext = MockGameContext();
       var action = ChooseCardDecisionAction(mockGameContext);
 
       when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.realPlayer);
-      when(mockGameContext.getPossibleCardsToPlay(any))
-          .thenReturn([TestFactory.cards[0]]);
+      when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([TestFactory.cards[0]]);
 
       chooseCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.nextCardPlayer());
       verify(mockGameContext.getPossibleCardsToPlay(TestFactory.realPlayer));
-      verify(Mocks.atoupicGame.realPlayerCanChooseCard(true,
-          possiblePlayableCards: [TestFactory.cards[0]]));
+      verify(Mocks.atoupicGame
+          .realPlayerCanChooseCard(true, possiblePlayableCards: [TestFactory.cards[0]]));
       verify(Mocks.mockNext.next(action));
     });
 
     test(
-        'dispatches a ChooseCardForAiAction when next card player is computer player',
-        () {
+        'when next card player is computer player'
+        'dispatches a SetCardDecisionAction with the given card from AiService ', () {
+      Turn turn = Turn(1, TestFactory.realPlayer);
+      var card = TestFactory.cards[0];
       GameContext mockGameContext = MockGameContext();
       var action = ChooseCardDecisionAction(mockGameContext);
 
-      when(mockGameContext.nextCardPlayer())
-          .thenReturn(TestFactory.computerPlayer);
-      when(mockGameContext.getPossibleCardsToPlay(any))
-          .thenReturn([TestFactory.cards[0]]);
+      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.computerPlayer);
+      when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([card]);
+      when(mockGameContext.lastTurn).thenReturn(turn);
+      when(Mocks.aiService.chooseCard(any, any, any)).thenReturn(card);
 
       chooseCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.nextCardPlayer());
-      verify(
-          mockGameContext.getPossibleCardsToPlay(TestFactory.computerPlayer));
-      verify(Mocks.store.dispatch(ChooseCardForAiAction(
-          [TestFactory.cards[0]], TestFactory.computerPlayer)));
+      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.computerPlayer));
+      verify(Mocks.aiService.chooseCard([card], turn, true));
+      verify(Mocks.store.dispatch(SetCardDecisionAction(card, TestFactory.computerPlayer)));
       verifyNoMoreInteractions(Mocks.store);
       verify(Mocks.mockNext.next(action));
     });
@@ -494,21 +487,19 @@ void main() {
       var action = SetCardDecisionAction(card, player);
 
       when(Mocks.gameService.read()).thenReturn(mockGameContext);
-      when(mockGameContext.setCardDecision(any, any))
-          .thenReturn(updatedGameContext);
+      when(mockGameContext.setCardDecision(any, any)).thenReturn(updatedGameContext);
 
       setCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.setCardDecision(card, player));
-      Function callBack = verify(Mocks.atoupicGame
-              .setLastCardPlayed(card, player.position, captureAny))
-          .captured
-          .single;
+      Function callBack =
+          verify(Mocks.atoupicGame.setLastCardPlayed(card, player.position, captureAny))
+              .captured
+              .single;
       verify(Mocks.store.dispatch(SetGameContextAction(updatedGameContext)));
       verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
       callBack();
-      verify(
-          Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));
+      verify(Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));
       verify(Mocks.mockNext.next(action));
     });
   });
@@ -539,9 +530,7 @@ void main() {
       verify(Mocks.mockNext.next(action));
     });
 
-    test(
-        'when all rounds played resets the last played cards in game and ends turn',
-        () {
+    test('when all rounds played resets the last played cards in game and ends turn', () {
       List<CartRound> cardRounds = List();
 
       for (int i = 0; i <= 7; i++) {
@@ -554,8 +543,7 @@ void main() {
 
       expect(cardRounds.length, 8);
 
-      GameContext gameContext = TestFactory.gameContext
-        ..lastTurn.cardRounds = cardRounds;
+      GameContext gameContext = TestFactory.gameContext..lastTurn.cardRounds = cardRounds;
       var action = EndCardRoundAction(gameContext);
 
       endCardRound(Mocks.store, action, Mocks.next);

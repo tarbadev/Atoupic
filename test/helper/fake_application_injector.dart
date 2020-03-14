@@ -11,6 +11,7 @@ void setupDependencyInjectorForTest() {
   container.registerInstance(Mocks.cardService);
   container.registerInstance(Mocks.playerService);
   container.registerInstance(Mocks.gameService);
+  container.registerInstance(Mocks.aiService);
   container.registerInstance(Mocks.gameContextRepository);
 
   when(Mocks.atoupicGame.widget).thenReturn(Scaffold());

@@ -2,6 +2,7 @@ import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/service/ai_service.dart';
 import 'package:atoupic/application/domain/service/card_service.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:atoupic/application/domain/service/player_service.dart';
@@ -20,6 +21,7 @@ class MockCardService extends Mock implements CardService {}
 class MockPlayerService extends Mock implements PlayerService {}
 
 class MockGameService extends Mock implements GameService {}
+class MockAiService extends Mock implements AiService {}
 
 class MockGameContextRepository extends Mock implements GameContextRepository {}
 
@@ -42,6 +44,7 @@ class Mocks {
   static final CardService cardService = MockCardService();
   static final PlayerService playerService = MockPlayerService();
   static final GameService gameService = MockGameService();
+  static final AiService aiService = MockAiService();
   static final Store<ApplicationState> store = MockStore();
   static final GameContextRepository gameContextRepository =
       MockGameContextRepository();
