@@ -77,5 +77,23 @@ void main() {
         });
       });
     });
+
+    group('when first card to play', () {
+      group('when has card that can win the round', () {
+        test('returns highest card', () {
+          var cards = [
+            Card(CardColor.Heart, CardHead.Eight),
+            Card(CardColor.Heart, CardHead.Queen),
+            Card(CardColor.Heart, CardHead.Ace),
+          ];
+          var turn = Turn(1, firstPlayer)
+            ..cardRounds = [
+              CartRound(firstPlayer)
+            ];
+
+          expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.Ace));
+        });
+      });
+    });
   });
 }

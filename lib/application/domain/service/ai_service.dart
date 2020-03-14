@@ -11,16 +11,19 @@ class AiService {
 
   Card chooseCard(List<Card> cards, Turn turn, bool isVertical) {
     var lastCardRound = turn.lastCardRound;
-    var cardRoundWinner = turn.getCardRoundWinner(lastCardRound);
     var highestCardByColor = _getHighestCardByColor(turn);
-
     var winningCards = cards.where((card) => highestCardByColor.values.contains(card));
     if (winningCards.isEmpty) {
-      var isPartnerWinning = cardRoundWinner.key.isVertical == isVertical;
-      if (isPartnerWinning) {
-        return _getBestCard(cards, cardRoundWinner.value.color == turn.trumpColor);
+      if (lastCardRound.playedCards.isEmpty) {
       } else {
-        return cards.reduce((card1, card2) => card1.head.order < card2.head.order ? card1 : card2);
+        var cardRoundWinner = turn.getCardRoundWinner(lastCardRound);
+        var isPartnerWinning = cardRoundWinner.key.isVertical == isVertical;
+        if (isPartnerWinning) {
+          return _getBestCard(cards, cardRoundWinner.value.color == turn.trumpColor);
+        } else {
+          return cards
+              .reduce((card1, card2) => card1.head.order < card2.head.order ? card1 : card2);
+        }
       }
     } else {
       return winningCards.first;
