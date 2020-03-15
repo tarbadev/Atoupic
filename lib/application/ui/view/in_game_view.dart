@@ -138,7 +138,7 @@ class _InGameViewModel {
 
     return _InGameViewModel(
       store.state.showTakeOrPassDialog,
-      store.state.showTakeOrPassDialog && currentTurn.round == 2,
+      currentTurn.round == 2,
       colorChoicesWidget,
       currentTurn.number,
       currentTurn.card,
