@@ -8,3 +8,6 @@ https://flutter.dev/docs/get-started/install
 
 ## Build Dependency Injection
 `flutter packages pub run build_runner build`
+
+## Update application icon
+`flutter pub run flutter_launcher_icons:main`

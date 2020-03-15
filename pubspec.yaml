@@ -22,6 +22,7 @@ dev_dependencies:
   mockito: ^4.1.1
   build_runner: ^1.7.2
   kiwi_generator: ^0.4.0
+  flutter_launcher_icons: ^0.7.3
 
 flutter:
   uses-material-design: true
@@ -59,3 +60,8 @@ flutter:
     - assets/images/cards/spades/K.png
     - assets/images/cards/spades/Q.png
     - assets/images/cards/BackFace.png
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/icon.png"
