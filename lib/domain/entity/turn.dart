@@ -21,11 +21,11 @@ class Turn extends Equatable {
 
   @override
   List<Object> get props =>
-      [number, card, firstPlayer, playerDecisions, round, cardRounds];
+      [number, card, firstPlayer, playerDecisions, round, cardRounds, trumpColor, turnResult];
 
   @override
   String toString() {
-    return 'Turn{number: $number, firstPlayer: $firstPlayer, card: $card, playerDecisions: $playerDecisions, cardRounds: $cardRounds, round: $round}';
+    return 'Turn{number: $number, firstPlayer: $firstPlayer, card: $card, playerDecisions: $playerDecisions, cardRounds: $cardRounds, round: $round, trumpColor: $trumpColor, turnResult: $turnResult}';
   }
 
   void calculatePoints(List<Player> players) {

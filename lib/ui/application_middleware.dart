@@ -53,28 +53,18 @@ void startTurn(
 ) {
   final container = Container();
   final AtoupicGame atoupicGame = container.resolve();
-  final CardService cardService = container<CardService>()..initializeCards();
   final GameService gameService = container<GameService>();
-
-  GameContext gameContext =
-      action.turnAlreadyCreated ? gameService.read() : gameService.read().nextTurn();
 
   atoupicGame.resetPlayersPassed();
   atoupicGame.resetTrumpColor();
   atoupicGame.resetPlayersCards();
 
-  gameContext.players.forEach((player) => player.cards = cardService.distributeCards(5));
-  gameContext.players.firstWhere((player) => player.isRealPlayer).sortCards();
+  GameContext gameContext = gameService.startTurn(action.turnAlreadyCreated);
 
   gameContext.players
       .forEach((player) => atoupicGame.addPlayerCards(player.cards, player.position));
 
-  final card = cardService.distributeCards(1).first;
-
-  gameContext.lastTurn.card = card;
-
   store.dispatch(SetCurrentTurnAction(gameContext.lastTurn));
-  gameService.save(gameContext);
   store.dispatch(TakeOrPassDecisionAction(gameContext.nextPlayer()));
 
   next(action);

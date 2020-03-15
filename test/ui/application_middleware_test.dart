@@ -1,8 +1,8 @@
-import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/cart_round.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_middleware.dart';
@@ -19,6 +19,8 @@ void main() {
 
   setUp(() {
     reset(Mocks.store);
+    reset(Mocks.mockNext);
+    reset(Mocks.aiService);
     reset(Mocks.gameService);
     reset(Mocks.atoupicGame);
     reset(Mocks.cardService);
@@ -52,134 +54,35 @@ void main() {
   });
 
   group('startTurn', () {
-    test('gets one card and dispatch a TakeOrPassDecision with the player', () {
+    test('resets game, gets new context from gameService and dispatches current turn and TakeOrPassDecision', () {
       var card = Card(CardColor.Club, CardHead.Ace);
       var firstPlayer = TestFactory.computerPlayer;
       List<Player> players = [
         Player(Position.Left),
         firstPlayer,
         Player(Position.Right),
-        TestFactory.realPlayer,
+        TestFactory.realPlayerWithCards([card]),
       ];
-      var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
-      var updatedGameContext = GameContext(players, [Turn(1, firstPlayer)..card = card]);
+      var gameContext = GameContext(players, [Turn(1, firstPlayer)..card = card]);
       var takeOrPassAction = StartTurnAction(turnAlreadyCreated: true);
 
-      when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
+      when(Mocks.gameService.startTurn(any)).thenReturn(gameContext);
 
       startTurn(Mocks.store, takeOrPassAction, Mocks.next);
 
       verifyInOrder([
-        Mocks.cardService.initializeCards(),
-        Mocks.atoupicGame.addPlayerCards([card], Position.Left),
-        Mocks.atoupicGame.addPlayerCards([card], Position.Top),
-        Mocks.atoupicGame.addPlayerCards([card], Position.Right),
+        Mocks.atoupicGame.resetPlayersPassed(),
+        Mocks.atoupicGame.resetTrumpColor(),
+        Mocks.atoupicGame.resetPlayersCards(),
+        Mocks.gameService.startTurn(true),
+        Mocks.atoupicGame.addPlayerCards(null, Position.Left),
+        Mocks.atoupicGame.addPlayerCards(null, Position.Top),
+        Mocks.atoupicGame.addPlayerCards(null, Position.Right),
         Mocks.atoupicGame.addPlayerCards([card], Position.Bottom),
-        Mocks.cardService.distributeCards(1),
-        Mocks.gameService.save(updatedGameContext),
+        Mocks.store.dispatch(SetCurrentTurnAction(gameContext.lastTurn)),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.mockNext.next(takeOrPassAction),
       ]);
-    });
-
-    test('distributes 5 cards to each players before getting one for the turn', () {
-      var card = Card(CardColor.Club, CardHead.Ace);
-      var firstPlayer = TestFactory.computerPlayer;
-      Player mockPlayer = MockPlayer();
-      List<Player> players = [
-        mockPlayer,
-        firstPlayer,
-        TestFactory.realPlayer,
-        Player(Position.Right),
-      ];
-      var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
-      var action = StartTurnAction();
-
-      when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(mockPlayer.isRealPlayer).thenReturn(false);
-      when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
-
-      startTurn(Mocks.store, action, Mocks.next);
-
-      verifyInOrder([
-        Mocks.cardService.distributeCards(5),
-        mockPlayer.cards = [card],
-        Mocks.cardService.distributeCards(5),
-        Mocks.cardService.distributeCards(5),
-        Mocks.cardService.distributeCards(5),
-        Mocks.cardService.distributeCards(1),
-        Mocks.gameService.save(gameContext),
-      ]);
-    });
-
-    test('orders the cards of the real player', () {
-      Player mockPlayer = MockPlayer();
-      List<Player> players = [
-        mockPlayer,
-      ];
-      var gameContext = GameContext(players, [Turn(1, mockPlayer)]);
-      var takeOrPassAction = StartTurnAction();
-
-      when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(Mocks.cardService.distributeCards(any))
-          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
-      when(mockPlayer.isRealPlayer).thenReturn(true);
-
-      startTurn(Mocks.store, takeOrPassAction, Mocks.next);
-
-      verifyInOrder([
-        mockPlayer.sortCards(),
-      ]);
-    });
-
-    test('create next turn and resets the game', () {
-      Player mockPlayer = MockPlayer();
-      GameContext gameContext = MockGameContext();
-      List<Player> players = [
-        mockPlayer,
-      ];
-      var currentTurn = Turn(1, mockPlayer);
-      var newGameContext = GameContext(players, [currentTurn]);
-      var takeOrPassAction = StartTurnAction();
-
-      when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(Mocks.cardService.distributeCards(any))
-          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
-      when(mockPlayer.isRealPlayer).thenReturn(true);
-      when(gameContext.players).thenReturn(players);
-      when(gameContext.nextTurn()).thenReturn(newGameContext);
-
-      startTurn(Mocks.store, takeOrPassAction, Mocks.next);
-
-      verify(Mocks.atoupicGame.resetPlayersPassed());
-      verify(Mocks.atoupicGame.resetPlayersCards());
-      verify(Mocks.atoupicGame.resetTrumpColor());
-      verify(Mocks.store.dispatch(SetCurrentTurnAction(currentTurn)));
-      verify(gameContext.nextTurn());
-    });
-
-    test('when turn already created does not call nextTurn()', () {
-      Player mockPlayer = MockPlayer();
-      GameContext gameContext = MockGameContext();
-      List<Player> players = [
-        mockPlayer,
-      ];
-      var lastTurn = Turn(1, mockPlayer);
-      var takeOrPassAction = StartTurnAction(turnAlreadyCreated: true);
-
-      when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(Mocks.cardService.distributeCards(any))
-          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
-      when(mockPlayer.isRealPlayer).thenReturn(true);
-      when(gameContext.players).thenReturn(players);
-      when(gameContext.lastTurn).thenReturn(lastTurn);
-
-      startTurn(Mocks.store, takeOrPassAction, Mocks.next);
-
-      verify(Mocks.atoupicGame.resetPlayersCards());
-      verify(Mocks.store.dispatch(SetCurrentTurnAction(lastTurn)));
-      verifyNever(gameContext.nextTurn());
     });
   });
 
@@ -331,6 +234,7 @@ void main() {
       var updatedGameContext = GameContext(updatedPlayers, [
         Turn(1, firstPlayer)
           ..card = card
+          ..trumpColor = card.color
           ..playerDecisions[realPlayer.position] = Decision.Take
       ]);
       var action = TakeDecisionAction(realPlayer, CardColor.Club);
