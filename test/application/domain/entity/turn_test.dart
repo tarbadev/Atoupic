@@ -1,7 +1,8 @@
-import 'package:atoupic/application/domain/entity/Turn.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/cart_round.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/entity/turn_result.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 

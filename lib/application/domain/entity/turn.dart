@@ -1,6 +1,7 @@
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/cart_round.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/entity/turn_result.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:equatable/equatable.dart';
 
@@ -111,34 +112,5 @@ class Turn extends Equatable {
                   : entry2);
     }
     return winner;
-  }
-}
-
-enum Result { Success, Failure }
-
-class TurnResult extends Equatable {
-  final Player taker;
-  final int horizontalCardPoints;
-  final int verticalCardPoints;
-  final int horizontalScore;
-  final int verticalScore;
-  final Result result;
-
-  TurnResult(this.taker, this.horizontalCardPoints, this.verticalCardPoints,
-      this.result, this.horizontalScore, this.verticalScore);
-
-  @override
-  List<Object> get props => [
-        this.taker,
-        this.horizontalCardPoints,
-        this.verticalCardPoints,
-        this.result,
-        this.horizontalScore,
-        this.verticalScore,
-      ];
-
-  @override
-  String toString() {
-    return 'TurnResult{taker: $taker, horizontalCardPoints: $horizontalCardPoints, verticalCardPoints: $verticalCardPoints, horizontalScore: $horizontalScore, verticalScore: $verticalScore, result: $result}';
   }
 }

@@ -13,6 +13,7 @@ class InGameViewTester extends BaseViewTester {
   TakeOrPassDialogElement get takeOrPass => TakeOrPassDialogElement(tester);
 
   TurnResultElement get turnResult => TurnResultElement(tester);
+  ScoreElement get score => ScoreElement(tester);
 
   String get turn => getTextByKey('InGame__TurnCounter');
 }
@@ -61,4 +62,14 @@ class TurnResultElement extends BaseViewTester {
     return Position.values
         .firstWhere((position) => takerPosition.contains(position.toString()));
   }
+}
+
+class ScoreElement extends BaseViewTester {
+  ScoreElement(tester) : super(tester);
+
+  bool get isVisible => widgetExists('Score');
+
+  int get us => int.parse(getTextByKey('Score__Us'));
+
+  int get them => int.parse(getTextByKey('Score__Them'));
 }

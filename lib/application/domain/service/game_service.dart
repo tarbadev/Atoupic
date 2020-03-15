@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:atoupic/application/domain/entity/Turn.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/player_service.dart';

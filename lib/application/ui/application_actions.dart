@@ -1,7 +1,8 @@
-import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/entity/turn_result.dart';
+import 'package:atoupic/application/ui/entity/score_display.dart';
 import 'package:equatable/equatable.dart';
 
 import 'atoupic_app.dart';
@@ -184,4 +185,13 @@ class SetTurnResultAction extends Equatable {
   String toString() {
     return 'SetTurnResultAction{turnResult: $turnResult}';
   }
+}
+
+class SetScoreAction extends Equatable {
+  final ScoreDisplay newScore;
+
+  SetScoreAction(this.newScore);
+
+  @override
+  List<Object> get props => [newScore];
 }

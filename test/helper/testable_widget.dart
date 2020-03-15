@@ -1,6 +1,7 @@
-import 'package:atoupic/application/domain/entity/Turn.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart' as AtoupicCard;
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/entity/turn_result.dart';
 import 'package:atoupic/application/ui/application_state.dart';
 import 'package:atoupic/application/ui/atoupic_app.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,8 @@ Widget buildTestableWidget(
   Player realPlayer,
   Turn lastTurn,
   TurnResult turnResult,
+  int usScore,
+  int themScore,
 }) {
   Mocks.setupMockStore(
     showTakeOrPassDialog: showTakeOrPassDialog,
@@ -24,6 +27,8 @@ Widget buildTestableWidget(
     realPlayer: realPlayer,
     lastTurn: lastTurn,
     turnResult: turnResult,
+    usScore: usScore,
+    themScore: themScore,
   );
 
   return MediaQuery(

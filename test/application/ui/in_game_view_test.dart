@@ -1,4 +1,4 @@
-import 'package:atoupic/application/domain/entity/Turn.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
@@ -16,8 +16,7 @@ void main() {
   setupDependencyInjectorForTest();
 
   group('InGameView', () {
-    testWidgets('displays dialog if showTakeOrPassDialog is true',
-        (WidgetTester tester) async {
+    testWidgets('displays dialog if showTakeOrPassDialog is true', (WidgetTester tester) async {
       var inGameView = InGameView();
 
       await tester.pumpWidget(buildTestableWidget(
@@ -31,8 +30,7 @@ void main() {
       expect(inGameViewTester.takeOrPass.isVisible, isTrue);
     });
 
-    testWidgets(
-        'displays round 2 dialog if showTakeOrPassDialog is true and round = 2',
+    testWidgets('displays round 2 dialog if showTakeOrPassDialog is true and round = 2',
         (WidgetTester tester) async {
       var inGameView = InGameView();
 
@@ -63,8 +61,7 @@ void main() {
       expect(inGameViewTester.turn, 'Turn 12');
     });
 
-    testWidgets('dispatches a PassAction on pass tap',
-        (WidgetTester tester) async {
+    testWidgets('dispatches a PassAction on pass tap', (WidgetTester tester) async {
       var inGameView = InGameView();
 
       await tester.pumpWidget(buildTestableWidget(
@@ -81,8 +78,7 @@ void main() {
       verify(Mocks.store.dispatch(PassDecisionAction(TestFactory.realPlayer)));
     });
 
-    testWidgets('dispatches a TakeAction on take tap',
-        (WidgetTester tester) async {
+    testWidgets('dispatches a TakeAction on take tap', (WidgetTester tester) async {
       var inGameView = InGameView();
 
       await tester.pumpWidget(buildTestableWidget(
@@ -96,12 +92,10 @@ void main() {
       var inGameViewTester = InGameViewTester(tester);
       await inGameViewTester.takeOrPass.tapOnTake();
       verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
-      verify(Mocks.store.dispatch(
-          TakeDecisionAction(TestFactory.realPlayer, CardColor.Club)));
+      verify(Mocks.store.dispatch(TakeDecisionAction(TestFactory.realPlayer, CardColor.Club)));
     });
 
-    testWidgets('dispatches a TakeAction on round 2 take tap',
-        (WidgetTester tester) async {
+    testWidgets('dispatches a TakeAction on round 2 take tap', (WidgetTester tester) async {
       var inGameView = InGameView();
 
       await tester.pumpWidget(buildTestableWidget(
@@ -117,12 +111,10 @@ void main() {
       await inGameViewTester.takeOrPass.tapOnColorChoice(CardColor.Heart);
       await inGameViewTester.takeOrPass.tapOnTake();
       verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
-      verify(Mocks.store.dispatch(
-          TakeDecisionAction(TestFactory.realPlayer, CardColor.Heart)));
+      verify(Mocks.store.dispatch(TakeDecisionAction(TestFactory.realPlayer, CardColor.Heart)));
     });
 
-    testWidgets('displays dialog when turnResult is not null',
-        (WidgetTester tester) async {
+    testWidgets('displays dialog when turnResult is not null', (WidgetTester tester) async {
       var inGameView = InGameView();
 
       await tester.pumpWidget(buildTestableWidget(
@@ -156,6 +148,22 @@ void main() {
 
       verify(Mocks.store.dispatch(SetTurnResultAction(null)));
       verify(Mocks.store.dispatch(StartTurnAction(Mocks.gameContext)));
+    });
+
+    testWidgets('displays current score', (WidgetTester tester) async {
+      var inGameView = InGameView();
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        usScore: 102,
+        themScore: 430,
+      ));
+      await tester.pump();
+
+      var inGameViewTester = InGameViewTester(tester);
+      expect(inGameViewTester.score.isVisible, isTrue);
+      expect(inGameViewTester.score.them, 430);
+      expect(inGameViewTester.score.us, 102);
     });
   });
 }

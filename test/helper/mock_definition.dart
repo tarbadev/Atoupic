@@ -1,7 +1,8 @@
-import 'package:atoupic/application/domain/entity/Turn.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/entity/turn_result.dart';
 import 'package:atoupic/application/domain/service/ai_service.dart';
 import 'package:atoupic/application/domain/service/card_service.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
@@ -9,6 +10,7 @@ import 'package:atoupic/application/domain/service/player_service.dart';
 import 'package:atoupic/application/repository/game_context_repository.dart';
 import 'package:atoupic/application/ui/application_state.dart';
 import 'package:atoupic/application/ui/atoupic_app.dart';
+import 'package:atoupic/application/ui/entity/score_display.dart';
 import 'package:atoupic/game/atoupic_game.dart';
 import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
@@ -61,6 +63,8 @@ class Mocks {
     Player realPlayer,
     Turn lastTurn,
     TurnResult turnResult,
+    int usScore = 42,
+    int themScore = 120,
   }) {
     reset(store);
     reset(applicationState);
@@ -78,5 +82,6 @@ class Mocks {
     when(applicationState.realPlayer).thenReturn(realPlayer);
     when(applicationState.gameContext).thenReturn(gameContext);
     when(applicationState.turnResult).thenReturn(turnResult);
+    when(applicationState.score).thenReturn(ScoreDisplay(usScore, themScore));
   }
 }

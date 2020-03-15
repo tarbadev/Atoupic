@@ -1,4 +1,4 @@
-import 'package:atoupic/application/domain/entity/Turn.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/service/card_service.dart';

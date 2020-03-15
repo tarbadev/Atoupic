@@ -1,9 +1,13 @@
-import 'package:atoupic/application/domain/entity/Turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart' as AtoupicCard;
 import 'package:atoupic/application/domain/entity/card.dart';
-import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/application_state.dart';
+import 'package:atoupic/application/ui/component/color_choices.dart';
+import 'package:atoupic/application/ui/component/score.dart';
+import 'package:atoupic/application/ui/component/take_or_pass_dialog.dart';
+import 'package:atoupic/application/ui/component/turn_result_dialog.dart';
+import 'package:atoupic/application/ui/entity/score_display.dart';
+import 'package:atoupic/application/ui/entity/turn_result_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -15,20 +19,52 @@ class InGameView extends StatelessWidget {
     return StoreConnector<ApplicationState, _InGameViewModel>(
       converter: (Store<ApplicationState> store) => _InGameViewModel.create(store),
       builder: (BuildContext context, _InGameViewModel viewModel) {
-        if (viewModel.showDialog) {
+        if (viewModel.showTakeOrPassDialog) {
           displayTakeOrPassDialog(context, viewModel);
         }
         if (viewModel.turnResultDisplay != null) {
-          displayTurnResultDialog(context, viewModel.turnResultDisplay, viewModel.onTurnResultNext);
+          SchedulerBinding.instance.addPostFrameCallback(
+            (_) => showDialog(
+              barrierDismissible: false,
+              context: context,
+              child: TurnResultDialog(
+                turnResultDisplay: viewModel.turnResultDisplay,
+                onNextPressed: viewModel.onTurnResultNext,
+              ),
+            ),
+          );
         }
         return Container(
           child: Scaffold(
             key: Key('InGame__Container'),
             backgroundColor: Colors.transparent,
-            body: Text(
-              'Turn ${viewModel.turnCounter}',
-              key: Key('InGame__TurnCounter'),
-              style: TextStyle(fontSize: 18.0, color: Colors.white),
+            body: Container(
+              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Flexible(
+                    fit: FlexFit.loose,
+                    flex: 1,
+                    child: Text(
+                      'Turn ${viewModel.turnCounter}',
+                      key: Key('InGame__TurnCounter'),
+                      style: TextStyle(fontSize: 18.0, color: Colors.white),
+                    ),
+                  ),
+                  Flexible(
+                    fit: FlexFit.tight,
+                    flex: 6,
+                    child: Divider(),
+                  ),
+                  Flexible(
+                    fit: FlexFit.loose,
+                    flex: 2,
+                    child: Score(usScore: viewModel.score.us, themScore: viewModel.score.them),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -37,37 +73,6 @@ class InGameView extends StatelessWidget {
   }
 
   void displayTakeOrPassDialog(BuildContext context, _InGameViewModel viewModel) {
-    var screenSize = MediaQuery.of(context).size;
-    var tileSize = screenSize.width / 9;
-    var cardWidth = tileSize * 1.5;
-    var cardHeight = tileSize * 1.5 * 1.39444;
-    var card = viewModel.takeOrPassCard;
-    var container;
-    if (viewModel.showRound2Dialog) {
-      container = Container(
-        child: Column(
-          children: [
-            Image.asset(
-              'assets/images/cards/${card.color.folder}/${card.head.fileName}',
-              fit: BoxFit.scaleDown,
-              width: cardWidth,
-              height: cardHeight,
-            ),
-            viewModel.colorChoices,
-          ],
-        ),
-      );
-    } else {
-      container = Container(
-        height: cardHeight,
-        width: cardWidth,
-        child: Image.asset(
-          'assets/images/cards/${card.color.folder}/${card.head.fileName}',
-          fit: BoxFit.scaleDown,
-        ),
-      );
-    }
-
     SchedulerBinding.instance.addPostFrameCallback(
       (_) => showGeneralDialog(
           pageBuilder: (
@@ -75,45 +80,12 @@ class InGameView extends StatelessWidget {
             Animation<double> animation,
             Animation<double> secondaryAnimation,
           ) =>
-              Container(
-                child: Column(
-                  key: Key('TakeOrPassDialog'),
-                  children: <Widget>[
-                    container,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        RaisedButton(
-                          key: Key('TakeOrPassDialog__TakeButton'),
-                          color: Color(0xff27ae60),
-                          onPressed: () {
-                            viewModel.onTakeTap();
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                            'Take!',
-                            style: TextStyle(fontSize: 18.0, color: Colors.white),
-                          ),
-                        ),
-                        SizedBox(width: 20),
-                        RaisedButton(
-                          key: Key('TakeOrPassDialog__PassButton'),
-                          color: Color(0xffc0392b),
-                          onPressed: () {
-                            viewModel.onPassTap();
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                            'Pass!',
-                            style: TextStyle(fontSize: 18.0, color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              TakeOrPassDialog(
+                card: viewModel.takeOrPassCard,
+                displayRound2: viewModel.showRound2Dialog,
+                colorChoices: viewModel.colorChoices,
+                onTakeTap: viewModel.onTakeTap,
+                onPassTap: viewModel.onPassTap,
               ),
           context: context,
           barrierDismissible: false,
@@ -121,73 +93,10 @@ class InGameView extends StatelessWidget {
           transitionDuration: const Duration(milliseconds: 150)),
     );
   }
-
-  void displayTurnResultDialog(
-      BuildContext context, TurnResultDisplay turnResultDisplay, Function onNextPressed) async {
-    SchedulerBinding.instance.addPostFrameCallback(
-      (_) => showDialog(
-        barrierDismissible: false,
-        context: context,
-        child: AlertDialog(
-          key: Key('TurnResultDialog'),
-          title: Text(
-            turnResultDisplay.result,
-            key: Key('TurnResultDialog__Result'),
-            style: TextStyle(fontSize: 22.0),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Taker: ${turnResultDisplay.taker}',
-                key: Key('TurnResultDialog__Taker'),
-                style: TextStyle(fontSize: 22.0),
-              ),
-              Divider(
-                color: Colors.transparent,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    turnResultDisplay.takerScore.toString(),
-                    key: Key('TurnResultDialog__TakerScore'),
-                    style: TextStyle(fontSize: 20.0),
-                  ),
-                  Container(
-                      height: 20,
-                      child: VerticalDivider(
-                        color: Colors.grey,
-                        thickness: 2,
-                      )),
-                  Text(
-                    turnResultDisplay.opponentScore.toString(),
-                    key: Key('TurnResultDialog__OpponentScore'),
-                    style: TextStyle(fontSize: 20.0),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            FlatButton(
-              key: Key('TurnResultDialog__NextButton'),
-              onPressed: () {
-                Navigator.pop(context);
-                onNextPressed();
-              },
-              child: Text('Next'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _InGameViewModel {
-  final bool showDialog;
+  final bool showTakeOrPassDialog;
   final bool showRound2Dialog;
   final ColorChoices colorChoices;
   final int turnCounter;
@@ -196,9 +105,10 @@ class _InGameViewModel {
   final Function onTakeTap;
   final TurnResultDisplay turnResultDisplay;
   final Function onTurnResultNext;
+  final ScoreDisplay score;
 
   _InGameViewModel(
-    this.showDialog,
+    this.showTakeOrPassDialog,
     this.showRound2Dialog,
     this.colorChoices,
     this.turnCounter,
@@ -207,6 +117,7 @@ class _InGameViewModel {
     this.onTakeTap,
     this.turnResultDisplay,
     this.onTurnResultNext,
+    this.score,
   );
 
   factory _InGameViewModel.create(Store<ApplicationState> store) {
@@ -214,7 +125,7 @@ class _InGameViewModel {
     final List<CardColor> colorChoices =
         lastTurn.card == null ? [] : AtoupicCard.CardColor.values.toList()
           ..removeWhere((cardColor) => lastTurn.card.color == cardColor);
-    var colorChoicesWidget = ColorChoices(colorChoices);
+    var colorChoicesWidget = ColorChoices.fromCardColorList(colorChoices);
 
     _onTake() {
       var cardColor = lastTurn.card.color;
@@ -246,84 +157,7 @@ class _InGameViewModel {
         store.dispatch(SetTurnResultAction(null));
         store.dispatch(StartTurnAction(store.state.gameContext));
       },
-    );
-  }
-}
-
-class TurnResultDisplay {
-  final String taker;
-  final int takerScore;
-  final int opponentScore;
-  final String result;
-
-  TurnResultDisplay(this.taker, this.takerScore, this.opponentScore, this.result);
-
-  static TurnResultDisplay fromTurnResult(TurnResult turnResult) {
-    Position takerPosition = turnResult.taker.position;
-    var takerScore =
-        takerPosition.isVertical ? turnResult.verticalScore : turnResult.horizontalScore;
-    var opponentScore =
-        takerPosition.isVertical ? turnResult.horizontalScore : turnResult.verticalScore;
-
-    return TurnResultDisplay(
-      takerPosition.toString(),
-      takerScore,
-      opponentScore,
-      turnResult.result == Result.Success ? 'Contract fulfilled' : 'Contract failed',
-    );
-  }
-}
-
-class ColorChoices extends StatefulWidget {
-  final List<AtoupicCard.CardColor> colorChoices;
-  _ColorChoicesState _choices;
-
-  AtoupicCard.CardColor get selectedColor => _choices.selectedColor;
-
-  ColorChoices(this.colorChoices) {
-    _choices = new _ColorChoicesState(colorChoices);
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    return _choices;
-  }
-}
-
-class _ColorChoicesState extends State<ColorChoices> {
-  final List<AtoupicCard.CardColor> colorChoices;
-  AtoupicCard.CardColor selectedColor;
-
-  _ColorChoicesState(this.colorChoices);
-
-  onColorChoiceTap(AtoupicCard.CardColor cardColor) {
-    setState(() {
-      selectedColor = cardColor;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      key: Key('TakeOrPassDialog__ColorChoices'),
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: colorChoices
-          .map((colorChoice) => Container(
-                margin: EdgeInsets.symmetric(horizontal: 5),
-                child: RaisedButton(
-                  color: colorChoice == selectedColor ? Colors.white : Colors.grey,
-                  onPressed: () => onColorChoiceTap(colorChoice),
-                  child: Text(colorChoice.symbol,
-                      style: TextStyle(
-                        fontSize: 30.0,
-                        color: colorChoice == AtoupicCard.CardColor.Diamond ||
-                                colorChoice == AtoupicCard.CardColor.Heart
-                            ? Colors.red
-                            : Colors.black,
-                      )),
-                ),
-              ))
-          .toList(),
+      store.state.score,
     );
   }
 }
