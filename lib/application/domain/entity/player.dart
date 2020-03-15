@@ -27,19 +27,19 @@ class Player extends Equatable {
   }
 
   void sortCards({CardColor trumpColor}) {
-    var cardsByColor = groupBy(cards, (Card card) => card.color);
-    cardsByColor.entries
-        .forEach((entry) => entry.value.sort(entry.key == trumpColor ? compareTrumpCards : compareCards));
-    cards = new List();
-    CardColor.values.forEach((color) {
-      if (cardsByColor.containsKey(color)) {
-        cards.addAll(cardsByColor[color]);
-      }
-    });
+    cards.sort((card1, card2) => _compareCards(card1, card2, trumpColor));
   }
 
-  int compareCards(Card card1, Card card2) {
-    return card2.head.order.compareTo(card1.head.order);
+  int _compareCards(Card card1, Card card2, CardColor trumpColor) {
+    var order1Value = _getComparableOrder(card1, card1.color == trumpColor);
+    var order2Value = _getComparableOrder(card2, card2.color == trumpColor);
+    return order2Value.compareTo(order1Value);
+  }
+
+  int _getComparableOrder(Card card, bool isTrumpColor) {
+    var colorValue = card.color.index * 10;
+    var headValue = isTrumpColor ? card.head.trumpOrder : card.head.order;
+    return colorValue + headValue;
   }
 
   int compareTrumpCards(Card card1, Card card2) {

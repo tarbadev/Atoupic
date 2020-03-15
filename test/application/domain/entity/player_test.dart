@@ -30,14 +30,6 @@ void main() {
     group('sortCards', () {
       test('when trump color', () {
         var cards = [
-          Card(CardColor.Spade, CardHead.Jack),
-          Card(CardColor.Spade, CardHead.Nine),
-          Card(CardColor.Spade, CardHead.Ace),
-          Card(CardColor.Spade, CardHead.Ten),
-          Card(CardColor.Spade, CardHead.King),
-          Card(CardColor.Spade, CardHead.Queen),
-          Card(CardColor.Spade, CardHead.Eight),
-          Card(CardColor.Spade, CardHead.Seven),
           Card(CardColor.Heart, CardHead.Ace),
           Card(CardColor.Heart, CardHead.Ten),
           Card(CardColor.Heart, CardHead.King),
@@ -46,6 +38,14 @@ void main() {
           Card(CardColor.Heart, CardHead.Nine),
           Card(CardColor.Heart, CardHead.Eight),
           Card(CardColor.Heart, CardHead.Seven),
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.Nine),
+          Card(CardColor.Spade, CardHead.Ace),
+          Card(CardColor.Spade, CardHead.Ten),
+          Card(CardColor.Spade, CardHead.King),
+          Card(CardColor.Spade, CardHead.Queen),
+          Card(CardColor.Spade, CardHead.Eight),
+          Card(CardColor.Spade, CardHead.Seven),
         ];
         var player = Player(Position.Right)
           ..cards = (cards.toList()
