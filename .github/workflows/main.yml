@@ -1,0 +1,31 @@
+name: Atoupic Debug
+on: push
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '1.12.13+hotfix.5'
+      - run: flutter test
+
+  build-debug:
+    name: Build - Debug
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '1.12.13+hotfix.5'
+      - name: "Build - Android - Debug"
+        run: flutter build apk --debug
+      - name: "Build - iOS - Debug"
+        run: flutter build ios --debug --no-codesign
+      - name: Upload APK
+        uses: actions/upload-artifact@v1
+        with:
+          name: app
+          path: build/app/outputs/apk/debug/app-debug.apk
+
