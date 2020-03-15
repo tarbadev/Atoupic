@@ -19,6 +19,9 @@ void main() {
 
   setUp(() {
     reset(Mocks.store);
+    reset(Mocks.gameService);
+    reset(Mocks.atoupicGame);
+    reset(Mocks.cardService);
   });
 
   group('startSoloGame', () {
@@ -42,7 +45,7 @@ void main() {
         Mocks.atoupicGame.setDomainPlayers(players),
         Mocks.atoupicGame.visible = true,
         Mocks.store.dispatch(SetRealPlayerAction(TestFactory.realPlayer)),
-        Mocks.store.dispatch(StartTurnAction(gameContext)),
+        Mocks.store.dispatch(StartTurnAction(turnAlreadyCreated: true)),
         Mocks.mockNext.next(startSoloGameAction),
       ]);
     });
@@ -60,8 +63,9 @@ void main() {
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
       var updatedGameContext = GameContext(players, [Turn(1, firstPlayer)..card = card]);
-      var takeOrPassAction = StartTurnAction(gameContext, turnAlreadyCreated: true);
+      var takeOrPassAction = StartTurnAction(turnAlreadyCreated: true);
 
+      when(Mocks.gameService.read()).thenReturn(gameContext);
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
 
       startTurn(Mocks.store, takeOrPassAction, Mocks.next);
@@ -73,7 +77,7 @@ void main() {
         Mocks.atoupicGame.addPlayerCards([card], Position.Right),
         Mocks.atoupicGame.addPlayerCards([card], Position.Bottom),
         Mocks.cardService.distributeCards(1),
-        Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
+        Mocks.gameService.save(updatedGameContext),
         Mocks.store.dispatch(SetTurnAction(1)),
         Mocks.store.dispatch(SetTakeOrPassCard(card)),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
@@ -92,8 +96,9 @@ void main() {
         Player(Position.Right),
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
-      var action = StartTurnAction(gameContext);
+      var action = StartTurnAction();
 
+      when(Mocks.gameService.read()).thenReturn(gameContext);
       when(mockPlayer.isRealPlayer).thenReturn(false);
       when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
 
@@ -106,7 +111,7 @@ void main() {
         Mocks.cardService.distributeCards(5),
         Mocks.cardService.distributeCards(5),
         Mocks.cardService.distributeCards(1),
-        Mocks.store.dispatch(SetGameContextAction(gameContext)),
+        Mocks.gameService.save(gameContext),
       ]);
     });
 
@@ -116,8 +121,9 @@ void main() {
         mockPlayer,
       ];
       var gameContext = GameContext(players, [Turn(1, mockPlayer)]);
-      var takeOrPassAction = StartTurnAction(gameContext);
+      var takeOrPassAction = StartTurnAction();
 
+      when(Mocks.gameService.read()).thenReturn(gameContext);
       when(Mocks.cardService.distributeCards(any))
           .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
       when(mockPlayer.isRealPlayer).thenReturn(true);
@@ -135,9 +141,11 @@ void main() {
       List<Player> players = [
         mockPlayer,
       ];
-      var newGameContext = GameContext(players, [Turn(1, mockPlayer)]);
-      var takeOrPassAction = StartTurnAction(gameContext);
+      var currentTurn = Turn(1, mockPlayer);
+      var newGameContext = GameContext(players, [currentTurn]);
+      var takeOrPassAction = StartTurnAction();
 
+      when(Mocks.gameService.read()).thenReturn(gameContext);
       when(Mocks.cardService.distributeCards(any))
           .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
       when(mockPlayer.isRealPlayer).thenReturn(true);
@@ -149,6 +157,7 @@ void main() {
       verify(Mocks.atoupicGame.resetPlayersPassed());
       verify(Mocks.atoupicGame.resetPlayersCards());
       verify(Mocks.atoupicGame.resetTrumpColor());
+      verify(Mocks.store.dispatch(SetCurrentTurnAction(currentTurn)));
       verify(gameContext.nextTurn());
     });
 
@@ -158,17 +167,20 @@ void main() {
       List<Player> players = [
         mockPlayer,
       ];
-      var takeOrPassAction = StartTurnAction(gameContext, turnAlreadyCreated: true);
+      var lastTurn = Turn(1, mockPlayer);
+      var takeOrPassAction = StartTurnAction(turnAlreadyCreated: true);
 
+      when(Mocks.gameService.read()).thenReturn(gameContext);
       when(Mocks.cardService.distributeCards(any))
           .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
       when(mockPlayer.isRealPlayer).thenReturn(true);
       when(gameContext.players).thenReturn(players);
-      when(gameContext.lastTurn).thenReturn(Turn(1, mockPlayer));
+      when(gameContext.lastTurn).thenReturn(lastTurn);
 
       startTurn(Mocks.store, takeOrPassAction, Mocks.next);
 
       verify(Mocks.atoupicGame.resetPlayersCards());
+      verify(Mocks.store.dispatch(SetCurrentTurnAction(lastTurn)));
       verifyNever(gameContext.nextTurn());
     });
   });
@@ -228,7 +240,7 @@ void main() {
         Mocks.atoupicGame.setPlayerPassed(action.player.position),
         Mocks.gameService.read(),
         Mocks.store.dispatch(TakeOrPassDecisionAction(TestFactory.realPlayer)),
-        Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
+        Mocks.gameService.save(updatedGameContext),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -262,7 +274,7 @@ void main() {
         Mocks.gameService.read(),
         Mocks.atoupicGame.resetPlayersPassed(),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
-        Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
+        Mocks.gameService.save(updatedGameContext),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -294,7 +306,7 @@ void main() {
 
       verifyInOrder([
         Mocks.gameService.read(),
-        Mocks.store.dispatch(SetGameContextAction(mockedContext)),
+        Mocks.gameService.save(mockedContext),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -343,7 +355,7 @@ void main() {
         Mocks.cardService.distributeCards(3),
         Mocks.atoupicGame.addPlayerCards([card], Position.Right),
         Mocks.atoupicGame.resetPlayersPassed(),
-        Mocks.store.dispatch(SetGameContextAction(updatedGameContext)),
+        Mocks.gameService.save(updatedGameContext),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -417,7 +429,7 @@ void main() {
 
       startCardRound(Mocks.store, action, Mocks.next);
 
-      verify(Mocks.store.dispatch(SetGameContextAction(updatedContext)));
+      verify(Mocks.gameService.save(updatedContext));
       verify(Mocks.store.dispatch(ChooseCardDecisionAction(updatedContext)));
       verify(Mocks.mockNext.next(action));
     });
@@ -496,7 +508,7 @@ void main() {
           verify(Mocks.atoupicGame.setLastCardPlayed(card, player.position, captureAny))
               .captured
               .single;
-      verify(Mocks.store.dispatch(SetGameContextAction(updatedGameContext)));
+      verify(Mocks.gameService.save(updatedGameContext));
       verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
       callBack();
       verify(Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));
@@ -567,7 +579,7 @@ void main() {
 
       verify(mockTurn.calculatePoints(gameContext.players));
       verify(Mocks.store.dispatch(SetTurnResultAction(turnResult)));
-      verify(Mocks.store.dispatch(SetGameContextAction(gameContext)));
+      verify(Mocks.gameService.save(gameContext));
       verify(Mocks.mockNext.next(action));
     });
   });

@@ -41,7 +41,7 @@ void startSoloGame(
 
   store.dispatch(
       SetRealPlayerAction(gameContext.players.firstWhere((player) => player.isRealPlayer)));
-  store.dispatch(StartTurnAction(gameContext, turnAlreadyCreated: true));
+  store.dispatch(StartTurnAction(turnAlreadyCreated: true));
 
   next(action);
 }
@@ -54,9 +54,10 @@ void startTurn(
   final container = Container();
   final AtoupicGame atoupicGame = container.resolve();
   final CardService cardService = container<CardService>()..initializeCards();
+  final GameService gameService = container<GameService>();
 
   GameContext gameContext =
-      action.turnAlreadyCreated ? action.gameContext : action.gameContext.nextTurn();
+      action.turnAlreadyCreated ? gameService.read() : gameService.read().nextTurn();
 
   atoupicGame.resetPlayersPassed();
   atoupicGame.resetTrumpColor();
@@ -72,7 +73,8 @@ void startTurn(
 
   gameContext.lastTurn.card = card;
 
-  store.dispatch(SetGameContextAction(gameContext));
+  store.dispatch(SetCurrentTurnAction(gameContext.lastTurn));
+  gameService.save(gameContext);
   store.dispatch(SetTurnAction(gameContext.lastTurn.number));
   store.dispatch(SetTakeOrPassCard(card));
   store.dispatch(TakeOrPassDecisionAction(gameContext.nextPlayer()));
@@ -108,7 +110,7 @@ void passDecision(
   var gameContext = gameService.read().setDecision(action.player, Decision.Pass);
   var nextPlayer = gameContext.nextPlayer();
   if (nextPlayer == null && gameContext.lastTurn.round == 2) {
-    store.dispatch(StartTurnAction(gameContext));
+    store.dispatch(StartTurnAction());
   } else {
     if (nextPlayer == null) {
       atoupicGame.resetPlayersPassed();
@@ -119,7 +121,7 @@ void passDecision(
     store.dispatch(TakeOrPassDecisionAction(nextPlayer));
   }
 
-  store.dispatch(SetGameContextAction(gameContext));
+  gameService.save(gameContext);
 
   next(action);
 }
@@ -157,7 +159,7 @@ void takeDecision(
   atoupicGame.resetPlayersPassed();
   atoupicGame.replaceRealPlayersCards(realPlayer.cards);
 
-  store.dispatch(SetGameContextAction(gameContext));
+  gameService.save(gameContext);
   store.dispatch(StartCardRoundAction(gameContext));
 
   next(action);
@@ -168,9 +170,11 @@ void startCardRound(
   StartCardRoundAction action,
   NextDispatcher next,
 ) {
+  final container = Container();
+  final GameService gameService = container<GameService>();
   var newContext = action.context.newCardRound();
 
-  store.dispatch(SetGameContextAction(newContext));
+  gameService.save(newContext);
   store.dispatch(ChooseCardDecisionAction(newContext));
 
   next(action);
@@ -227,7 +231,7 @@ void setCardDecision(
   );
   atoupicGame.realPlayerCanChooseCard(false);
 
-  store.dispatch(SetGameContextAction(gameContext));
+  gameService.save(gameContext);
 
   next(action);
 }
@@ -271,9 +275,12 @@ void endTurn(
   EndTurnAction action,
   NextDispatcher next,
 ) {
+  final container = Container();
+  final GameService gameService = container<GameService>();
   action.context.lastTurn.calculatePoints(action.context.players);
 
-  store.dispatch(SetGameContextAction(action.context));
+  gameService.save(action.context);
+
   store.dispatch(SetTurnResultAction(action.context.lastTurn.turnResult));
 
   next(action);

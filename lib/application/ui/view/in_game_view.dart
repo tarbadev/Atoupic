@@ -121,15 +121,15 @@ class _InGameViewModel {
   );
 
   factory _InGameViewModel.create(Store<ApplicationState> store) {
-    final lastTurn = store.state.gameContext.lastTurn;
+    final currentTurn = store.state.currentTurn;
     final List<CardColor> colorChoices =
-        lastTurn.card == null ? [] : AtoupicCard.CardColor.values.toList()
-          ..removeWhere((cardColor) => lastTurn.card.color == cardColor);
+        currentTurn.card == null ? [] : AtoupicCard.CardColor.values.toList()
+          ..removeWhere((cardColor) => currentTurn.card.color == cardColor);
     var colorChoicesWidget = ColorChoices.fromCardColorList(colorChoices);
 
     _onTake() {
-      var cardColor = lastTurn.card.color;
-      if (lastTurn.round == 2) {
+      var cardColor = currentTurn.card.color;
+      if (currentTurn.round == 2) {
         cardColor = colorChoicesWidget.selectedColor;
       }
       store.dispatch(ShowTakeOrPassDialogAction(false));
@@ -138,10 +138,10 @@ class _InGameViewModel {
 
     return _InGameViewModel(
       store.state.showTakeOrPassDialog,
-      store.state.showTakeOrPassDialog && lastTurn.round == 2,
+      store.state.showTakeOrPassDialog && currentTurn.round == 2,
       colorChoicesWidget,
-      lastTurn.number,
-      lastTurn.card,
+      currentTurn.number,
+      currentTurn.card,
       () {
         store.dispatch(ShowTakeOrPassDialogAction(false));
         store.dispatch(PassDecisionAction(store.state.realPlayer));
@@ -155,7 +155,7 @@ class _InGameViewModel {
           : TurnResultDisplay.fromTurnResult(store.state.turnResult),
       () {
         store.dispatch(SetTurnResultAction(null));
-        store.dispatch(StartTurnAction(store.state.gameContext));
+        store.dispatch(StartTurnAction());
       },
       store.state.score,
     );

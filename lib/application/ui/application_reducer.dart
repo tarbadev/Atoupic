@@ -1,19 +1,17 @@
-import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/turn_result.dart';
-import 'package:atoupic/application/domain/service/game_service.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/application_state.dart';
 import 'package:atoupic/application/ui/atoupic_app.dart';
 import 'package:atoupic/application/ui/entity/score_display.dart';
-import 'package:kiwi/kiwi.dart';
 import 'package:redux/redux.dart';
 
 ApplicationState applicationReducer(ApplicationState state, action) => ApplicationState(
       setShowTakeOrPassDialogReducer(state.showTakeOrPassDialog, action),
       setCurrentViewReducer(state.currentView, action),
       setRealPlayerReducer(state.realPlayer, action),
-      setGameContextReducer(state.gameContext, action),
+      setCurrentTurnReducer(state.currentTurn, action),
       setTurnResultReducer(state.turnResult, action),
       setScoreReducer(state.score, action),
     );
@@ -36,16 +34,6 @@ final Reducer<Player> setRealPlayerReducer = combineReducers([
 
 Player _setRealPlayer(Player player, SetRealPlayerAction action) => action.player;
 
-final Reducer<GameContext> setGameContextReducer = combineReducers([
-  TypedReducer<GameContext, SetGameContextAction>(setGameContext),
-]);
-
-GameContext setGameContext(
-  GameContext currentGameContext,
-  SetGameContextAction action,
-) =>
-    Container().resolve<GameService>().save(action.newGameContext);
-
 final Reducer<TurnResult> setTurnResultReducer = combineReducers([
   TypedReducer<TurnResult, SetTurnResultAction>(_setTurnResult),
 ]);
@@ -66,3 +54,9 @@ ScoreDisplay addToScore(ScoreDisplay scoreDisplay, SetTurnResultAction action) =
             scoreDisplay.us + action.turnResult.verticalScore,
             scoreDisplay.them + action.turnResult.horizontalScore,
           );
+
+final Reducer<Turn> setCurrentTurnReducer = combineReducers([
+  TypedReducer<Turn, SetCurrentTurnAction>(_setCurrentTurn),
+]);
+
+Turn _setCurrentTurn(Turn turn, SetCurrentTurnAction action) => action.turn;

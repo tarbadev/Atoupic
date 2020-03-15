@@ -38,7 +38,7 @@ void main() {
         inGameView,
         showTakeOrPassDialog: true,
         takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
-        lastTurn: Turn(1, MockPlayer())..round = 2,
+        currentTurn: Turn(1, MockPlayer())..round = 2,
       ));
       await tester.pump();
 
@@ -54,7 +54,7 @@ void main() {
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
         takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
-        lastTurn: Turn(12, MockPlayer()),
+        currentTurn: Turn(12, MockPlayer()),
       ));
 
       var inGameViewTester = InGameViewTester(tester);
@@ -103,7 +103,7 @@ void main() {
         showTakeOrPassDialog: true,
         realPlayer: TestFactory.realPlayer,
         takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
-        lastTurn: Turn(1, MockPlayer())..round = 2,
+        currentTurn: Turn(1, MockPlayer())..round = 2,
       ));
       await tester.pump();
 
@@ -147,7 +147,7 @@ void main() {
       await inGameViewTester.turnResult.tapOnNext();
 
       verify(Mocks.store.dispatch(SetTurnResultAction(null)));
-      verify(Mocks.store.dispatch(StartTurnAction(Mocks.gameContext)));
+      verify(Mocks.store.dispatch(StartTurnAction()));
     });
 
     testWidgets('displays current score', (WidgetTester tester) async {

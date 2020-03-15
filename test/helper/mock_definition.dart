@@ -54,14 +54,12 @@ class Mocks {
   static final MockNext mockNext = MockNext();
   static final NextDispatcher next = (dynamic action) => mockNext.next(action);
 
-  static GameContext gameContext;
-
   static setupMockStore({
     bool showTakeOrPassDialog: false,
     AtoupicView currentView = AtoupicView.Home,
     Card takeOrPassCard,
     Player realPlayer,
-    Turn lastTurn,
+    Turn currentTurn,
     TurnResult turnResult,
     int usScore = 42,
     int themScore = 120,
@@ -69,10 +67,10 @@ class Mocks {
     reset(store);
     reset(applicationState);
 
-    if (lastTurn == null) {
-      lastTurn = Turn(1, MockPlayer());
+    if (currentTurn == null) {
+      currentTurn = Turn(1, MockPlayer());
     }
-    gameContext = GameContext([], [lastTurn..card = takeOrPassCard]);
+    currentTurn.card = takeOrPassCard;
 
     when(store.state).thenReturn(applicationState);
     when(store.onChange).thenAnswer((_) => Stream.empty());
@@ -80,7 +78,7 @@ class Mocks {
         .thenReturn(showTakeOrPassDialog);
     when(applicationState.currentView).thenReturn(currentView);
     when(applicationState.realPlayer).thenReturn(realPlayer);
-    when(applicationState.gameContext).thenReturn(gameContext);
+    when(applicationState.currentTurn).thenReturn(currentTurn);
     when(applicationState.turnResult).thenReturn(turnResult);
     when(applicationState.score).thenReturn(ScoreDisplay(usScore, themScore));
   }

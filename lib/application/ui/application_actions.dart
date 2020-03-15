@@ -1,6 +1,7 @@
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/turn_result.dart';
 import 'package:atoupic/application/ui/entity/score_display.dart';
 import 'package:equatable/equatable.dart';
@@ -31,13 +32,12 @@ class StartSoloGameAction extends Equatable {
 }
 
 class StartTurnAction extends Equatable {
-  final GameContext gameContext;
   final bool turnAlreadyCreated;
 
-  StartTurnAction(this.gameContext, {this.turnAlreadyCreated = false});
+  StartTurnAction({this.turnAlreadyCreated = false});
 
   @override
-  List<Object> get props => [gameContext];
+  List<Object> get props => [turnAlreadyCreated];
 }
 
 class TakeOrPassDecisionAction extends Equatable {
@@ -96,20 +96,6 @@ class SetTurnAction extends Equatable {
 
   @override
   List<Object> get props => [this.newTurn];
-}
-
-class SetGameContextAction extends Equatable {
-  final GameContext newGameContext;
-
-  SetGameContextAction(this.newGameContext);
-
-  @override
-  List<Object> get props => [this.newGameContext];
-
-  @override
-  String toString() {
-    return 'SetGameContextAction{newGameContext: $newGameContext}';
-  }
 }
 
 class StartCardRoundAction extends Equatable {
@@ -194,4 +180,13 @@ class SetScoreAction extends Equatable {
 
   @override
   List<Object> get props => [newScore];
+}
+
+class SetCurrentTurnAction extends Equatable {
+  final Turn turn;
+
+  SetCurrentTurnAction(this.turn);
+
+  @override
+  List<Object> get props => [turn];
 }
