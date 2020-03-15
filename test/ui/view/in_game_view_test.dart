@@ -6,11 +6,11 @@ import 'package:atoupic/ui/view/in_game_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import '../helper/fake_application_injector.dart';
-import '../helper/mock_definition.dart';
-import '../helper/test_factory.dart';
-import '../helper/testable_widget.dart';
-import '../in_game_view_tester.dart';
+import '../../helper/fake_application_injector.dart';
+import '../../helper/mock_definition.dart';
+import '../../helper/test_factory.dart';
+import '../../helper/testable_widget.dart';
+import '../../in_game_view_tester.dart';
 
 void main() {
   setupDependencyInjectorForTest();

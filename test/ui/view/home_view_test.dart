@@ -4,9 +4,9 @@ import 'package:atoupic/ui/view/home_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import '../helper/mock_definition.dart';
-import '../helper/testable_widget.dart';
-import '../home_view_tester.dart';
+import '../../helper/mock_definition.dart';
+import '../../helper/testable_widget.dart';
+import '../../home_view_tester.dart';
 
 void main() {
   group('HomeView', () {
