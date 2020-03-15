@@ -1,7 +1,6 @@
-import 'package:atoupic/application/domain/entity/turn.dart';
-import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/turn_result.dart';
 import 'package:atoupic/application/domain/service/ai_service.dart';
 import 'package:atoupic/application/domain/service/card_service.dart';
@@ -57,7 +56,6 @@ class Mocks {
   static setupMockStore({
     bool showTakeOrPassDialog: false,
     AtoupicView currentView = AtoupicView.Home,
-    Card takeOrPassCard,
     Player realPlayer,
     Turn currentTurn,
     TurnResult turnResult,
@@ -70,7 +68,6 @@ class Mocks {
     if (currentTurn == null) {
       currentTurn = Turn(1, MockPlayer());
     }
-    currentTurn.card = takeOrPassCard;
 
     when(store.state).thenReturn(applicationState);
     when(store.onChange).thenAnswer((_) => Stream.empty());

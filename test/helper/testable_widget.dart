@@ -1,6 +1,5 @@
-import 'package:atoupic/application/domain/entity/turn.dart';
-import 'package:atoupic/application/domain/entity/card.dart' as AtoupicCard;
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/turn_result.dart';
 import 'package:atoupic/application/ui/application_state.dart';
 import 'package:atoupic/application/ui/atoupic_app.dart';
@@ -13,7 +12,6 @@ Widget buildTestableWidget(
   Widget widget, {
   bool showTakeOrPassDialog = false,
   AtoupicView currentView = AtoupicView.Home,
-  AtoupicCard.Card takeOrPassCard,
   Player realPlayer,
   Turn currentTurn,
   TurnResult turnResult,
@@ -23,7 +21,6 @@ Widget buildTestableWidget(
   Mocks.setupMockStore(
     showTakeOrPassDialog: showTakeOrPassDialog,
     currentView: currentView,
-    takeOrPassCard: takeOrPassCard,
     realPlayer: realPlayer,
     currentTurn: currentTurn,
     turnResult: turnResult,

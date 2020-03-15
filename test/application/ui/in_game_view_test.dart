@@ -1,6 +1,6 @@
-import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/application/domain/entity/turn.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/view/in_game_view.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,7 +22,7 @@ void main() {
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
         showTakeOrPassDialog: true,
-        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
+        currentTurn: Turn(1, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace),
       ));
       await tester.pump();
 
@@ -37,8 +37,9 @@ void main() {
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
         showTakeOrPassDialog: true,
-        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
-        currentTurn: Turn(1, MockPlayer())..round = 2,
+        currentTurn: Turn(1, MockPlayer())
+          ..round = 2
+          ..card = Card(CardColor.Club, CardHead.Ace),
       ));
       await tester.pump();
 
@@ -53,8 +54,7 @@ void main() {
 
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
-        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
-        currentTurn: Turn(12, MockPlayer()),
+        currentTurn: Turn(12, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace),
       ));
 
       var inGameViewTester = InGameViewTester(tester);
@@ -67,7 +67,7 @@ void main() {
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
         showTakeOrPassDialog: true,
-        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
+        currentTurn: Turn(1, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace),
         realPlayer: TestFactory.realPlayer,
       ));
       await tester.pump();
@@ -84,7 +84,7 @@ void main() {
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
         showTakeOrPassDialog: true,
-        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
+        currentTurn: Turn(1, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace),
         realPlayer: TestFactory.realPlayer,
       ));
       await tester.pump();
@@ -102,8 +102,9 @@ void main() {
         inGameView,
         showTakeOrPassDialog: true,
         realPlayer: TestFactory.realPlayer,
-        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
-        currentTurn: Turn(1, MockPlayer())..round = 2,
+        currentTurn: Turn(1, MockPlayer())
+          ..round = 2
+          ..card = Card(CardColor.Club, CardHead.Ace),
       ));
       await tester.pump();
 

@@ -1,4 +1,3 @@
-import 'package:atoupic/application/domain/entity/card.dart';
 import 'package:atoupic/application/ui/atoupic_app.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -39,7 +38,6 @@ void main() {
       await tester.pumpWidget(buildTestableWidget(
         AtoupicApp(),
         currentView: AtoupicView.InGame,
-        takeOrPassCard: Card(CardColor.Club, CardHead.Ace),
       ));
 
       expect(homeViewTester.isVisible, isFalse);
