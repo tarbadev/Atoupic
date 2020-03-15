@@ -78,8 +78,6 @@ void main() {
         Mocks.atoupicGame.addPlayerCards([card], Position.Bottom),
         Mocks.cardService.distributeCards(1),
         Mocks.gameService.save(updatedGameContext),
-        Mocks.store.dispatch(SetTurnAction(1)),
-        Mocks.store.dispatch(SetTakeOrPassCard(card)),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.mockNext.next(takeOrPassAction),
       ]);

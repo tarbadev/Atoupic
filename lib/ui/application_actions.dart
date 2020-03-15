@@ -71,15 +71,6 @@ class TakeDecisionAction extends DecisionAction {
   List<Object> get props => [this.player, this.color];
 }
 
-class SetTakeOrPassCard extends Equatable {
-  final Card newCard;
-
-  SetTakeOrPassCard(this.newCard);
-
-  @override
-  List<Object> get props => [this.newCard];
-}
-
 class SetRealPlayerAction extends Equatable {
   final Player player;
 
@@ -87,15 +78,6 @@ class SetRealPlayerAction extends Equatable {
 
   @override
   List<Object> get props => [this.player];
-}
-
-class SetTurnAction extends Equatable {
-  final int newTurn;
-
-  SetTurnAction(this.newTurn);
-
-  @override
-  List<Object> get props => [this.newTurn];
 }
 
 class StartCardRoundAction extends Equatable {

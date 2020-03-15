@@ -75,8 +75,6 @@ void startTurn(
 
   store.dispatch(SetCurrentTurnAction(gameContext.lastTurn));
   gameService.save(gameContext);
-  store.dispatch(SetTurnAction(gameContext.lastTurn.number));
-  store.dispatch(SetTakeOrPassCard(card));
   store.dispatch(TakeOrPassDecisionAction(gameContext.nextPlayer()));
 
   next(action);
