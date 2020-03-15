@@ -1,6 +1,5 @@
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/entity/turn.dart';
-import 'package:atoupic/application/domain/entity/turn_result.dart';
 import 'package:atoupic/application/ui/application_actions.dart';
 import 'package:atoupic/application/ui/application_state.dart';
 import 'package:atoupic/application/ui/atoupic_app.dart';
@@ -12,7 +11,6 @@ ApplicationState applicationReducer(ApplicationState state, action) => Applicati
       setCurrentViewReducer(state.currentView, action),
       setRealPlayerReducer(state.realPlayer, action),
       setCurrentTurnReducer(state.currentTurn, action),
-      setTurnResultReducer(state.turnResult, action),
       setScoreReducer(state.score, action),
     );
 
@@ -33,12 +31,6 @@ final Reducer<Player> setRealPlayerReducer = combineReducers([
 ]);
 
 Player _setRealPlayer(Player player, SetRealPlayerAction action) => action.player;
-
-final Reducer<TurnResult> setTurnResultReducer = combineReducers([
-  TypedReducer<TurnResult, SetTurnResultAction>(_setTurnResult),
-]);
-
-TurnResult _setTurnResult(TurnResult turnResult, SetTurnResultAction action) => action.turnResult;
 
 final Reducer<ScoreDisplay> setScoreReducer = combineReducers([
   TypedReducer<ScoreDisplay, SetScoreAction>(_setScore),

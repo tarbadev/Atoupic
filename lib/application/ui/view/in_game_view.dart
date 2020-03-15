@@ -150,9 +150,9 @@ class _InGameViewModel {
         store.dispatch(ShowTakeOrPassDialogAction(false));
         _onTake();
       },
-      store.state.turnResult == null
+      currentTurn.turnResult == null
           ? null
-          : TurnResultDisplay.fromTurnResult(store.state.turnResult),
+          : TurnResultDisplay.fromTurnResult(currentTurn.turnResult),
       () {
         store.dispatch(SetTurnResultAction(null));
         store.dispatch(StartTurnAction());

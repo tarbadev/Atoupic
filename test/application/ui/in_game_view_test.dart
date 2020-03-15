@@ -120,7 +120,7 @@ void main() {
 
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
-        turnResult: TestFactory.turnResult,
+        currentTurn: Turn(1, TestFactory.computerPlayer)..turnResult = TestFactory.turnResult,
       ));
       await tester.pump();
 
@@ -138,7 +138,7 @@ void main() {
 
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
-        turnResult: TestFactory.turnResult,
+        currentTurn: Turn(1, TestFactory.computerPlayer)..turnResult = TestFactory.turnResult,
       ));
       await tester.pump();
 

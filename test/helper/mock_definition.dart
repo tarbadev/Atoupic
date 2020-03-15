@@ -1,7 +1,6 @@
 import 'package:atoupic/application/domain/entity/game_context.dart';
 import 'package:atoupic/application/domain/entity/player.dart';
 import 'package:atoupic/application/domain/entity/turn.dart';
-import 'package:atoupic/application/domain/entity/turn_result.dart';
 import 'package:atoupic/application/domain/service/ai_service.dart';
 import 'package:atoupic/application/domain/service/card_service.dart';
 import 'package:atoupic/application/domain/service/game_service.dart';
@@ -58,7 +57,6 @@ class Mocks {
     AtoupicView currentView = AtoupicView.Home,
     Player realPlayer,
     Turn currentTurn,
-    TurnResult turnResult,
     int usScore = 42,
     int themScore = 120,
   }) {
@@ -76,7 +74,6 @@ class Mocks {
     when(applicationState.currentView).thenReturn(currentView);
     when(applicationState.realPlayer).thenReturn(realPlayer);
     when(applicationState.currentTurn).thenReturn(currentTurn);
-    when(applicationState.turnResult).thenReturn(turnResult);
     when(applicationState.score).thenReturn(ScoreDisplay(usScore, themScore));
   }
 }
