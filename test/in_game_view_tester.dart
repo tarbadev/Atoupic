@@ -1,5 +1,5 @@
-import 'package:atoupic/application/domain/entity/card.dart';
-import 'package:atoupic/application/domain/entity/player.dart';
+import 'package:atoupic/domain/entity/card.dart';
+import 'package:atoupic/domain/entity/player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

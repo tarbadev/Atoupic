@@ -1,5 +1,5 @@
-import 'package:atoupic/application/ui/application_injector.dart';
-import 'package:atoupic/application/ui/atoupic_app.dart';
+import 'package:atoupic/ui/application_injector.dart';
+import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/util.dart';
 import 'package:flutter/material.dart';

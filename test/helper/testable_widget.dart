@@ -1,7 +1,7 @@
-import 'package:atoupic/application/domain/entity/player.dart';
-import 'package:atoupic/application/domain/entity/turn.dart';
-import 'package:atoupic/application/ui/application_state.dart';
-import 'package:atoupic/application/ui/atoupic_app.dart';
+import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/domain/entity/turn.dart';
+import 'package:atoupic/ui/application_state.dart';
+import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 

@@ -1,15 +1,15 @@
-import 'package:atoupic/application/domain/entity/game_context.dart';
-import 'package:atoupic/application/domain/entity/player.dart';
-import 'package:atoupic/application/domain/entity/turn.dart';
-import 'package:atoupic/application/domain/service/ai_service.dart';
-import 'package:atoupic/application/domain/service/card_service.dart';
-import 'package:atoupic/application/domain/service/game_service.dart';
-import 'package:atoupic/application/domain/service/player_service.dart';
-import 'package:atoupic/application/repository/game_context_repository.dart';
-import 'package:atoupic/application/ui/application_state.dart';
-import 'package:atoupic/application/ui/atoupic_app.dart';
-import 'package:atoupic/application/ui/entity/score_display.dart';
-import 'package:atoupic/game/atoupic_game.dart';
+import 'package:atoupic/domain/entity/game_context.dart';
+import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/domain/entity/turn.dart';
+import 'package:atoupic/domain/service/ai_service.dart';
+import 'package:atoupic/domain/service/card_service.dart';
+import 'package:atoupic/domain/service/game_service.dart';
+import 'package:atoupic/domain/service/player_service.dart';
+import 'package:atoupic/repository/game_context_repository.dart';
+import 'package:atoupic/ui/application_state.dart';
+import 'package:atoupic/ui/atoupic_app.dart';
+import 'package:atoupic/ui/entity/score_display.dart';
+import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 
