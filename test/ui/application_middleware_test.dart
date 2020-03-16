@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/cart_round.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
@@ -133,7 +135,7 @@ void main() {
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
       when(mockedContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
-      when(mockedContext.players).thenReturn([firstPlayer, TestFactory.realPlayer]);
+      when(mockedContext.players).thenReturn(UnmodifiableListView([firstPlayer, TestFactory.realPlayer]));
 
       passDecision(Mocks.store, action, Mocks.next);
 
@@ -471,7 +473,7 @@ void main() {
   group('endTurn', () {
     test('calculates the points and displays the result', () {
       Turn mockTurn = MockTurn();
-      GameContext gameContext = TestFactory.gameContext..turns[0] = mockTurn;
+      GameContext gameContext = GameContext([], [mockTurn]);
       var action = EndTurnAction(gameContext);
       var turnResult = TestFactory.turnResult;
 

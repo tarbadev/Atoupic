@@ -1,17 +1,21 @@
-import 'package:atoupic/domain/entity/turn.dart';
+import 'dart:collection';
+
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/cart_round.dart';
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:equatable/equatable.dart';
 
 class GameContext extends Equatable {
-  final List<Player> players;
-  final List<Turn> turns;
+  final UnmodifiableListView<Player> players;
+  final UnmodifiableListView<Turn> turns;
 
   Turn get lastTurn => turns.last;
 
-  GameContext(this.players, this.turns);
+  GameContext(List<Player> players, List<Turn> turns)
+      : players = UnmodifiableListView(players),
+        turns = UnmodifiableListView(turns);
 
   @override
   List<Object> get props => [players, turns];
@@ -53,8 +57,7 @@ class GameContext extends Equatable {
     }
 
     var firstPlayer = players[firstPlayerIndex];
-    turns.add(Turn(lastTurn.number + 1, firstPlayer));
-    return this;
+    return GameContext(players, turns.toList()..add(Turn(lastTurn.number + 1, firstPlayer)));
   }
 
   GameContext setCardDecision(Card card, Player player) {
@@ -110,7 +113,8 @@ class GameContext extends Equatable {
           var playedTrumpCards =
               lastCardRound.playedCards.values.where((card) => card.color == lastTurn.trumpColor);
           if (playedTrumpCards.isEmpty) {
-            if (lastTurn.getCardRoundWinnerPosition(lastCardRound).isVertical == player.position.isVertical) {
+            if (lastTurn.getCardRoundWinnerPosition(lastCardRound).isVertical ==
+                player.position.isVertical) {
               return player.cards;
             }
             return trumpCards.toList();

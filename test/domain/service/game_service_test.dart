@@ -2,6 +2,7 @@ import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/game_service.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -113,7 +114,7 @@ void main() {
         var turn = Turn(1, TestFactory.computerPlayer);
 
         when(Mocks.gameContextRepository.read()).thenReturn(mockedGameContext);
-        when(mockedGameContext.players).thenReturn([TestFactory.realPlayer]);
+        when(mockedGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayer]));
         when(mockedGameContext.lastTurn).thenReturn(turn);
         when(Mocks.cardService.distributeCards(any)).thenReturn([TestFactory.cards[0]]);
         when(Mocks.gameContextRepository.save(any)).thenReturn(mockedGameContext);
