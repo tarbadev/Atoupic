@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:atoupic/domain/entity/card.dart';
+import 'package:flame/anchor.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/components/mixins/resizable.dart';
 import 'package:flame/components/mixins/tapable.dart';
@@ -25,6 +26,7 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
 
   CardComponent(this._spriteFileName, this.onCardPlayed, this.card) {
     sprite = Sprite(_spriteFileName);
+    anchor = Anchor.center;
   }
 
   @override
@@ -74,20 +76,20 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
 
       var currentRect = toRect();
       Offset toTarget = Offset(
-        (playedCardTarget.left - currentRect.left) * differencePercent,
-        (playedCardTarget.top - currentRect.top) * differencePercent,
+        (playedCardTarget.left - currentRect.left - (width / 2)) * differencePercent,
+        (playedCardTarget.top - currentRect.top - (height / 2)) * differencePercent,
       );
-      Rect newRect = toRect().shift(toTarget);
+      Rect newRect = currentRect.shift(toTarget);
 
-      x = newRect.left;
-      y = newRect.top;
+      x = newRect.left + (width / 2);
+      y = newRect.top + (height / 2);
       width -= (width - playedCardTarget.width) * differencePercent;
       height -= (height - playedCardTarget.height) * differencePercent;
 
-      if (x == playedCardTarget.left &&
+      if ((x == playedCardTarget.left &&
           y == playedCardTarget.top &&
           width == playedCardTarget.width &&
-          height == playedCardTarget.height) {
+          height == playedCardTarget.height) || differencePercent == 1) {
         animatePlayedCard = false;
         onAnimationDoneCallback();
       }
@@ -113,9 +115,7 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
     Function onCardPlayed,
   }) {
     return CardComponent(
-      showBackFace
-          ? 'cards/BackFace.png'
-          : 'cards/${card.color.folder}/${card.head.fileName}',
+      showBackFace ? 'cards/BackFace.png' : 'cards/${card.color.folder}/${card.head.fileName}',
       onCardPlayed,
       card,
     );

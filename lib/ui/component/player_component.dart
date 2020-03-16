@@ -63,44 +63,44 @@ class PlayerComponent extends PositionComponent
 
     switch (position) {
       case Position.Top:
-        initialX = (size.width / 2) - (fullDeckWidth / 2) + cardWidth;
-        cardY = cardHeight * .25;
+        initialX = (size.width / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
+        cardY = -(cardHeight * .25);
         cardAngle = rotation * 2;
         playedCardTarget = Rect.fromLTWH(
-          (size.width / 2) - (playedCardWidth / 2),
-          (size.height / 2) - (playedCardHeight * 1.5) - 10,
+          (size.width / 2),
+          (size.height / 2) - (playedCardHeight) - 10,
           playedCardWidth,
           playedCardHeight,
         );
         break;
       case Position.Bottom:
-        initialX = (size.width / 2) - (fullDeckWidth / 2);
-        cardY = size.height - (cardHeight * .75);
+        initialX = (size.width / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
+        cardY = size.height - (cardHeight * .25);
         playedCardTarget = Rect.fromLTWH(
-          (size.width / 2) - (playedCardWidth / 2),
-          (size.height / 2) - (playedCardHeight * .5) + 10,
+          (size.width / 2),
+          (size.height / 2) + 10,
           playedCardWidth,
           playedCardHeight,
         );
         break;
       case Position.Left:
-        cardX = cardHeight * .25;
-        initialY = (size.height / 2) - (fullDeckWidth / 2);
+        cardX = -(cardHeight * .25);
+        initialY = (size.height / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
         cardAngle = rotation;
         playedCardTarget = Rect.fromLTWH(
-          (size.width / 2) - (playedCardWidth * 2),
-          (size.height / 2) - playedCardHeight,
+          (size.width / 2) - (playedCardWidth * 1.5),
+          (size.height / 2) - (playedCardHeight / 2),
           playedCardWidth,
           playedCardHeight,
         );
         break;
       case Position.Right:
-        cardX = size.width - cardHeight * .25;
-        initialY = (size.height / 2) - (fullDeckWidth / 2) + cardWidth;
+        cardX = size.width + cardHeight * .25;
+        initialY = (size.height / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
         cardAngle = -rotation;
         playedCardTarget = Rect.fromLTWH(
-          (size.width / 2) + playedCardWidth,
-          (size.height / 2) - playedCardHeight,
+          (size.width / 2) + (playedCardWidth * 1.5),
+          (size.height / 2) - (playedCardHeight / 2),
           playedCardWidth,
           playedCardHeight,
         );
@@ -127,22 +127,23 @@ class PlayerComponent extends PositionComponent
     super.resize(size);
   }
 
-  void _resizePassedCaption(double cardX, double cardY, double cardHeight,
-      double fullDeckWidth, double cardWidth) {
+  void _resizePassedCaption(
+      double cardX, double cardY, double cardHeight, double fullDeckWidth, double cardWidth) {
     if (position == Position.Top) {
       _passedCaption
-        ..anchor = Anchor.bottomLeft
-        ..x = cardX
-        ..y = cardY;
+        ..anchor = Anchor.topLeft
+        ..x = cardX + (cardWidth / 2)
+        ..y = 0;
     } else if (position == Position.Left) {
       _passedCaption
         ..anchor = Anchor.bottomLeft
-        ..x = cardX - cardHeight * .25
-        ..y = cardY - (fullDeckWidth - cardWidth);
+        ..x = 0
+        ..y = cardY - (fullDeckWidth - (cardWidth / 2));
     } else if (position == Position.Right) {
       _passedCaption
-        ..x = cardX + cardHeight * .25
-        ..y = cardY - fullDeckWidth;
+        ..anchor = Anchor.bottomRight
+        ..x = cardX - cardHeight * .25
+        ..y = cardY - (fullDeckWidth - (cardWidth / 2));
     }
   }
 
@@ -159,26 +160,26 @@ class PlayerComponent extends PositionComponent
         case Position.Top:
           _trumpColor
             ..anchor = Anchor.topLeft
-            ..x = cardX + 10
+            ..x = cardX + (cardWidth / 2) + 10
             ..y = 0;
           break;
         case Position.Bottom:
           _trumpColor
             ..anchor = Anchor.bottomRight
-            ..x = initialX - 10
+            ..x = initialX - (cardWidth / 2) - 10
             ..y = size.height;
           break;
         case Position.Left:
           _trumpColor
             ..anchor = Anchor.bottomLeft
             ..x = 0
-            ..y = cardY - (fullDeckWidth - cardWidth) - 10;
+            ..y = cardY - (fullDeckWidth - (cardWidth / 2)) - 10;
           break;
         case Position.Right:
           _trumpColor
             ..anchor = Anchor.bottomRight
             ..x = size.width
-            ..y = cardY - fullDeckWidth - 10;
+            ..y = cardY + cardWidth + 10;
           break;
       }
     }
@@ -233,7 +234,7 @@ class PlayerComponent extends PositionComponent
   }
 
   void resetTrumpColor() {
-    if (_trumpColor != null){
+    if (_trumpColor != null) {
       _trumpColor.shouldDestroy = true;
       _trumpColor = null;
     }
