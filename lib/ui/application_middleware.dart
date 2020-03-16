@@ -212,14 +212,14 @@ void setCardDecision(
   GameContext gameContext = gameService.read();
   gameContext = gameContext.setCardDecision(action.card, action.player);
 
+  gameService.save(gameContext);
+
+  atoupicGame.realPlayerCanChooseCard(false);
   atoupicGame.setLastCardPlayed(
     action.card,
     action.player.position,
     () => store.dispatch(ChooseCardDecisionAction(gameContext)),
   );
-  atoupicGame.realPlayerCanChooseCard(false);
-
-  gameService.save(gameContext);
 
   next(action);
 }
