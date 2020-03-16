@@ -98,6 +98,7 @@ void passDecision(
   var gameContext = gameService.read().setDecision(action.player, Decision.Pass);
   var nextPlayer = gameContext.nextPlayer();
   if (nextPlayer == null && gameContext.lastTurn.round == 2) {
+    gameService.save(gameContext);
     store.dispatch(StartTurnAction());
   } else {
     if (nextPlayer == null) {
@@ -106,10 +107,9 @@ void passDecision(
       nextPlayer = gameContext.nextPlayer();
     }
 
+    gameService.save(gameContext);
     store.dispatch(TakeOrPassDecisionAction(nextPlayer));
   }
-
-  gameService.save(gameContext);
 
   next(action);
 }

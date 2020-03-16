@@ -142,8 +142,8 @@ void main() {
       verifyInOrder([
         Mocks.atoupicGame.setPlayerPassed(action.player.position),
         Mocks.gameService.read(),
-        Mocks.store.dispatch(TakeOrPassDecisionAction(TestFactory.realPlayer)),
         Mocks.gameService.save(updatedGameContext),
+        Mocks.store.dispatch(TakeOrPassDecisionAction(TestFactory.realPlayer)),
         Mocks.mockNext.next(action),
       ]);
     });
@@ -176,8 +176,8 @@ void main() {
       verifyInOrder([
         Mocks.gameService.read(),
         Mocks.atoupicGame.resetPlayersPassed(),
-        Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.gameService.save(updatedGameContext),
+        Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.mockNext.next(action),
       ]);
     });
