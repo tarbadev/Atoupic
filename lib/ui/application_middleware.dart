@@ -269,6 +269,7 @@ void endTurn(
 
   gameService.save(action.context);
 
+  store.dispatch(SetCurrentTurnAction(action.context.lastTurn));
   store.dispatch(SetTurnResultAction(action.context.lastTurn.turnResult));
 
   next(action);

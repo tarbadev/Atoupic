@@ -482,6 +482,7 @@ void main() {
       endTurn(Mocks.store, action, Mocks.next);
 
       verify(mockTurn.calculatePoints(gameContext.players));
+      verify(Mocks.store.dispatch(SetCurrentTurnAction(gameContext.lastTurn)));
       verify(Mocks.store.dispatch(SetTurnResultAction(turnResult)));
       verify(Mocks.gameService.save(gameContext));
       verify(Mocks.mockNext.next(action));
