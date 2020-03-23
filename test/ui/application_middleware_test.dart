@@ -281,14 +281,14 @@ void main() {
       verifyInOrder([
         Mocks.gameService.read(),
         Mocks.cardService.distributeCards(2),
-        Mocks.atoupicGame.addPlayerCards([card], realPlayer.position),
+        Mocks.gameBloc.add(AddPlayerCards([card], realPlayer.position)),
         Mocks.cardService.distributeCards(3),
-        Mocks.atoupicGame.addPlayerCards([card], Position.Left),
+        Mocks.gameBloc.add(AddPlayerCards([card], Position.Left)),
         Mocks.cardService.distributeCards(3),
-        Mocks.atoupicGame.addPlayerCards([card], firstPlayer.position),
+        Mocks.gameBloc.add(AddPlayerCards([card], firstPlayer.position)),
         Mocks.cardService.distributeCards(3),
-        Mocks.atoupicGame.addPlayerCards([card], Position.Right),
-        Mocks.atoupicGame.resetPlayersPassed(),
+        Mocks.gameBloc.add(AddPlayerCards([card], Position.Right)),
+        Mocks.gameBloc.add(ResetPlayersPassedCaption()),
         Mocks.gameService.save(updatedGameContext),
         Mocks.mockNext.next(action),
       ]);
@@ -309,10 +309,10 @@ void main() {
       takeDecision(Mocks.store, action, Mocks.next);
 
       verify(mockPlayer.sortCards(trumpColor: CardColor.Club));
-      verify(Mocks.atoupicGame.replaceRealPlayersCards([
+      verify(Mocks.gameBloc.add(ReplaceRealPlayersCards([
         Card(CardColor.Club, CardHead.King),
         Card(CardColor.Club, CardHead.Eight),
-      ]));
+      ])));
     });
 
     test('dispatches StartCardRound', () {
@@ -349,7 +349,7 @@ void main() {
 
       expect(gameContext.lastTurn.trumpColor, CardColor.Club);
 
-      verify(Mocks.atoupicGame.setTrumpColor(CardColor.Club, Position.Right));
+      verify(Mocks.gameBloc.add(DisplayTrumpColor(CardColor.Club, Position.Right)));
     });
   });
 

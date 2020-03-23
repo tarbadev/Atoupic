@@ -1,3 +1,4 @@
+import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:equatable/equatable.dart';
 
@@ -45,3 +46,41 @@ class DisplayPlayerPassedCaption extends GameEvent {
 }
 
 class ResetPlayersPassedCaption extends GameEvent {}
+
+class DisplayTrumpColor extends GameEvent {
+  final CardColor color;
+  final Position takerPosition;
+
+  DisplayTrumpColor(this.color, this.takerPosition);
+
+  @override
+  List<Object> get props => [color, takerPosition];
+
+  @override
+  String toString() => 'DisplayTrumpColor{color: $color, taker: $takerPosition}';
+}
+
+class AddPlayerCards extends GameEvent {
+  final List<Card> cards;
+  final Position position;
+
+  AddPlayerCards(this.cards, this.position);
+
+  @override
+  List<Object> get props => [cards, position];
+
+  @override
+  String toString() => 'AddPlayerCards{cards: $cards, position: $position}';
+}
+
+class ReplaceRealPlayersCards extends GameEvent {
+  final List<Card> cards;
+
+  ReplaceRealPlayersCards(this.cards);
+
+  @override
+  List<Object> get props => [cards];
+
+  @override
+  String toString() => 'ReplaceRealPlayersCards{cards: $cards}';
+}

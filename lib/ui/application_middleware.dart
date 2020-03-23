@@ -123,9 +123,9 @@ void takeDecision(
   NextDispatcher next,
 ) {
   final container = Container();
-  final AtoupicGame atoupicGame = container.resolve();
   final GameService gameService = container<GameService>();
   final CardService cardService = container<CardService>();
+  final GameBloc gameBloc = container<GameBloc>();
 
   var gameContext = gameService.read().setDecision(action.player, Decision.Take);
 
@@ -134,21 +134,22 @@ void takeDecision(
   action.player.cards.addAll(takerCards);
 
   gameContext.lastTurn.trumpColor = action.color;
-  atoupicGame.setTrumpColor(action.color, action.player.position);
-  atoupicGame.addPlayerCards(takerCards, action.player.position);
+
+  gameBloc.add(DisplayTrumpColor(action.color, action.player.position));
+  gameBloc.add(AddPlayerCards(takerCards, action.player.position));
 
   gameContext.players.forEach((player) {
     if (player != action.player) {
       var newCards = cardService.distributeCards(3);
       player.cards.addAll(newCards);
-      atoupicGame.addPlayerCards(newCards, player.position);
+      gameBloc.add(AddPlayerCards(newCards, player.position));
     }
   });
   var realPlayer = gameContext.players.firstWhere((player) => player.isRealPlayer);
   realPlayer.sortCards(trumpColor: action.color);
 
-  atoupicGame.resetPlayersPassed();
-  atoupicGame.replaceRealPlayersCards(realPlayer.cards);
+  gameBloc.add(ResetPlayersPassedCaption());
+  gameBloc.add(ReplaceRealPlayersCards(realPlayer.cards));
 
   gameService.save(gameContext);
   store.dispatch(StartCardRoundAction(gameContext));

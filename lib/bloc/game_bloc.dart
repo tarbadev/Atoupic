@@ -29,6 +29,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       event.players.forEach((player) => _atoupicGame.addPlayerCards(player.cards, player.position));
     } else if (event is DisplayPlayerPassedCaption) {
       _atoupicGame.setPlayerPassed(event.position);
+    } else if (event is DisplayTrumpColor) {
+      _atoupicGame.setTrumpColor(event.color, event.takerPosition);
+    } else if (event is ResetPlayersPassedCaption) {
+      _atoupicGame.resetPlayersPassed();
+    } else if (event is AddPlayerCards) {
+      _atoupicGame.addPlayerCards(event.cards, event.position);
+    } else if (event is ReplaceRealPlayersCards) {
+      _atoupicGame.replaceRealPlayersCards(event.cards);
     }
   }
 }

@@ -68,5 +68,35 @@ void main() {
         verify(Mocks.atoupicGame.resetPlayersPassed());
       },
     );
+
+    blocTest<GameBloc, GameEvent, GameState>(
+      'calls the game to display the trump color contracted by the taker',
+      build: () async => gameBloc,
+      act: (bloc) async => bloc.add(DisplayTrumpColor(CardColor.Heart, Position.Top)),
+      expect: [],
+      verify: (_) async {
+        verify(Mocks.atoupicGame.setTrumpColor(CardColor.Heart, Position.Top));
+      },
+    );
+
+    blocTest<GameBloc, GameEvent, GameState>(
+      'calls the game to cards to the given player',
+      build: () async => gameBloc,
+      act: (bloc) async => bloc.add(AddPlayerCards([TestFactory.cards.first], Position.Right)),
+      expect: [],
+      verify: (_) async {
+        verify(Mocks.atoupicGame.addPlayerCards([TestFactory.cards.first], Position.Right));
+      },
+    );
+
+    blocTest<GameBloc, GameEvent, GameState>(
+      'calls the game to reset the real players cards',
+      build: () async => gameBloc,
+      act: (bloc) async => bloc.add(ReplaceRealPlayersCards([TestFactory.cards.first])),
+      expect: [],
+      verify: (_) async {
+        verify(Mocks.atoupicGame.replaceRealPlayersCards([TestFactory.cards.first]));
+      },
+    );
   });
 }
