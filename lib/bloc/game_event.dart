@@ -21,3 +21,17 @@ class Start extends GameEvent {
     return 'Start{players: $players}';
   }
 }
+
+class NewTurn extends GameEvent {
+  final List<Player> players;
+
+  NewTurn(this.players);
+
+  @override
+  List<Object> get props => [players];
+
+  @override
+  String toString() {
+    return 'NewTurn{players: $players}';
+  }
+}

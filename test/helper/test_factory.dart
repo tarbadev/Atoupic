@@ -55,7 +55,7 @@ abstract class TestFactory {
         Player(Position.Left),
         Player(Position.Top),
         Player(Position.Right),
-        realPlayer
+        realPlayerWithCards([Card(CardColor.Heart, CardHead.Ace)])
       ], [
         Turn(1, Player(Position.Top))
       ]);

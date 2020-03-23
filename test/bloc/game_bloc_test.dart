@@ -1,4 +1,5 @@
 import 'package:atoupic/bloc/bloc.dart';
+import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
@@ -28,6 +29,22 @@ void main() {
       verify: (_) async {
         verify(Mocks.atoupicGame.visible = true);
         verify(Mocks.atoupicGame.setDomainPlayers(players));
+      },
+    );
+
+    blocTest<GameBloc, GameEvent, GameState>(
+      'resets the game on NewTurn',
+      build: () async => gameBloc,
+      act: (bloc) async => bloc.add(NewTurn(players)),
+      expect: [],
+      verify: (_) async {
+        verify(Mocks.atoupicGame.resetPlayersPassed());
+        verify(Mocks.atoupicGame.resetTrumpColor());
+        verify(Mocks.atoupicGame.resetPlayersCards());
+        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Left));
+        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Top));
+        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Right));
+        verify(Mocks.atoupicGame.addPlayerCards([Card(CardColor.Heart, CardHead.Ace)], Position.Bottom));
       },
     );
   });

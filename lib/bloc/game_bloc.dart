@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:bloc/bloc.dart';
+
 import './bloc.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
@@ -19,7 +21,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       _atoupicGame.setDomainPlayers(event.players);
       _atoupicGame.visible = true;
       yield Initialized();
-    } else if (event is Initialized) {
+    } else if (event is NewTurn) {
+      _atoupicGame.resetPlayersPassed();
+      _atoupicGame.resetTrumpColor();
+      _atoupicGame.resetPlayersCards();
+      event.players.forEach((player) => _atoupicGame.addPlayerCards(player.cards, player.position));
     }
   }
 }

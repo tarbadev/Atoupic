@@ -108,14 +108,8 @@ void main() {
       startTurn(Mocks.store, takeOrPassAction, Mocks.next);
 
       verifyInOrder([
-        Mocks.atoupicGame.resetPlayersPassed(),
-        Mocks.atoupicGame.resetTrumpColor(),
-        Mocks.atoupicGame.resetPlayersCards(),
         Mocks.gameService.startTurn(true),
-        Mocks.atoupicGame.addPlayerCards(null, Position.Left),
-        Mocks.atoupicGame.addPlayerCards(null, Position.Top),
-        Mocks.atoupicGame.addPlayerCards(null, Position.Right),
-        Mocks.atoupicGame.addPlayerCards([card], Position.Bottom),
+        Mocks.gameBloc.add(NewTurn(players)),
         Mocks.store.dispatch(SetCurrentTurnAction(gameContext.lastTurn)),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.mockNext.next(takeOrPassAction),

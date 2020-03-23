@@ -60,17 +60,12 @@ void startTurn(
   NextDispatcher next,
 ) {
   final container = Container();
-  final AtoupicGame atoupicGame = container.resolve();
   final GameService gameService = container<GameService>();
-
-  atoupicGame.resetPlayersPassed();
-  atoupicGame.resetTrumpColor();
-  atoupicGame.resetPlayersCards();
+  final GameBloc gameBloc = container<GameBloc>();
 
   GameContext gameContext = gameService.startTurn(action.turnAlreadyCreated);
 
-  gameContext.players
-      .forEach((player) => atoupicGame.addPlayerCards(player.cards, player.position));
+  gameBloc.add(NewTurn(gameContext.players));
 
   store.dispatch(SetCurrentTurnAction(gameContext.lastTurn));
   store.dispatch(TakeOrPassDecisionAction(gameContext.nextPlayer()));
