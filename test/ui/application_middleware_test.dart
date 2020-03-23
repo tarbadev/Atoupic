@@ -26,7 +26,6 @@ void main() {
     reset(Mocks.mockNext);
     reset(Mocks.aiService);
     reset(Mocks.gameService);
-    reset(Mocks.atoupicGame);
     reset(Mocks.cardService);
     reset(Mocks.gameBloc);
   });
@@ -469,7 +468,7 @@ void main() {
       when(mockContext.lastTurn).thenReturn(Turn(1, TestFactory.realPlayer));
       endCardRound(Mocks.store, action, Mocks.next);
 
-      verify(Mocks.atoupicGame.resetLastPlayedCards());
+      verify(Mocks.gameBloc.add(ResetLastPlayedCards()));
       verify(Mocks.store.dispatch(StartCardRoundAction(mockContext)));
       verify(Mocks.mockNext.next(action));
     });
@@ -492,7 +491,7 @@ void main() {
 
       endCardRound(Mocks.store, action, Mocks.next);
 
-      verify(Mocks.atoupicGame.resetLastPlayedCards());
+      verify(Mocks.gameBloc.add(ResetLastPlayedCards()));
       verify(Mocks.store.dispatch(EndTurnAction(gameContext)));
       verify(Mocks.mockNext.next(action));
     });

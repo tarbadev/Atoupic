@@ -42,6 +42,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     } else if (event is SetPlayedCard) {
       _atoupicGame.realPlayerCanChooseCard(false);
       _atoupicGame.setLastCardPlayed(event.card, event.position, event.onCardPlayed);
+    } else if (event is ResetLastPlayedCards) {
+      _atoupicGame.resetLastPlayedCards();
     }
   }
 }

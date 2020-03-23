@@ -125,5 +125,18 @@ void main() {
         },
       );
     });
+
+    group('On ResetLastPlayedCards', () {
+      blocTest<GameBloc, GameEvent, GameState>(
+        'calls the game to reset the last played cards',
+        build: () async => gameBloc,
+        act: (bloc) async =>
+            bloc.add(ResetLastPlayedCards()),
+        expect: [],
+        verify: (_) async {
+          verify(Mocks.atoupicGame.resetLastPlayedCards());
+        },
+      );
+    });
   });
 }

@@ -112,3 +112,5 @@ class SetPlayedCard extends GameEvent {
     return 'SetPlayedCard{card: $card, position: $position, onCardPlayed: $onCardPlayed}';
   }
 }
+
+class ResetLastPlayedCards extends GameEvent {}

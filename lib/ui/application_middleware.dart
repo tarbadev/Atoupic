@@ -10,7 +10,6 @@ import 'package:atoupic/domain/service/card_service.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_state.dart';
-import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:redux/redux.dart';
 
@@ -245,9 +244,9 @@ void endCardRound(
   NextDispatcher next,
 ) {
   final container = Container();
-  final AtoupicGame atoupicGame = container<AtoupicGame>();
+  final GameBloc gameBloc = container<GameBloc>();
 
-  atoupicGame.resetLastPlayedCards();
+  gameBloc.add(ResetLastPlayedCards());
 
   if (action.context.lastTurn.cardRounds.length < 8) {
     store.dispatch(StartCardRoundAction(action.context));
