@@ -25,7 +25,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       _atoupicGame.resetPlayersPassed();
       _atoupicGame.resetTrumpColor();
       _atoupicGame.resetPlayersCards();
-      
+
       event.players.forEach((player) => _atoupicGame.addPlayerCards(player.cards, player.position));
     } else if (event is DisplayPlayerPassedCaption) {
       _atoupicGame.setPlayerPassed(event.position);
@@ -38,7 +38,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     } else if (event is ReplaceRealPlayersCards) {
       _atoupicGame.replaceRealPlayersCards(event.cards);
     } else if (event is RealPlayerCanChooseCard) {
-      _atoupicGame.realPlayerCanChooseCard(event.canChooseCard, possiblePlayableCards: event.cards);
+      _atoupicGame.realPlayerCanChooseCard(true, possiblePlayableCards: event.cards);
+    } else if (event is SetPlayedCard) {
+      _atoupicGame.realPlayerCanChooseCard(false);
+      _atoupicGame.setLastCardPlayed(event.card, event.position, event.onCardPlayed);
     }
   }
 }

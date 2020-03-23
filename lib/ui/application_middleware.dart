@@ -186,7 +186,7 @@ void chooseCardDecision(
     var possibleCardsToPlay = action.context.getPossibleCardsToPlay(nextPlayer);
     if (nextPlayer.isRealPlayer) {
       GameBloc gameBloc = container.resolve();
-      gameBloc.add(RealPlayerCanChooseCard(true, cards: possibleCardsToPlay));
+      gameBloc.add(RealPlayerCanChooseCard(possibleCardsToPlay));
     } else {
       AiService aiService = container.resolve();
       var chosenCard = aiService.chooseCard(
@@ -207,20 +207,19 @@ void setCardDecision(
   NextDispatcher next,
 ) {
   final container = Container();
-  final AtoupicGame atoupicGame = container<AtoupicGame>();
   final GameService gameService = container<GameService>();
+  final GameBloc gameBloc = container<GameBloc>();
 
   GameContext gameContext = gameService.read();
   gameContext = gameContext.setCardDecision(action.card, action.player);
 
   gameService.save(gameContext);
 
-  atoupicGame.realPlayerCanChooseCard(false);
-  atoupicGame.setLastCardPlayed(
+  gameBloc.add(SetPlayedCard(
     action.card,
     action.player.position,
     () => store.dispatch(ChooseCardDecisionAction(gameContext)),
-  );
+  ));
 
   next(action);
 }

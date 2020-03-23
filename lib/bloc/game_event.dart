@@ -86,14 +86,29 @@ class ReplaceRealPlayersCards extends GameEvent {
 }
 
 class RealPlayerCanChooseCard extends GameEvent {
-  final bool canChooseCard;
   final List<Card> cards;
 
-  RealPlayerCanChooseCard(this.canChooseCard, {this.cards});
+  RealPlayerCanChooseCard(this.cards);
 
   @override
-  List<Object> get props => [canChooseCard, cards];
+  List<Object> get props => [cards];
 
   @override
-  String toString() => 'RealPlayerCanChooseCard{canChooseCard: $canChooseCard, cards: $cards}';
+  String toString() => 'RealPlayerCanChooseCard{cards: $cards}';
+}
+
+class SetPlayedCard extends GameEvent {
+  final Card card;
+  final Position position;
+  final Function onCardPlayed;
+
+  SetPlayedCard(this.card, this.position, this.onCardPlayed);
+
+  @override
+  List<Object> get props => [card, position, onCardPlayed];
+
+  @override
+  String toString() {
+    return 'SetPlayedCard{card: $card, position: $position, onCardPlayed: $onCardPlayed}';
+  }
 }

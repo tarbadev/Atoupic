@@ -100,13 +100,30 @@ void main() {
     );
 
     blocTest<GameBloc, GameEvent, GameState>(
-      'calls the game to set the enable/disable real players capability to play a card',
+      'calls the game to set the enable real players capability to play a card',
       build: () async => gameBloc,
-      act: (bloc) async => bloc.add(RealPlayerCanChooseCard(true, cards: [TestFactory.cards.first])),
+      act: (bloc) async => bloc.add(RealPlayerCanChooseCard([TestFactory.cards.first])),
       expect: [],
       verify: (_) async {
-        verify(Mocks.atoupicGame.realPlayerCanChooseCard(true, possiblePlayableCards: [TestFactory.cards.first]));
+        verify(Mocks.atoupicGame
+            .realPlayerCanChooseCard(true, possiblePlayableCards: [TestFactory.cards.first]));
       },
     );
+
+    group('On SetPlayedCard', () {
+      final callback = () {};
+      blocTest<GameBloc, GameEvent, GameState>(
+        'calls the game to set the disable real players capability to play a card',
+        build: () async => gameBloc,
+        act: (bloc) async =>
+            bloc.add(SetPlayedCard(TestFactory.cards.first, Position.Right, callback)),
+        expect: [],
+        verify: (_) async {
+          verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
+          verify(Mocks.atoupicGame
+              .setLastCardPlayed(TestFactory.cards.first, Position.Right, callback));
+        },
+      );
+    });
   });
 }

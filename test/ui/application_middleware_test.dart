@@ -381,7 +381,7 @@ void main() {
 
       verify(mockGameContext.nextCardPlayer());
       verify(mockGameContext.getPossibleCardsToPlay(TestFactory.realPlayer));
-      verify(Mocks.gameBloc.add(RealPlayerCanChooseCard(true, cards: [TestFactory.cards[0]])));
+      verify(Mocks.gameBloc.add(RealPlayerCanChooseCard([TestFactory.cards[0]])));
       verify(Mocks.mockNext.next(action));
     });
 
@@ -437,13 +437,12 @@ void main() {
       setCardDecision(Mocks.store, action, Mocks.next);
 
       verify(mockGameContext.setCardDecision(card, player));
-      Function callBack =
-          verify(Mocks.atoupicGame.setLastCardPlayed(card, player.position, captureAny))
-              .captured
-              .single;
+      SetPlayedCard setPlayedCard = verify(Mocks.gameBloc.add(captureAny)).captured.single;
+      expect(setPlayedCard.card, card);
+      expect(setPlayedCard.position, player.position);
+
       verify(Mocks.gameService.save(updatedGameContext));
-      verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
-      callBack();
+      setPlayedCard.onCardPlayed();
       verify(Mocks.store.dispatch(ChooseCardDecisionAction(updatedGameContext)));
       verify(Mocks.mockNext.next(action));
     });
