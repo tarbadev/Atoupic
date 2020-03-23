@@ -98,5 +98,15 @@ void main() {
         verify(Mocks.atoupicGame.replaceRealPlayersCards([TestFactory.cards.first]));
       },
     );
+
+    blocTest<GameBloc, GameEvent, GameState>(
+      'calls the game to set the enable/disable real players capability to play a card',
+      build: () async => gameBloc,
+      act: (bloc) async => bloc.add(RealPlayerCanChooseCard(true, cards: [TestFactory.cards.first])),
+      expect: [],
+      verify: (_) async {
+        verify(Mocks.atoupicGame.realPlayerCanChooseCard(true, possiblePlayableCards: [TestFactory.cards.first]));
+      },
+    );
   });
 }

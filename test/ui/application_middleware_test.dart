@@ -381,8 +381,7 @@ void main() {
 
       verify(mockGameContext.nextCardPlayer());
       verify(mockGameContext.getPossibleCardsToPlay(TestFactory.realPlayer));
-      verify(Mocks.atoupicGame
-          .realPlayerCanChooseCard(true, possiblePlayableCards: [TestFactory.cards[0]]));
+      verify(Mocks.gameBloc.add(RealPlayerCanChooseCard(true, cards: [TestFactory.cards[0]])));
       verify(Mocks.mockNext.next(action));
     });
 

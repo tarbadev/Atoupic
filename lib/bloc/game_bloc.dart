@@ -37,6 +37,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       _atoupicGame.addPlayerCards(event.cards, event.position);
     } else if (event is ReplaceRealPlayersCards) {
       _atoupicGame.replaceRealPlayersCards(event.cards);
+    } else if (event is RealPlayerCanChooseCard) {
+      _atoupicGame.realPlayerCanChooseCard(event.canChooseCard, possiblePlayableCards: event.cards);
     }
   }
 }

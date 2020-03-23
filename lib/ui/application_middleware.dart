@@ -185,11 +185,8 @@ void chooseCardDecision(
     final container = Container();
     var possibleCardsToPlay = action.context.getPossibleCardsToPlay(nextPlayer);
     if (nextPlayer.isRealPlayer) {
-      AtoupicGame atoupicGame = container.resolve();
-      atoupicGame.realPlayerCanChooseCard(
-        true,
-        possiblePlayableCards: possibleCardsToPlay,
-      );
+      GameBloc gameBloc = container.resolve();
+      gameBloc.add(RealPlayerCanChooseCard(true, cards: possibleCardsToPlay));
     } else {
       AiService aiService = container.resolve();
       var chosenCard = aiService.chooseCard(

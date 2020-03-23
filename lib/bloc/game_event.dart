@@ -84,3 +84,16 @@ class ReplaceRealPlayersCards extends GameEvent {
   @override
   String toString() => 'ReplaceRealPlayersCards{cards: $cards}';
 }
+
+class RealPlayerCanChooseCard extends GameEvent {
+  final bool canChooseCard;
+  final List<Card> cards;
+
+  RealPlayerCanChooseCard(this.canChooseCard, {this.cards});
+
+  @override
+  List<Object> get props => [canChooseCard, cards];
+
+  @override
+  String toString() => 'RealPlayerCanChooseCard{canChooseCard: $canChooseCard, cards: $cards}';
+}
