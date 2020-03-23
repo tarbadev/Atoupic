@@ -17,9 +17,7 @@ class Start extends GameEvent {
   List<Object> get props => [players];
 
   @override
-  String toString() {
-    return 'Start{players: $players}';
-  }
+  String toString() => 'Start{players: $players}';
 }
 
 class NewTurn extends GameEvent {
@@ -31,7 +29,17 @@ class NewTurn extends GameEvent {
   List<Object> get props => [players];
 
   @override
-  String toString() {
-    return 'NewTurn{players: $players}';
-  }
+  String toString() => 'NewTurn{players: $players}';
+}
+
+class DisplayPlayerPassed extends GameEvent {
+  final Position position;
+
+  DisplayPlayerPassed(this.position);
+
+  @override
+  List<Object> get props => [position];
+
+  @override
+  String toString() => 'DisplayPlayerPassed{position: $position}';
 }

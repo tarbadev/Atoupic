@@ -170,7 +170,7 @@ void main() {
       passDecision(Mocks.store, action, Mocks.next);
 
       verifyInOrder([
-        Mocks.atoupicGame.setPlayerPassed(action.player.position),
+        Mocks.gameBloc.add(DisplayPlayerPassed(action.player.position)),
         Mocks.gameService.read(),
         Mocks.gameService.save(updatedGameContext),
         Mocks.store.dispatch(TakeOrPassDecisionAction(TestFactory.realPlayer)),

@@ -95,8 +95,9 @@ void passDecision(
   final container = Container();
   final AtoupicGame atoupicGame = container.resolve();
   final GameService gameService = container<GameService>();
+  final GameBloc gameBloc = container<GameBloc>();
 
-  atoupicGame.setPlayerPassed(action.player.position);
+  gameBloc.add(DisplayPlayerPassed(action.player.position));
 
   var gameContext = gameService.read().setDecision(action.player, Decision.Pass);
   var nextPlayer = gameContext.nextPlayer();
