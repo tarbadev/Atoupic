@@ -32,14 +32,16 @@ class NewTurn extends GameEvent {
   String toString() => 'NewTurn{players: $players}';
 }
 
-class DisplayPlayerPassed extends GameEvent {
+class DisplayPlayerPassedCaption extends GameEvent {
   final Position position;
 
-  DisplayPlayerPassed(this.position);
+  DisplayPlayerPassedCaption(this.position);
 
   @override
   List<Object> get props => [position];
 
   @override
-  String toString() => 'DisplayPlayerPassed{position: $position}';
+  String toString() => 'DisplayPlayerPassedCaption{position: $position}';
 }
+
+class ResetPlayersPassedCaption extends GameEvent {}

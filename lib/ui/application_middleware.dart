@@ -93,11 +93,10 @@ void passDecision(
   NextDispatcher next,
 ) {
   final container = Container();
-  final AtoupicGame atoupicGame = container.resolve();
   final GameService gameService = container<GameService>();
   final GameBloc gameBloc = container<GameBloc>();
 
-  gameBloc.add(DisplayPlayerPassed(action.player.position));
+  gameBloc.add(DisplayPlayerPassedCaption(action.player.position));
 
   var gameContext = gameService.read().setDecision(action.player, Decision.Pass);
   var nextPlayer = gameContext.nextPlayer();
@@ -106,7 +105,7 @@ void passDecision(
     store.dispatch(StartTurnAction());
   } else {
     if (nextPlayer == null) {
-      atoupicGame.resetPlayersPassed();
+      gameBloc.add(ResetPlayersPassedCaption());
       gameContext = gameContext.nextRound();
       nextPlayer = gameContext.nextPlayer();
     }

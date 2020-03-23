@@ -143,8 +143,8 @@ void main() {
 
   group('passDecision', () {
     test(
-        'saves new gameContext with decision, sets in game players and dispatch TakeOrPassDecision with next player',
-        () {
+        'saves new gameContext with decision, displays passed caption'
+        'and dispatch TakeOrPassDecision with next player', () {
       var card = Card(CardColor.Club, CardHead.Ace);
       var firstPlayer = TestFactory.computerPlayer;
       List<Player> players = [
@@ -170,7 +170,7 @@ void main() {
       passDecision(Mocks.store, action, Mocks.next);
 
       verifyInOrder([
-        Mocks.gameBloc.add(DisplayPlayerPassed(action.player.position)),
+        Mocks.gameBloc.add(DisplayPlayerPassedCaption(action.player.position)),
         Mocks.gameService.read(),
         Mocks.gameService.save(updatedGameContext),
         Mocks.store.dispatch(TakeOrPassDecisionAction(TestFactory.realPlayer)),
@@ -205,7 +205,7 @@ void main() {
 
       verifyInOrder([
         Mocks.gameService.read(),
-        Mocks.atoupicGame.resetPlayersPassed(),
+        Mocks.gameBloc.add(ResetPlayersPassedCaption()),
         Mocks.gameService.save(updatedGameContext),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.mockNext.next(action),

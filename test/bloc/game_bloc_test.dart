@@ -52,10 +52,20 @@ void main() {
     blocTest<GameBloc, GameEvent, GameState>(
       'calls the game to display player passed',
       build: () async => gameBloc,
-      act: (bloc) async => bloc.add(DisplayPlayerPassed(Position.Left)),
+      act: (bloc) async => bloc.add(DisplayPlayerPassedCaption(Position.Left)),
       expect: [],
       verify: (_) async {
         verify(Mocks.atoupicGame.setPlayerPassed(Position.Left));
+      },
+    );
+
+    blocTest<GameBloc, GameEvent, GameState>(
+      'calls the game to reset the passed caption for all players',
+      build: () async => gameBloc,
+      act: (bloc) async => bloc.add(ResetPlayersPassedCaption()),
+      expect: [],
+      verify: (_) async {
+        verify(Mocks.atoupicGame.resetPlayersPassed());
       },
     );
   });
