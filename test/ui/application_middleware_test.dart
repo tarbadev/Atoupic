@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/cart_round.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
@@ -27,10 +28,11 @@ void main() {
     reset(Mocks.gameService);
     reset(Mocks.atoupicGame);
     reset(Mocks.cardService);
+    reset(Mocks.gameBloc);
   });
 
   group('startSoloGame', () {
-    test('call gameService to get gameContext and sets in the state', () {
+    test('call gameService to get gameContext and adds event to gameBloc to start the game', () {
       var startSoloGameAction = StartSoloGameAction();
       var firstPlayer = TestFactory.computerPlayer;
       List<Player> players = [
@@ -45,20 +47,51 @@ void main() {
 
       startSoloGame(Mocks.store, startSoloGameAction, Mocks.next);
 
-      verifyInOrder([
-        Mocks.gameService.startSoloGame(),
-        Mocks.atoupicGame.setDomainPlayers(players),
-        Mocks.atoupicGame.visible = true,
-        Mocks.store.dispatch(SetCurrentViewAction(AtoupicView.InGame)),
-        Mocks.store.dispatch(SetRealPlayerAction(TestFactory.realPlayer)),
-        Mocks.store.dispatch(StartTurnAction(turnAlreadyCreated: true)),
-        Mocks.mockNext.next(startSoloGameAction),
-      ]);
+      verify(Mocks.gameService.startSoloGame());
+      verify(Mocks.gameBloc.add(Start(players)));
+      verify(Mocks.mockNext.next(startSoloGameAction));
+      verify(Mocks.gameBloc.listen(any));
+    });
+
+    test('listens to the gameBloc to dispatch new state when game is initialized', () {
+      var startSoloGameAction = StartSoloGameAction();
+      var firstPlayer = TestFactory.computerPlayer;
+      List<Player> players = [
+        Player(Position.Left),
+        firstPlayer,
+        TestFactory.realPlayer,
+        Player(Position.Right),
+      ];
+      var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
+
+      when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
+
+      startSoloGame(Mocks.store, startSoloGameAction, Mocks.next);
+
+      verify(Mocks.gameService.startSoloGame());
+      verify(Mocks.gameBloc.add(Start(players)));
+      verify(Mocks.mockNext.next(startSoloGameAction));
+
+      var callback = verify(Mocks.gameBloc.listen(captureAny)).captured.single;
+
+      expect(callback, isNotNull);
+
+      reset(Mocks.store);
+
+      callback(NotStarted());
+      verifyZeroInteractions(Mocks.store);
+
+      callback(Initialized());
+      verify(Mocks.store.dispatch(SetCurrentViewAction(AtoupicView.InGame)));
+      verify(Mocks.store.dispatch(SetRealPlayerAction(TestFactory.realPlayer)));
+      verify(Mocks.store.dispatch(StartTurnAction(turnAlreadyCreated: true)));
     });
   });
 
   group('startTurn', () {
-    test('resets game, gets new context from gameService and dispatches current turn and TakeOrPassDecision', () {
+    test(
+        'resets game, gets new context from gameService and dispatches current turn and TakeOrPassDecision',
+        () {
       var card = Card(CardColor.Club, CardHead.Ace);
       var firstPlayer = TestFactory.computerPlayer;
       List<Player> players = [
@@ -137,7 +170,8 @@ void main() {
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
       when(mockedContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
-      when(mockedContext.players).thenReturn(UnmodifiableListView([firstPlayer, TestFactory.realPlayer]));
+      when(mockedContext.players)
+          .thenReturn(UnmodifiableListView([firstPlayer, TestFactory.realPlayer]));
 
       passDecision(Mocks.store, action, Mocks.next);
 

@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:atoupic/bloc/bloc.dart';
+import 'package:atoupic/bloc/game_bloc.dart';
+import 'package:atoupic/bloc/game_event.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/service/ai_service.dart';
@@ -33,18 +36,20 @@ void startSoloGame(
   NextDispatcher next,
 ) {
   final container = Container();
-  final atoupicGame = container<AtoupicGame>();
   final GameService gameService = container<GameService>();
+  final GameBloc gameBloc = container<GameBloc>();
 
   final gameContext = gameService.startSoloGame();
 
-  atoupicGame.setDomainPlayers(gameContext.players);
-  atoupicGame.visible = true;
-
-  store.dispatch(SetCurrentViewAction(AtoupicView.InGame));
-  store.dispatch(
-      SetRealPlayerAction(gameContext.players.firstWhere((player) => player.isRealPlayer)));
-  store.dispatch(StartTurnAction(turnAlreadyCreated: true));
+  gameBloc.add(Start(gameContext.players));
+  gameBloc.listen((gameState) {
+    if (gameState is Initialized) {
+      store.dispatch(SetCurrentViewAction(AtoupicView.InGame));
+      store.dispatch(
+          SetRealPlayerAction(gameContext.players.firstWhere((player) => player.isRealPlayer)));
+      store.dispatch(StartTurnAction(turnAlreadyCreated: true));
+    }
+  });
 
   next(action);
 }

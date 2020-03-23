@@ -1,3 +1,4 @@
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
@@ -28,6 +29,7 @@ class MockGameContextRepository extends Mock implements GameContextRepository {}
 class MockGameContext extends Mock implements GameContext {}
 
 class MockPlayer extends Mock implements Player {}
+class MockGameBloc extends Mock implements GameBloc {}
 
 class MockStore extends Mock implements Store<ApplicationState> {}
 
@@ -45,6 +47,7 @@ class Mocks {
   static final PlayerService playerService = MockPlayerService();
   static final GameService gameService = MockGameService();
   static final AiService aiService = MockAiService();
+  static final GameBloc gameBloc = MockGameBloc();
   static final Store<ApplicationState> store = MockStore();
   static final GameContextRepository gameContextRepository =
       MockGameContextRepository();

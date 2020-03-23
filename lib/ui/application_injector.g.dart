@@ -16,5 +16,6 @@ class _$ApplicationInjector extends ApplicationInjector {
         (c) => GameService(c<GameContextRepository>(), c<CardService>()));
     container.registerFactory((c) => AiService(c<CardService>()));
     container.registerSingleton((c) => GameContextRepository());
+    container.registerSingleton((c) => GameBloc(c<AtoupicGame>()));
   }
 }

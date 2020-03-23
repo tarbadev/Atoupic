@@ -122,9 +122,10 @@ class _InGameViewModel {
 
   factory _InGameViewModel.create(Store<ApplicationState> store) {
     final currentTurn = store.state.currentTurn;
-    final List<CardColor> colorChoices =
-        currentTurn.card == null ? [] : AtoupicCard.CardColor.values.toList()
-          ..removeWhere((cardColor) => currentTurn.card.color == cardColor);
+    final List<CardColor> colorChoices = (currentTurn == null || currentTurn.card == null)
+        ? []
+        : AtoupicCard.CardColor.values.toList()
+      ..removeWhere((cardColor) => currentTurn.card.color == cardColor);
     var colorChoicesWidget = ColorChoices.fromCardColorList(colorChoices);
 
     _onTake() {
