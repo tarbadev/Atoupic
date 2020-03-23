@@ -1,5 +1,4 @@
 import 'package:atoupic/ui/application_actions.dart';
-import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:atoupic/ui/view/home_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -17,7 +16,6 @@ void main() {
       await tester.pumpWidget(buildTestableWidget(HomeView()));
 
       await homeViewTester.tapOnSolo();
-      verify(Mocks.store.dispatch(SetCurrentViewAction(AtoupicView.InGame)));
       verify(Mocks.store.dispatch(StartSoloGameAction()));
     });
   });

@@ -8,6 +8,7 @@ import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_middleware.dart';
+import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -48,6 +49,7 @@ void main() {
         Mocks.gameService.startSoloGame(),
         Mocks.atoupicGame.setDomainPlayers(players),
         Mocks.atoupicGame.visible = true,
+        Mocks.store.dispatch(SetCurrentViewAction(AtoupicView.InGame)),
         Mocks.store.dispatch(SetRealPlayerAction(TestFactory.realPlayer)),
         Mocks.store.dispatch(StartTurnAction(turnAlreadyCreated: true)),
         Mocks.mockNext.next(startSoloGameAction),

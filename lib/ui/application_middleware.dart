@@ -11,6 +11,8 @@ import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:redux/redux.dart';
 
+import 'atoupic_app.dart';
+
 List<Middleware<ApplicationState>> createApplicationMiddleware() => [
       TypedMiddleware<ApplicationState, StartSoloGameAction>(startSoloGame),
       TypedMiddleware<ApplicationState, StartTurnAction>(startTurn),
@@ -39,6 +41,7 @@ void startSoloGame(
   atoupicGame.setDomainPlayers(gameContext.players);
   atoupicGame.visible = true;
 
+  store.dispatch(SetCurrentViewAction(AtoupicView.InGame));
   store.dispatch(
       SetRealPlayerAction(gameContext.players.firstWhere((player) => player.isRealPlayer)));
   store.dispatch(StartTurnAction(turnAlreadyCreated: true));
