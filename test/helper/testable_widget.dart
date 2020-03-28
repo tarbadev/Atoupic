@@ -13,8 +13,8 @@ Widget buildTestableWidget(
   AtoupicView currentView = AtoupicView.Home,
   Player realPlayer,
   Turn currentTurn,
-  int usScore,
-  int themScore,
+  int usScore = 42,
+  int themScore = 120,
 }) {
   Mocks.setupMockStore(
     showTakeOrPassDialog: showTakeOrPassDialog,

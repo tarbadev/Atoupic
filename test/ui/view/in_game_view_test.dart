@@ -138,6 +138,8 @@ void main() {
 
       await tester.pumpWidget(buildTestableWidget(
         inGameView,
+        usScore: 102,
+        themScore: 31,
         currentTurn: Turn(1, TestFactory.computerPlayer)..turnResult = TestFactory.turnResult,
       ));
       await tester.pump();
@@ -149,6 +151,48 @@ void main() {
 
       verify(Mocks.store.dispatch(SetTurnResultAction(null)));
       verify(Mocks.store.dispatch(StartTurnAction()));
+    });
+
+    testWidgets('when game is over displays result for winner',
+        (WidgetTester tester) async {
+      var inGameView = InGameView();
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        usScore: 520,
+        themScore: 102,
+      ));
+
+      var inGameViewTester = InGameViewTester(tester);
+      expect(inGameViewTester.gameResult.isVisible, isFalse);
+
+      await tester.pump();
+
+      expect(inGameViewTester.gameResult.isVisible, isTrue);
+      expect(inGameViewTester.gameResult.usScore, 520);
+      expect(inGameViewTester.gameResult.themScore, 102);
+      expect(inGameViewTester.gameResult.result, 'Congratulations!');
+    });
+
+    testWidgets('when game is over displays result for looser',
+        (WidgetTester tester) async {
+      var inGameView = InGameView();
+
+      await tester.pumpWidget(buildTestableWidget(
+        inGameView,
+        usScore: 102,
+        themScore: 520,
+      ));
+
+      var inGameViewTester = InGameViewTester(tester);
+      expect(inGameViewTester.gameResult.isVisible, isFalse);
+
+      await tester.pump();
+
+      expect(inGameViewTester.gameResult.isVisible, isTrue);
+      expect(inGameViewTester.gameResult.usScore, 102);
+      expect(inGameViewTester.gameResult.themScore, 520);
+      expect(inGameViewTester.gameResult.result, 'You Lost!');
     });
 
     testWidgets('displays current score', (WidgetTester tester) async {

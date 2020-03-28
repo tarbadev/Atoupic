@@ -27,6 +27,7 @@ List<Middleware<ApplicationState>> createApplicationMiddleware() => [
       TypedMiddleware<ApplicationState, ChooseCardForAiAction>(chooseCardForAi),
       TypedMiddleware<ApplicationState, EndCardRoundAction>(endCardRound),
       TypedMiddleware<ApplicationState, EndTurnAction>(endTurn),
+      TypedMiddleware<ApplicationState, EndGameAction>(endGame),
     ];
 
 void startSoloGame(
@@ -271,5 +272,13 @@ void endTurn(
   store.dispatch(SetCurrentTurnAction(action.context.lastTurn));
   store.dispatch(SetTurnResultAction(action.context.lastTurn.turnResult));
 
+  next(action);
+}
+
+void endGame(
+  Store<ApplicationState> store,
+  EndGameAction action,
+  NextDispatcher next,
+) {
   next(action);
 }

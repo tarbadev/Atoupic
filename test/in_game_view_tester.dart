@@ -13,6 +13,7 @@ class InGameViewTester extends BaseViewTester {
   TakeOrPassDialogElement get takeOrPass => TakeOrPassDialogElement(tester);
 
   TurnResultElement get turnResult => TurnResultElement(tester);
+  GameResultElement get gameResult => GameResultElement(tester);
   ScoreElement get score => ScoreElement(tester);
 
   String get turn => getTextByKey('InGame__TurnCounter');
@@ -62,6 +63,20 @@ class TurnResultElement extends BaseViewTester {
     return Position.values
         .firstWhere((position) => takerPosition.contains(position.toString()));
   }
+}
+
+class GameResultElement extends BaseViewTester {
+  GameResultElement(tester) : super(tester);
+
+  bool get isVisible => widgetExists('GameResultDialog');
+
+  String get result => getTextByKey('GameResultDialog__Result');
+
+  int get usScore => int.parse(getTextByKey('GameResultDialog__UsScore'));
+
+  int get themScore => int.parse(getTextByKey('GameResultDialog__ThemScore'));
+
+  Future<void> tapOnNewGame() async => await tapOnButtonByKey('GameResultDialog__NewGameButton');
 }
 
 class ScoreElement extends BaseViewTester {

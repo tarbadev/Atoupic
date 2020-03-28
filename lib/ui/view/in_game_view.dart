@@ -34,6 +34,49 @@ class InGameView extends StatelessWidget {
             ),
           );
         }
+        if (viewModel.showEndGameDialog) {
+          SchedulerBinding.instance.addPostFrameCallback(
+                (_) => showDialog(
+              barrierDismissible: false,
+              context: context,
+              child: AlertDialog(
+                key: Key('GameResultDialog'),
+                title: Text(
+                  viewModel.score.us > viewModel.score.them ? 'Congratulations!': 'You Lost!',
+                  key: Key('GameResultDialog__Result'),
+                  style: TextStyle(fontSize: 22.0),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          viewModel.score.us.toString(),
+                          key: Key('GameResultDialog__UsScore'),
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                        Container(
+                            height: 20,
+                            child: VerticalDivider(
+                              color: Colors.grey,
+                              thickness: 2,
+                            )),
+                        Text(
+                          viewModel.score.them.toString(),
+                          key: Key('GameResultDialog__ThemScore'),
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
         return Container(
           child: Scaffold(
             key: Key('InGame__Container'),
@@ -106,6 +149,7 @@ class _InGameViewModel {
   final TurnResultDisplay turnResultDisplay;
   final Function onTurnResultNext;
   final ScoreDisplay score;
+  final bool showEndGameDialog;
 
   _InGameViewModel(
     this.showTakeOrPassDialog,
@@ -118,10 +162,12 @@ class _InGameViewModel {
     this.turnResultDisplay,
     this.onTurnResultNext,
     this.score,
+    this.showEndGameDialog,
   );
 
   factory _InGameViewModel.create(Store<ApplicationState> store) {
     final currentTurn = store.state.currentTurn;
+    final isGameOver = store.state.score.us >= 501 || store.state.score.them >= 501;
     final List<CardColor> colorChoices = (currentTurn == null || currentTurn.card == null)
         ? []
         : AtoupicCard.CardColor.values.toList()
@@ -135,6 +181,13 @@ class _InGameViewModel {
       }
       store.dispatch(ShowTakeOrPassDialogAction(false));
       store.dispatch(TakeDecisionAction(store.state.realPlayer, cardColor));
+    }
+
+    _onEndTurnNext() {
+      store.dispatch(SetTurnResultAction(null));
+      if (!isGameOver) {
+        store.dispatch(StartTurnAction());
+      }
     }
 
     return _InGameViewModel(
@@ -154,11 +207,9 @@ class _InGameViewModel {
       currentTurn.turnResult == null
           ? null
           : TurnResultDisplay.fromTurnResult(currentTurn.turnResult),
-      () {
-        store.dispatch(SetTurnResultAction(null));
-        store.dispatch(StartTurnAction());
-      },
+      _onEndTurnNext,
       store.state.score,
+      currentTurn.turnResult == null && isGameOver,
     );
   }
 }

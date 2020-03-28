@@ -172,3 +172,8 @@ class SetCurrentTurnAction extends Equatable {
   @override
   List<Object> get props => [turn];
 }
+
+class EndGameAction extends Equatable {
+  @override
+  List<Object> get props => [];
+}
