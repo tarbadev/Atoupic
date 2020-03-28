@@ -57,11 +57,21 @@ class Turn extends Equatable {
     var horizontalScore = 0;
 
     if (isTakerVertical) {
-      verticalScore = isSuccessful ? verticalPoints : 0;
-      horizontalScore = !isSuccessful ? 162 : horizontalPoints;
+      if (isSuccessful) {
+        verticalScore = horizontalPoints == 0 ? 252 : verticalPoints;
+        horizontalScore = horizontalPoints;
+      } else {
+        verticalScore = 0;
+        horizontalScore = verticalPoints == 0 ? 252 : 162;
+      }
     } else {
-      verticalScore = !isSuccessful ? 162 : verticalPoints;
-      horizontalScore = isSuccessful ? horizontalPoints : 0;
+      if (isSuccessful) {
+        verticalScore = verticalPoints;
+        horizontalScore = verticalPoints == 0 ? 252 : horizontalPoints;
+      } else {
+        verticalScore = horizontalPoints == 0 ? 252 : 162;
+        horizontalScore = 0;
+      }
     }
 
     var turnResult = TurnResult(
