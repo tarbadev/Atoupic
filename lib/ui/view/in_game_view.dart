@@ -2,6 +2,7 @@ import 'package:atoupic/domain/entity/card.dart' as AtoupicCard;
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_state.dart';
+import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:atoupic/ui/component/color_choices.dart';
 import 'package:atoupic/ui/component/score.dart';
 import 'package:atoupic/ui/component/take_or_pass_dialog.dart';
@@ -73,6 +74,16 @@ class InGameView extends StatelessWidget {
                     ),
                   ],
                 ),
+                actions: <Widget>[
+                  FlatButton(
+                    key: Key('GameResultDialog__HomeButton'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      viewModel.onHomeTap();
+                    },
+                    child: Text('Home'),
+                  ),
+                ],
               ),
             ),
           );
@@ -150,6 +161,7 @@ class _InGameViewModel {
   final Function onTurnResultNext;
   final ScoreDisplay score;
   final bool showEndGameDialog;
+  final Function onHomeTap;
 
   _InGameViewModel(
     this.showTakeOrPassDialog,
@@ -163,6 +175,7 @@ class _InGameViewModel {
     this.onTurnResultNext,
     this.score,
     this.showEndGameDialog,
+    this.onHomeTap,
   );
 
   factory _InGameViewModel.create(Store<ApplicationState> store) {
@@ -210,6 +223,7 @@ class _InGameViewModel {
       _onEndTurnNext,
       store.state.score,
       currentTurn.turnResult == null && isGameOver,
+      () => store.dispatch(SetCurrentViewAction(AtoupicView.Home)),
     );
   }
 }

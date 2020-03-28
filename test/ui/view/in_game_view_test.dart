@@ -2,6 +2,7 @@ import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/application_actions.dart';
+import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:atoupic/ui/view/in_game_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -153,46 +154,63 @@ void main() {
       verify(Mocks.store.dispatch(StartTurnAction()));
     });
 
-    testWidgets('when game is over displays result for winner',
-        (WidgetTester tester) async {
-      var inGameView = InGameView();
+    group('when game is over', () {
+      testWidgets('displays result for winner', (WidgetTester tester) async {
+        var inGameView = InGameView();
 
-      await tester.pumpWidget(buildTestableWidget(
-        inGameView,
-        usScore: 520,
-        themScore: 102,
-      ));
+        await tester.pumpWidget(buildTestableWidget(
+          inGameView,
+          usScore: 520,
+          themScore: 102,
+        ));
 
-      var inGameViewTester = InGameViewTester(tester);
-      expect(inGameViewTester.gameResult.isVisible, isFalse);
+        var inGameViewTester = InGameViewTester(tester);
+        expect(inGameViewTester.gameResult.isVisible, isFalse);
 
-      await tester.pump();
+        await tester.pump();
 
-      expect(inGameViewTester.gameResult.isVisible, isTrue);
-      expect(inGameViewTester.gameResult.usScore, 520);
-      expect(inGameViewTester.gameResult.themScore, 102);
-      expect(inGameViewTester.gameResult.result, 'Congratulations!');
-    });
+        expect(inGameViewTester.gameResult.isVisible, isTrue);
+        expect(inGameViewTester.gameResult.usScore, 520);
+        expect(inGameViewTester.gameResult.themScore, 102);
+        expect(inGameViewTester.gameResult.result, 'Congratulations!');
+      });
 
-    testWidgets('when game is over displays result for looser',
-        (WidgetTester tester) async {
-      var inGameView = InGameView();
+      testWidgets('displays result for looser', (WidgetTester tester) async {
+        var inGameView = InGameView();
 
-      await tester.pumpWidget(buildTestableWidget(
-        inGameView,
-        usScore: 102,
-        themScore: 520,
-      ));
+        await tester.pumpWidget(buildTestableWidget(
+          inGameView,
+          usScore: 102,
+          themScore: 520,
+        ));
 
-      var inGameViewTester = InGameViewTester(tester);
-      expect(inGameViewTester.gameResult.isVisible, isFalse);
+        var inGameViewTester = InGameViewTester(tester);
+        expect(inGameViewTester.gameResult.isVisible, isFalse);
 
-      await tester.pump();
+        await tester.pump();
 
-      expect(inGameViewTester.gameResult.isVisible, isTrue);
-      expect(inGameViewTester.gameResult.usScore, 102);
-      expect(inGameViewTester.gameResult.themScore, 520);
-      expect(inGameViewTester.gameResult.result, 'You Lost!');
+        expect(inGameViewTester.gameResult.isVisible, isTrue);
+        expect(inGameViewTester.gameResult.usScore, 102);
+        expect(inGameViewTester.gameResult.themScore, 520);
+        expect(inGameViewTester.gameResult.result, 'You Lost!');
+      });
+
+      testWidgets('when click on home dispatches SetCurrentViewAction', (WidgetTester tester) async {
+        var inGameView = InGameView();
+
+        await tester.pumpWidget(buildTestableWidget(
+          inGameView,
+          usScore: 520,
+          themScore: 102,
+        ));
+        await tester.pump();
+
+        var inGameViewTester = InGameViewTester(tester);
+
+        await inGameViewTester.gameResult.tapOnHome();
+
+        verify(Mocks.store.dispatch(SetCurrentViewAction(AtoupicView.Home)));
+      });
     });
 
     testWidgets('displays current score', (WidgetTester tester) async {

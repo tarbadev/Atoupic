@@ -76,6 +76,7 @@ class GameResultElement extends BaseViewTester {
 
   int get themScore => int.parse(getTextByKey('GameResultDialog__ThemScore'));
 
+  Future<void> tapOnHome() async => await tapOnButtonByKey('GameResultDialog__HomeButton');
   Future<void> tapOnNewGame() async => await tapOnButtonByKey('GameResultDialog__NewGameButton');
 }
 
