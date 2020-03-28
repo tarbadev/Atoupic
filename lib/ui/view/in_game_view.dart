@@ -37,13 +37,13 @@ class InGameView extends StatelessWidget {
         }
         if (viewModel.showEndGameDialog) {
           SchedulerBinding.instance.addPostFrameCallback(
-                (_) => showDialog(
+            (_) => showDialog(
               barrierDismissible: false,
               context: context,
               child: AlertDialog(
                 key: Key('GameResultDialog'),
                 title: Text(
-                  viewModel.score.us > viewModel.score.them ? 'Congratulations!': 'You Lost!',
+                  viewModel.score.us > viewModel.score.them ? 'Congratulations!' : 'You Lost!',
                   key: Key('GameResultDialog__Result'),
                   style: TextStyle(fontSize: 22.0),
                 ),
@@ -75,13 +75,29 @@ class InGameView extends StatelessWidget {
                   ],
                 ),
                 actions: <Widget>[
-                  FlatButton(
+                  RaisedButton(
                     key: Key('GameResultDialog__HomeButton'),
+                    color: Theme.of(context).backgroundColor,
                     onPressed: () {
                       Navigator.pop(context);
                       viewModel.onHomeTap();
                     },
-                    child: Text('Home'),
+                    child: Text(
+                      'Home',
+                      style: Theme.of(context).textTheme.body1,
+                    ),
+                  ),
+                  RaisedButton(
+                    key: Key('GameResultDialog__NewGameButton'),
+                    color: Theme.of(context).backgroundColor,
+                    onPressed: () {
+                      Navigator.pop(context);
+                      viewModel.onNewGameTap();
+                    },
+                    child: Text(
+                      'New Game',
+                      style: Theme.of(context).textTheme.body1,
+                    ),
                   ),
                 ],
               ),
@@ -162,6 +178,7 @@ class _InGameViewModel {
   final ScoreDisplay score;
   final bool showEndGameDialog;
   final Function onHomeTap;
+  final Function onNewGameTap;
 
   _InGameViewModel(
     this.showTakeOrPassDialog,
@@ -176,6 +193,7 @@ class _InGameViewModel {
     this.score,
     this.showEndGameDialog,
     this.onHomeTap,
+    this.onNewGameTap,
   );
 
   factory _InGameViewModel.create(Store<ApplicationState> store) {
@@ -224,6 +242,7 @@ class _InGameViewModel {
       store.state.score,
       currentTurn.turnResult == null && isGameOver,
       () => store.dispatch(SetCurrentViewAction(AtoupicView.Home)),
+      () => store.dispatch(StartSoloGameAction()),
     );
   }
 }

@@ -211,6 +211,23 @@ void main() {
 
         verify(Mocks.store.dispatch(SetCurrentViewAction(AtoupicView.Home)));
       });
+
+      testWidgets('when click on new game dispatches StartSoloGameAction', (WidgetTester tester) async {
+        var inGameView = InGameView();
+
+        await tester.pumpWidget(buildTestableWidget(
+          inGameView,
+          usScore: 520,
+          themScore: 102,
+        ));
+        await tester.pump();
+
+        var inGameViewTester = InGameViewTester(tester);
+
+        await inGameViewTester.gameResult.tapOnNewGame();
+
+        verify(Mocks.store.dispatch(StartSoloGameAction()));
+      });
     });
 
     testWidgets('displays current score', (WidgetTester tester) async {
