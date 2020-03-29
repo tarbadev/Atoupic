@@ -65,7 +65,7 @@ void startTurn(
 
   GameContext gameContext = gameService.startTurn(action.turnAlreadyCreated);
 
-  gameBloc.add(NewTurn(gameContext.players));
+  gameBloc.add(NewTurn());
 
   store.dispatch(SetCurrentTurnAction(gameContext.lastTurn));
   store.dispatch(TakeOrPassDecisionAction(gameContext.nextPlayer()));

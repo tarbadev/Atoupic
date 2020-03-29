@@ -48,6 +48,7 @@ class AtoupicGame extends BaseGame {
     playerComponent.addCards(cards
         .map((card) => CardComponent.fromCard(card, showBackFace: !playerComponent.isRealPlayer))
         .toList());
+    playerComponent.resize(size);
   }
 
   @override

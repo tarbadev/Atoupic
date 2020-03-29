@@ -1,4 +1,4 @@
-import 'package:atoupic/bloc/game_bloc.dart';
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/service/ai_service.dart';
 import 'package:atoupic/domain/service/card_service.dart';
 import 'package:atoupic/domain/service/game_service.dart';
@@ -26,6 +26,9 @@ abstract class ApplicationInjector {
   @Register.factory(AiService)
   @Register.singleton(GameContextRepository)
   @Register.singleton(GameBloc)
+  @Register.singleton(AppBloc)
+  @Register.singleton(CurrentTurnBloc)
+  @Register.singleton(TakeOrPassBloc)
   void configureAnnotations();
 
   void configureInstances() {

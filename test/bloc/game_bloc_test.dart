@@ -1,6 +1,8 @@
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
+import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/domain/entity/turn.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -14,13 +16,61 @@ void main() {
     GameBloc gameBloc;
 
     setUp(() {
-      gameBloc = GameBloc(Mocks.atoupicGame);
+      gameBloc = GameBloc(Mocks.atoupicGame, Mocks.appBloc, Mocks.gameService);
+    });
+
+    tearDown((){
+      gameBloc.close();
     });
 
     test('initial state is NotStarted', () {
       expect(gameBloc.initialState, NotStarted());
     });
 
+    blocTest<GameBloc, GameEvent, GameState>(
+      'emits SoloGameInitialized() state on StartSoloGame event',
+      build: () async => gameBloc,
+      act: (bloc) async {
+        var firstPlayer = TestFactory.computerPlayer;
+        var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
+
+        when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
+
+        bloc.add(StartSoloGame());
+      },
+      expect: [SoloGameInitialized()],
+      verify: (_) async {
+        verify(Mocks.gameService.startSoloGame());
+        verify(Mocks.atoupicGame.visible = true);
+        verify(Mocks.atoupicGame.setDomainPlayers(players));
+        verify(Mocks.appBloc.add(GameInitialized()));
+      },
+    );
+
+    blocTest<GameBloc, GameEvent, GameState>(
+      'emits TurnCreated() state on NewTurn event',
+      build: () async => gameBloc,
+      act: (bloc) async {
+        when(Mocks.gameService.startTurn(any)).thenReturn(TestFactory.gameContext);
+
+        bloc.add(NewTurn());
+      },
+      expect: [TurnCreated(TestFactory.gameContext.lastTurn)],
+      verify: (_) async {
+        verify(Mocks.atoupicGame.resetPlayersPassed());
+        verify(Mocks.atoupicGame.resetTrumpColor());
+        verify(Mocks.atoupicGame.resetPlayersCards());
+
+        verify(Mocks.gameService.startTurn(true));
+
+        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Left));
+        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Top));
+        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Right));
+        verify(Mocks.atoupicGame.addPlayerCards([Card(CardColor.Heart, CardHead.Ace)], Position.Bottom));
+      },
+    );
+
+    // Deprecated
     blocTest<GameBloc, GameEvent, GameState>(
       'emits Initialized() state when starting game',
       build: () async => gameBloc,
@@ -32,10 +82,11 @@ void main() {
       },
     );
 
+    // Deprecated
     blocTest<GameBloc, GameEvent, GameState>(
       'resets the game on NewTurn',
       build: () async => gameBloc,
-      act: (bloc) async => bloc.add(NewTurn(players)),
+      act: (bloc) async => bloc.add(NewTurn()),
       expect: [],
       verify: (_) async {
         verify(Mocks.atoupicGame.resetPlayersPassed());

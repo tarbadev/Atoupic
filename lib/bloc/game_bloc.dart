@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:atoupic/domain/entity/game_context.dart';
+import 'package:atoupic/domain/service/game_service.dart';
 import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:bloc/bloc.dart';
 
@@ -7,8 +9,10 @@ import './bloc.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   final AtoupicGame _atoupicGame;
+  final AppBloc _appBloc;
+  final GameService _gameService;
 
-  GameBloc(this._atoupicGame);
+  GameBloc(this._atoupicGame, this._appBloc, this._gameService);
 
   @override
   GameState get initialState => NotStarted();
@@ -17,16 +21,29 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Stream<GameState> mapEventToState(
     GameEvent event,
   ) async* {
-    if (event is Start) {
-      _atoupicGame.setDomainPlayers(event.players);
+    if (event is StartSoloGame) {
+      final gameContext = _gameService.startSoloGame();
+
+      _atoupicGame.setDomainPlayers(gameContext.players);
       _atoupicGame.visible = true;
+
+      yield SoloGameInitialized();
+
+      _appBloc.add(GameInitialized());
+    } else if (event is Start) {
+//      _atoupicGame.setDomainPlayers(event.players);
+//      _atoupicGame.visible = true;
       yield Initialized();
     } else if (event is NewTurn) {
       _atoupicGame.resetPlayersPassed();
       _atoupicGame.resetTrumpColor();
       _atoupicGame.resetPlayersCards();
 
-      event.players.forEach((player) => _atoupicGame.addPlayerCards(player.cards, player.position));
+      GameContext gameContext = _gameService.startTurn(true);
+
+      gameContext.players.forEach((player) => _atoupicGame.addPlayerCards(player.cards, player.position));
+
+      yield TurnCreated(gameContext.lastTurn);
     } else if (event is DisplayPlayerPassedCaption) {
       _atoupicGame.setPlayerPassed(event.position);
     } else if (event is DisplayTrumpColor) {

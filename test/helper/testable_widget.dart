@@ -3,6 +3,7 @@ import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/application_state.dart';
 import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import 'mock_definition.dart';
@@ -27,9 +28,17 @@ Widget buildTestableWidget(
 
   return MediaQuery(
     data: MediaQueryData(),
-    child: StoreProvider<ApplicationState>(
-      store: Mocks.store,
-      child: MaterialApp(home: Scaffold(body: widget)),
+    child: MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => Mocks.gameBloc),
+        BlocProvider(create: (_) => Mocks.appBloc),
+        BlocProvider(create: (_) => Mocks.currentTurnBloc),
+        BlocProvider(create: (_) => Mocks.takeOrPassBloc),
+      ],
+      child: StoreProvider<ApplicationState>(
+        store: Mocks.store,
+        child: MaterialApp(home: Scaffold(body: widget)),
+      ),
     ),
   );
 }

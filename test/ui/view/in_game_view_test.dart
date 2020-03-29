@@ -1,3 +1,4 @@
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
@@ -17,20 +18,6 @@ void main() {
   setupDependencyInjectorForTest();
 
   group('InGameView', () {
-    testWidgets('displays dialog if showTakeOrPassDialog is true', (WidgetTester tester) async {
-      var inGameView = InGameView();
-
-      await tester.pumpWidget(buildTestableWidget(
-        inGameView,
-        showTakeOrPassDialog: true,
-        currentTurn: Turn(1, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace),
-      ));
-      await tester.pump();
-
-      var inGameViewTester = InGameViewTester(tester);
-      expect(inGameViewTester.takeOrPass.isVisible, isTrue);
-    });
-
     testWidgets('displays round 2 dialog if showTakeOrPassDialog is true and round = 2',
         (WidgetTester tester) async {
       var inGameView = InGameView();
@@ -51,49 +38,134 @@ void main() {
     });
 
     testWidgets('displays current turn number', (WidgetTester tester) async {
-      var inGameView = InGameView();
+      when(Mocks.currentTurnBloc.state).thenAnswer((_) => 12);
 
       await tester.pumpWidget(buildTestableWidget(
-        inGameView,
-        currentTurn: Turn(12, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace),
+        InGameView(),
       ));
 
       var inGameViewTester = InGameViewTester(tester);
       expect(inGameViewTester.turn, 'Turn 12');
     });
 
-    testWidgets('dispatches a PassAction on pass tap', (WidgetTester tester) async {
-      var inGameView = InGameView();
+    group('on TurnCreated state from GameBloc', () {
+      testWidgets('adds a Pass event when player is computer', (WidgetTester tester) async {
+        when(Mocks.gameBloc.state)
+            .thenAnswer((_) => TurnCreated(Turn(1, TestFactory.computerPlayer)));
 
-      await tester.pumpWidget(buildTestableWidget(
-        inGameView,
-        showTakeOrPassDialog: true,
-        currentTurn: Turn(1, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace),
-        realPlayer: TestFactory.realPlayer,
-      ));
-      await tester.pump();
+        await tester.pumpWidget(buildTestableWidget(InGameView()));
 
-      var inGameViewTester = InGameViewTester(tester);
-      await inGameViewTester.takeOrPass.tapOnPass();
-      verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
-      verify(Mocks.store.dispatch(PassDecisionAction(TestFactory.realPlayer)));
+        verify(Mocks.takeOrPassBloc.add(Pass(TestFactory.computerPlayer)));
+      });
+
+      testWidgets('displays take of pass dialog when player is real player',
+          (WidgetTester tester) async {
+        var card = Card(CardColor.Heart, CardHead.Ace);
+        when(Mocks.gameBloc.state)
+            .thenAnswer((_) => TurnCreated(Turn(1, TestFactory.realPlayer)..card = card));
+
+        await tester.pumpWidget(buildTestableWidget(InGameView()));
+        await tester.pump();
+
+        var inGameViewTester = InGameViewTester(tester);
+        expect(inGameViewTester.takeOrPass.isVisible, isTrue);
+      });
     });
 
-    testWidgets('dispatches a TakeAction on take tap', (WidgetTester tester) async {
-      var inGameView = InGameView();
+    group('on PlayerPassed state from TakeOrPassBloc', () {
+      testWidgets('adds a Pass event when next player is computer', (WidgetTester tester) async {
+        var mockedGameContext = MockGameContext();
+
+        when(Mocks.takeOrPassBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
+        when(mockedGameContext.lastTurn).thenReturn(Turn(1, TestFactory.computerPlayer));
+        when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.computerPlayer);
+
+        await tester.pumpWidget(buildTestableWidget(InGameView()));
+
+        verify(Mocks.takeOrPassBloc.add(Pass(TestFactory.computerPlayer)));
+      });
+
+      testWidgets('displays take of pass dialog when player is real player',
+          (WidgetTester tester) async {
+        var mockedGameContext = MockGameContext();
+
+        when(Mocks.takeOrPassBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
+        when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
+        when(mockedGameContext.lastTurn).thenReturn(
+            Turn(1, TestFactory.computerPlayer)..card = Card(CardColor.Heart, CardHead.Ace));
+
+        await tester.pumpWidget(buildTestableWidget(InGameView()));
+        await tester.pump();
+
+        var inGameViewTester = InGameViewTester(tester);
+        expect(inGameViewTester.takeOrPass.isVisible, isTrue);
+      });
+
+      testWidgets('adds a Pass event on pass tap', (WidgetTester tester) async {
+        var mockedGameContext = MockGameContext();
+        var turn = Turn(1, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace);
+
+        when(Mocks.takeOrPassBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
+        when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
+        when(mockedGameContext.lastTurn).thenReturn(turn);
+
+        await tester.pumpWidget(buildTestableWidget(InGameView()));
+        await tester.pump();
+
+        var inGameViewTester = InGameViewTester(tester);
+        await inGameViewTester.takeOrPass.tapOnPass();
+        verify(Mocks.takeOrPassBloc.add(Pass(TestFactory.realPlayer)));
+      });
+
+      testWidgets('adds a Take event on take tap', (WidgetTester tester) async {
+        var mockedGameContext = MockGameContext();
+        var turn = Turn(1, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace);
+
+        when(Mocks.takeOrPassBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
+        when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
+        when(mockedGameContext.lastTurn).thenReturn(turn);
+
+        await tester.pumpWidget(buildTestableWidget(InGameView()));
+        await tester.pump();
+
+        var inGameViewTester = InGameViewTester(tester);
+        await inGameViewTester.takeOrPass.tapOnTake();
+        verify(Mocks.takeOrPassBloc.add(Take(TestFactory.realPlayer, turn.card.color)));
+      });
+
+      testWidgets('displays take of pass round 2 dialog when player is real player',
+          (WidgetTester tester) async {
+        var mockedGameContext = MockGameContext();
+
+        when(Mocks.takeOrPassBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
+        when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
+        when(mockedGameContext.lastTurn).thenReturn(Turn(1, TestFactory.computerPlayer)
+          ..round = 2
+          ..card = Card(CardColor.Heart, CardHead.Ace));
+
+        await tester.pumpWidget(buildTestableWidget(InGameView()));
+        await tester.pump();
+
+        var inGameViewTester = InGameViewTester(tester);
+        expect(inGameViewTester.takeOrPass.isVisible, isTrue);
+
+        await inGameViewTester.takeOrPass.tapOnColorChoice(CardColor.Spade);
+        await inGameViewTester.takeOrPass.tapOnTake();
+
+        verify(Mocks.takeOrPassBloc.add(Take(TestFactory.realPlayer, CardColor.Spade)));
+      });
+    });
+
+    testWidgets('triggers a NewTurn event on SoloGameInitialized', (WidgetTester tester) async {
+      when(Mocks.gameBloc.state).thenAnswer((_) => SoloGameInitialized());
 
       await tester.pumpWidget(buildTestableWidget(
-        inGameView,
-        showTakeOrPassDialog: true,
-        currentTurn: Turn(1, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace),
-        realPlayer: TestFactory.realPlayer,
+        InGameView(),
+        currentTurn: Turn(12, MockPlayer())..card = Card(CardColor.Club, CardHead.Ace),
       ));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      var inGameViewTester = InGameViewTester(tester);
-      await inGameViewTester.takeOrPass.tapOnTake();
-      verify(Mocks.store.dispatch(ShowTakeOrPassDialogAction(false)));
-      verify(Mocks.store.dispatch(TakeDecisionAction(TestFactory.realPlayer, CardColor.Club)));
+      verify(Mocks.gameBloc.add(NewTurn()));
     });
 
     testWidgets('dispatches a TakeAction on round 2 take tap', (WidgetTester tester) async {
@@ -195,7 +267,8 @@ void main() {
         expect(inGameViewTester.gameResult.result, 'You Lost!');
       });
 
-      testWidgets('when click on home dispatches SetCurrentViewAction', (WidgetTester tester) async {
+      testWidgets('when click on home dispatches SetCurrentViewAction',
+          (WidgetTester tester) async {
         var inGameView = InGameView();
 
         await tester.pumpWidget(buildTestableWidget(
@@ -212,7 +285,8 @@ void main() {
         verify(Mocks.store.dispatch(SetCurrentViewAction(AtoupicView.Home)));
       });
 
-      testWidgets('when click on new game dispatches StartSoloGameAction', (WidgetTester tester) async {
+      testWidgets('when click on new game dispatches StartSoloGameAction',
+          (WidgetTester tester) async {
         var inGameView = InGameView();
 
         await tester.pumpWidget(buildTestableWidget(

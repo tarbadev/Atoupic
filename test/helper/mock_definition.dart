@@ -11,6 +11,7 @@ import 'package:atoupic/ui/application_state.dart';
 import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:atoupic/ui/entity/score_display.dart';
 import 'package:atoupic/ui/view/atoupic_game.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 
@@ -29,7 +30,10 @@ class MockGameContextRepository extends Mock implements GameContextRepository {}
 class MockGameContext extends Mock implements GameContext {}
 
 class MockPlayer extends Mock implements Player {}
-class MockGameBloc extends Mock implements GameBloc {}
+class MockGameBloc extends MockBloc<GameEvent, GameState> implements GameBloc {}
+class MockAppBloc extends MockBloc<AppEvent, AppState> implements AppBloc {}
+class MockTakeOrPassBloc extends MockBloc<TakeOrPassEvent, TakeOrPassState> implements TakeOrPassBloc {}
+class MockCurrentTurnBloc extends MockBloc<CurrentTurnEvent, int> implements CurrentTurnBloc {}
 
 class MockStore extends Mock implements Store<ApplicationState> {}
 
@@ -48,6 +52,9 @@ class Mocks {
   static final GameService gameService = MockGameService();
   static final AiService aiService = MockAiService();
   static final GameBloc gameBloc = MockGameBloc();
+  static final AppBloc appBloc = MockAppBloc();
+  static final CurrentTurnBloc currentTurnBloc = MockCurrentTurnBloc();
+  static final TakeOrPassBloc takeOrPassBloc = MockTakeOrPassBloc();
   static final Store<ApplicationState> store = MockStore();
   static final GameContextRepository gameContextRepository =
       MockGameContextRepository();

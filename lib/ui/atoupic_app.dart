@@ -1,8 +1,11 @@
+import 'package:atoupic/bloc/app_state.dart';
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/ui/application_state.dart';
+import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:atoupic/ui/view/home_view.dart';
 import 'package:atoupic/ui/view/in_game_view.dart';
-import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 import 'package:redux/redux.dart';
@@ -28,47 +31,35 @@ class AtoupicApp extends StatelessWidget {
 
 class _MainPage extends StatelessWidget {
   final AtoupicGame _game = kiwi.Container().resolve<AtoupicGame>();
-  final HomeView _homeView = HomeView();
-  final InGameView _inGameView = InGameView();
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<ApplicationState, _AtoupicAppModel>(
-        converter: (Store<ApplicationState> store) =>
-            _AtoupicAppModel.create(store),
-        builder: (BuildContext context, _AtoupicAppModel viewModel) {
-          var currentView;
-          switch (viewModel.currentView) {
-            case AtoupicView.Home:
-              currentView = _homeView;
-              break;
-            case AtoupicView.InGame:
-              currentView = _inGameView;
-              break;
-          }
-          return Stack(
-            children: <Widget>[
-              _game.widget,
-              GestureDetector(
-                onTap: _game.onTap,
-                onTapDown: _game.onTapDown,
-                onTapUp: _game.onTapUp,
-                onTapCancel: _game.onTapCancel,
-                child: currentView,
-              ),
+    return Stack(
+      children: <Widget>[
+        _game.widget,
+        GestureDetector(
+          onTap: _game.onTap,
+          onTapDown: _game.onTapDown,
+          onTapUp: _game.onTapUp,
+          onTapCancel: _game.onTapCancel,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => kiwi.Container().resolve<GameBloc>()),
+              BlocProvider(create: (_) => kiwi.Container().resolve<AppBloc>()),
+              BlocProvider(create: (_) => kiwi.Container().resolve<TakeOrPassBloc>()),
             ],
-          );
-        });
+            child: BlocBuilder<AppBloc, AppState>(
+              builder: (context, state) {
+                if (state is InGameAppState) {
+                  return InGameView();
+                } else {
+                  return HomeView();
+                }
+              },
+            ),
+          ),
+        ),
+      ],
+    );
   }
-}
-
-class _AtoupicAppModel {
-  final AtoupicView currentView;
-
-  _AtoupicAppModel(this.currentView);
-
-  factory _AtoupicAppModel.create(Store<ApplicationState> store) =>
-      _AtoupicAppModel(
-        store.state.currentView,
-      );
 }

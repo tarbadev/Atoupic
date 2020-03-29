@@ -108,7 +108,7 @@ void main() {
 
       verifyInOrder([
         Mocks.gameService.startTurn(true),
-        Mocks.gameBloc.add(NewTurn(players)),
+        Mocks.gameBloc.add(NewTurn()),
         Mocks.store.dispatch(SetCurrentTurnAction(gameContext.lastTurn)),
         Mocks.store.dispatch(TakeOrPassDecisionAction(firstPlayer)),
         Mocks.mockNext.next(takeOrPassAction),
@@ -158,8 +158,8 @@ void main() {
           ..card = card
           ..playerDecisions[firstPlayer.position] = Decision.Pass
       ]);
-      var action = PassDecisionAction(firstPlayer);
       var mockedContext = MockGameContext();
+      var action = PassDecisionAction(firstPlayer);
 
       when(Mocks.gameService.read()).thenReturn(gameContext);
       when(mockedContext.nextPlayer()).thenReturn(TestFactory.realPlayer);

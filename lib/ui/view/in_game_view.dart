@@ -1,5 +1,8 @@
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart' as AtoupicCard;
 import 'package:atoupic/domain/entity/card.dart';
+import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_state.dart';
 import 'package:atoupic/ui/atoupic_app.dart';
@@ -9,140 +12,197 @@ import 'package:atoupic/ui/component/take_or_pass_dialog.dart';
 import 'package:atoupic/ui/component/turn_result_dialog.dart';
 import 'package:atoupic/ui/entity/score_display.dart';
 import 'package:atoupic/ui/entity/turn_result_display.dart';
+import 'package:atoupic/ui/widget/CurrentTurn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 class InGameView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<ApplicationState, _InGameViewModel>(
-      converter: (Store<ApplicationState> store) => _InGameViewModel.create(store),
-      builder: (BuildContext context, _InGameViewModel viewModel) {
-        if (viewModel.showTakeOrPassDialog) {
-          displayTakeOrPassDialog(context, viewModel);
+    _takeOrPass(Player player, Turn turn) {
+      if (player.isRealPlayer) {
+        displayTakeOrPassDialog(context, _TakeOrPassDialogModel(turn, player));
+      } else {
+        BlocProvider.of<TakeOrPassBloc>(context).add(Pass(player));
+      }
+    }
+
+    return BlocBuilder<GameBloc, GameState>(
+      builder: (BuildContext context, GameState gameState) {
+        if (gameState is SoloGameInitialized) {
+          BlocProvider.of<GameBloc>(context).add(NewTurn());
+        } else if (gameState is TurnCreated) {
+          _takeOrPass(gameState.turn.firstPlayer, gameState.turn);
         }
-        if (viewModel.turnResultDisplay != null) {
-          SchedulerBinding.instance.addPostFrameCallback(
-            (_) => showDialog(
-              barrierDismissible: false,
-              context: context,
-              child: TurnResultDialog(
-                turnResultDisplay: viewModel.turnResultDisplay,
-                onNextPressed: viewModel.onTurnResultNext,
-              ),
-            ),
-          );
-        }
-        if (viewModel.showEndGameDialog) {
-          SchedulerBinding.instance.addPostFrameCallback(
-            (_) => showDialog(
-              barrierDismissible: false,
-              context: context,
-              child: AlertDialog(
-                key: Key('GameResultDialog'),
-                title: Text(
-                  viewModel.score.us > viewModel.score.them ? 'Congratulations!' : 'You Lost!',
-                  key: Key('GameResultDialog__Result'),
-                  style: TextStyle(fontSize: 22.0),
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
+
+        return BlocBuilder<TakeOrPassBloc, TakeOrPassState>(
+            builder: (BuildContext context, TakeOrPassState takeOrPassState) {
+          if (takeOrPassState is PlayerPassed) {
+            var nextPlayer = takeOrPassState.gameContext.nextPlayer();
+            _takeOrPass(nextPlayer, takeOrPassState.gameContext.lastTurn);
+          }
+          return Container(
+            child: Scaffold(
+              key: Key('InGame__Container'),
+              backgroundColor: Colors.transparent,
+              body: Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          viewModel.score.us.toString(),
-                          key: Key('GameResultDialog__UsScore'),
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                        Container(
-                            height: 20,
-                            child: VerticalDivider(
-                              color: Colors.grey,
-                              thickness: 2,
-                            )),
-                        Text(
-                          viewModel.score.them.toString(),
-                          key: Key('GameResultDialog__ThemScore'),
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ],
+                    Flexible(
+                      fit: FlexFit.loose,
+                      flex: 1,
+                      child: CurrentTurn(),
+                    ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      flex: 6,
+                      child: Divider(color: Colors.transparent),
+                    ),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      flex: 2,
+                      child: StoreConnector<ApplicationState, _InGameViewModel>(
+                        converter: (Store<ApplicationState> store) =>
+                            _InGameViewModel.create(store),
+                        builder: (BuildContext context, _InGameViewModel viewModel) =>
+                            Score(usScore: viewModel.score.us, themScore: viewModel.score.them),
+                      ),
                     ),
                   ],
                 ),
-                actions: <Widget>[
-                  RaisedButton(
-                    key: Key('GameResultDialog__HomeButton'),
-                    color: Theme.of(context).backgroundColor,
-                    onPressed: () {
-                      Navigator.pop(context);
-                      viewModel.onHomeTap();
-                    },
-                    child: Text(
-                      'Home',
-                      style: Theme.of(context).textTheme.body1,
-                    ),
-                  ),
-                  RaisedButton(
-                    key: Key('GameResultDialog__NewGameButton'),
-                    color: Theme.of(context).backgroundColor,
-                    onPressed: () {
-                      Navigator.pop(context);
-                      viewModel.onNewGameTap();
-                    },
-                    child: Text(
-                      'New Game',
-                      style: Theme.of(context).textTheme.body1,
-                    ),
-                  ),
-                ],
               ),
             ),
           );
-        }
-        return Container(
-          child: Scaffold(
-            key: Key('InGame__Container'),
-            backgroundColor: Colors.transparent,
-            body: Container(
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Flexible(
-                    fit: FlexFit.loose,
-                    flex: 1,
-                    child: Text(
-                      'Turn ${viewModel.turnCounter}',
-                      key: Key('InGame__TurnCounter'),
-                      style: TextStyle(fontSize: 18.0, color: Colors.white),
-                    ),
-                  ),
-                  Flexible(
-                    fit: FlexFit.tight,
-                    flex: 6,
-                    child: Divider(),
-                  ),
-                  Flexible(
-                    fit: FlexFit.loose,
-                    flex: 2,
-                    child: Score(usScore: viewModel.score.us, themScore: viewModel.score.them),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
+        });
       },
     );
+    return BlocBuilder<GameBloc, GameState>(builder: (BuildContext context, GameState state) {
+      return StoreConnector<ApplicationState, _InGameViewModel>(
+        converter: (Store<ApplicationState> store) => _InGameViewModel.create(store),
+        builder: (BuildContext context, _InGameViewModel viewModel) {
+          if (viewModel.turnResultDisplay != null) {
+            SchedulerBinding.instance.addPostFrameCallback(
+              (_) => showDialog(
+                barrierDismissible: false,
+                context: context,
+                child: TurnResultDialog(
+                  turnResultDisplay: viewModel.turnResultDisplay,
+                  onNextPressed: viewModel.onTurnResultNext,
+                ),
+              ),
+            );
+          }
+          if (viewModel.showEndGameDialog) {
+            SchedulerBinding.instance.addPostFrameCallback(
+              (_) => showDialog(
+                barrierDismissible: false,
+                context: context,
+                child: AlertDialog(
+                  key: Key('GameResultDialog'),
+                  title: Text(
+                    viewModel.score.us > viewModel.score.them ? 'Congratulations!' : 'You Lost!',
+                    key: Key('GameResultDialog__Result'),
+                    style: TextStyle(fontSize: 22.0),
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            viewModel.score.us.toString(),
+                            key: Key('GameResultDialog__UsScore'),
+                            style: TextStyle(fontSize: 20.0),
+                          ),
+                          Container(
+                              height: 20,
+                              child: VerticalDivider(
+                                color: Colors.grey,
+                                thickness: 2,
+                              )),
+                          Text(
+                            viewModel.score.them.toString(),
+                            key: Key('GameResultDialog__ThemScore'),
+                            style: TextStyle(fontSize: 20.0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  actions: <Widget>[
+                    RaisedButton(
+                      key: Key('GameResultDialog__HomeButton'),
+                      color: Theme.of(context).backgroundColor,
+                      onPressed: () {
+                        Navigator.pop(context);
+                        viewModel.onHomeTap();
+                      },
+                      child: Text(
+                        'Home',
+                        style: Theme.of(context).textTheme.body1,
+                      ),
+                    ),
+                    RaisedButton(
+                      key: Key('GameResultDialog__NewGameButton'),
+                      color: Theme.of(context).backgroundColor,
+                      onPressed: () {
+                        Navigator.pop(context);
+                        viewModel.onNewGameTap();
+                      },
+                      child: Text(
+                        'New Game',
+                        style: Theme.of(context).textTheme.body1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          return Container(
+            child: Scaffold(
+              key: Key('InGame__Container'),
+              backgroundColor: Colors.transparent,
+              body: Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Flexible(
+                      fit: FlexFit.loose,
+                      flex: 1,
+                      child: CurrentTurn(),
+                    ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      flex: 6,
+                      child: Divider(),
+                    ),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      flex: 2,
+                      child: Score(usScore: viewModel.score.us, themScore: viewModel.score.them),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    });
   }
 
-  void displayTakeOrPassDialog(BuildContext context, _InGameViewModel viewModel) {
+  void displayTakeOrPassDialog(BuildContext context, _TakeOrPassDialogModel viewModel) {
     SchedulerBinding.instance.addPostFrameCallback(
       (_) => showGeneralDialog(
           pageBuilder: (
@@ -151,11 +211,9 @@ class InGameView extends StatelessWidget {
             Animation<double> secondaryAnimation,
           ) =>
               TakeOrPassDialog(
-                card: viewModel.takeOrPassCard,
-                displayRound2: viewModel.showRound2Dialog,
-                colorChoices: viewModel.colorChoices,
-                onTakeTap: viewModel.onTakeTap,
-                onPassTap: viewModel.onPassTap,
+                card: viewModel.turn.card,
+                displayRound2: viewModel.turn.round == 2,
+                player: viewModel.player,
               ),
           context: context,
           barrierDismissible: false,
@@ -163,6 +221,13 @@ class InGameView extends StatelessWidget {
           transitionDuration: const Duration(milliseconds: 150)),
     );
   }
+}
+
+class _TakeOrPassDialogModel {
+  final Turn turn;
+  final Player player;
+
+  _TakeOrPassDialogModel(this.turn, this.player);
 }
 
 class _InGameViewModel {
@@ -223,10 +288,10 @@ class _InGameViewModel {
 
     return _InGameViewModel(
       store.state.showTakeOrPassDialog,
-      currentTurn.round == 2,
+      currentTurn?.round == 2,
       colorChoicesWidget,
-      currentTurn.number,
-      currentTurn.card,
+      currentTurn?.number,
+      currentTurn?.card,
       () {
         store.dispatch(ShowTakeOrPassDialogAction(false));
         store.dispatch(PassDecisionAction(store.state.realPlayer));
@@ -235,12 +300,12 @@ class _InGameViewModel {
         store.dispatch(ShowTakeOrPassDialogAction(false));
         _onTake();
       },
-      currentTurn.turnResult == null
+      currentTurn?.turnResult == null
           ? null
-          : TurnResultDisplay.fromTurnResult(currentTurn.turnResult),
+          : TurnResultDisplay.fromTurnResult(currentTurn?.turnResult),
       _onEndTurnNext,
       store.state.score,
-      currentTurn.turnResult == null && isGameOver,
+      currentTurn?.turnResult == null && isGameOver,
       () => store.dispatch(SetCurrentViewAction(AtoupicView.Home)),
       () => store.dispatch(StartSoloGameAction()),
     );
