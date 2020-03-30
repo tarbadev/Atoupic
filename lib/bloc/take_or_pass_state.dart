@@ -41,15 +41,16 @@ class PlayerPassed extends TakeOrPassState {
 class ShowTakeOrPassDialog extends TakeOrPassState {
   final Player player;
   final Card card;
+  final bool isRound2;
 
-  ShowTakeOrPassDialog(this.player, this.card);
+  ShowTakeOrPassDialog(this.player, this.card, this.isRound2);
 
   @override
-  List<Object> get props => [player, card];
+  List<Object> get props => [player, card, isRound2];
 
   @override
   String toString() {
-    return 'ShowTakeOrPassDialog{player: $player, card: $card}';
+    return 'ShowTakeOrPassDialog{player: $player, card: $card, isRound2: $isRound2}';
   }
 }
 

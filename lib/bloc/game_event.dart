@@ -21,7 +21,19 @@ class Start extends GameEvent {
   String toString() => 'Start{players: $players}';
 }
 
-class NewTurn extends GameEvent {}
+class NewTurn extends GameEvent {
+  final bool turnAlreadyCreated;
+
+  NewTurn({this.turnAlreadyCreated = false});
+
+  @override
+  List<Object> get props => [turnAlreadyCreated];
+
+  @override
+  String toString() {
+    return 'NewTurn{turnAlreadyCreated: $turnAlreadyCreated}';
+  }
+}
 
 class DisplayPlayerPassedCaption extends GameEvent {
   final Position position;

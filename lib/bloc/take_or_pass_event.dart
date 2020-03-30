@@ -1,5 +1,6 @@
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/domain/entity/turn.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class TakeOrPassEvent extends Equatable {
@@ -11,16 +12,16 @@ abstract class TakeOrPassEvent extends Equatable {
 
 class RealPlayerTurn extends TakeOrPassEvent {
   final Player player;
-  final Card card;
+  final Turn turn;
 
-  RealPlayerTurn(this.player, this.card);
+  RealPlayerTurn(this.player, this.turn);
 
   @override
-  List<Object> get props => [player, card];
+  List<Object> get props => [player, turn];
 
   @override
   String toString() {
-    return 'RealPlayerTurn{player: $player, card: $card}';
+    return 'RealPlayerTurn{player: $player, turn: $turn}';
   }
 }
 

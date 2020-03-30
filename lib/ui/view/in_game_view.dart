@@ -1,15 +1,12 @@
 import 'package:atoupic/bloc/bloc.dart';
-import 'package:atoupic/domain/entity/card.dart' as AtoupicCard;
-import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_state.dart';
 import 'package:atoupic/ui/atoupic_app.dart';
-import 'package:atoupic/ui/component/color_choices.dart';
 import 'package:atoupic/ui/component/score.dart';
-import 'package:atoupic/ui/component/take_or_pass_dialog.dart';
 import 'package:atoupic/ui/component/turn_result_dialog.dart';
+import 'package:atoupic/ui/controller/take_or_pass_controller.dart';
 import 'package:atoupic/ui/entity/score_display.dart';
 import 'package:atoupic/ui/entity/turn_result_display.dart';
 import 'package:atoupic/ui/widget/CurrentTurn.dart';
@@ -24,7 +21,7 @@ class InGameView extends StatelessWidget {
   Widget build(BuildContext context) {
     _takeOrPass(Player player, Turn turn) {
       if (player.isRealPlayer) {
-        displayTakeOrPassDialog(context, _TakeOrPassDialogModel(turn, player));
+        BlocProvider.of<TakeOrPassBloc>(context).add(RealPlayerTurn(player, turn));
       } else {
         BlocProvider.of<TakeOrPassBloc>(context).add(Pass(player));
       }
@@ -33,7 +30,7 @@ class InGameView extends StatelessWidget {
     return BlocBuilder<GameBloc, GameState>(
       builder: (BuildContext context, GameState gameState) {
         if (gameState is SoloGameInitialized) {
-          BlocProvider.of<GameBloc>(context).add(NewTurn());
+          BlocProvider.of<GameBloc>(context).add(NewTurn(turnAlreadyCreated: true));
         } else if (gameState is TurnCreated) {
           _takeOrPass(gameState.turn.firstPlayer, gameState.turn);
         }
@@ -48,34 +45,39 @@ class InGameView extends StatelessWidget {
             child: Scaffold(
               key: Key('InGame__Container'),
               backgroundColor: Colors.transparent,
-              body: Container(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Flexible(
-                      fit: FlexFit.loose,
-                      flex: 1,
-                      child: CurrentTurn(),
+              body: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Flexible(
+                          fit: FlexFit.loose,
+                          flex: 1,
+                          child: CurrentTurn(),
+                        ),
+                        Flexible(
+                          fit: FlexFit.tight,
+                          flex: 6,
+                          child: Divider(color: Colors.transparent),
+                        ),
+                        Flexible(
+                          fit: FlexFit.loose,
+                          flex: 2,
+                          child: StoreConnector<ApplicationState, _InGameViewModel>(
+                            converter: (Store<ApplicationState> store) =>
+                                _InGameViewModel.create(store),
+                            builder: (BuildContext context, _InGameViewModel viewModel) =>
+                                Score(usScore: viewModel.score.us, themScore: viewModel.score.them),
+                          ),
+                        ),
+                      ],
                     ),
-                    Flexible(
-                      fit: FlexFit.tight,
-                      flex: 6,
-                      child: Divider(color: Colors.transparent),
-                    ),
-                    Flexible(
-                      fit: FlexFit.loose,
-                      flex: 2,
-                      child: StoreConnector<ApplicationState, _InGameViewModel>(
-                        converter: (Store<ApplicationState> store) =>
-                            _InGameViewModel.create(store),
-                        builder: (BuildContext context, _InGameViewModel viewModel) =>
-                            Score(usScore: viewModel.score.us, themScore: viewModel.score.them),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  TakeOrPassDialogController(),
+                ],
               ),
             ),
           );
@@ -167,77 +169,14 @@ class InGameView extends StatelessWidget {
               ),
             );
           }
-          return Container(
-            child: Scaffold(
-              key: Key('InGame__Container'),
-              backgroundColor: Colors.transparent,
-              body: Container(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Flexible(
-                      fit: FlexFit.loose,
-                      flex: 1,
-                      child: CurrentTurn(),
-                    ),
-                    Flexible(
-                      fit: FlexFit.tight,
-                      flex: 6,
-                      child: Divider(),
-                    ),
-                    Flexible(
-                      fit: FlexFit.loose,
-                      flex: 2,
-                      child: Score(usScore: viewModel.score.us, themScore: viewModel.score.them),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
+          return null;
         },
       );
     });
   }
-
-  void displayTakeOrPassDialog(BuildContext context, _TakeOrPassDialogModel viewModel) {
-    SchedulerBinding.instance.addPostFrameCallback(
-      (_) => showGeneralDialog(
-          pageBuilder: (
-            BuildContext context,
-            Animation<double> animation,
-            Animation<double> secondaryAnimation,
-          ) =>
-              TakeOrPassDialog(
-                card: viewModel.turn.card,
-                displayRound2: viewModel.turn.round == 2,
-                player: viewModel.player,
-              ),
-          context: context,
-          barrierDismissible: false,
-          barrierColor: null,
-          transitionDuration: const Duration(milliseconds: 150)),
-    );
-  }
-}
-
-class _TakeOrPassDialogModel {
-  final Turn turn;
-  final Player player;
-
-  _TakeOrPassDialogModel(this.turn, this.player);
 }
 
 class _InGameViewModel {
-  final bool showTakeOrPassDialog;
-  final bool showRound2Dialog;
-  final ColorChoices colorChoices;
-  final int turnCounter;
-  final AtoupicCard.Card takeOrPassCard;
-  final Function onPassTap;
-  final Function onTakeTap;
   final TurnResultDisplay turnResultDisplay;
   final Function onTurnResultNext;
   final ScoreDisplay score;
@@ -246,13 +185,6 @@ class _InGameViewModel {
   final Function onNewGameTap;
 
   _InGameViewModel(
-    this.showTakeOrPassDialog,
-    this.showRound2Dialog,
-    this.colorChoices,
-    this.turnCounter,
-    this.takeOrPassCard,
-    this.onPassTap,
-    this.onTakeTap,
     this.turnResultDisplay,
     this.onTurnResultNext,
     this.score,
@@ -264,20 +196,6 @@ class _InGameViewModel {
   factory _InGameViewModel.create(Store<ApplicationState> store) {
     final currentTurn = store.state.currentTurn;
     final isGameOver = store.state.score.us >= 501 || store.state.score.them >= 501;
-    final List<CardColor> colorChoices = (currentTurn == null || currentTurn.card == null)
-        ? []
-        : AtoupicCard.CardColor.values.toList()
-      ..removeWhere((cardColor) => currentTurn.card.color == cardColor);
-    var colorChoicesWidget = ColorChoices.fromCardColorList(colorChoices);
-
-    _onTake() {
-      var cardColor = currentTurn.card.color;
-      if (currentTurn.round == 2) {
-        cardColor = colorChoicesWidget.selectedColor;
-      }
-      store.dispatch(ShowTakeOrPassDialogAction(false));
-      store.dispatch(TakeDecisionAction(store.state.realPlayer, cardColor));
-    }
 
     _onEndTurnNext() {
       store.dispatch(SetTurnResultAction(null));
@@ -287,19 +205,6 @@ class _InGameViewModel {
     }
 
     return _InGameViewModel(
-      store.state.showTakeOrPassDialog,
-      currentTurn?.round == 2,
-      colorChoicesWidget,
-      currentTurn?.number,
-      currentTurn?.card,
-      () {
-        store.dispatch(ShowTakeOrPassDialogAction(false));
-        store.dispatch(PassDecisionAction(store.state.realPlayer));
-      },
-      () {
-        store.dispatch(ShowTakeOrPassDialogAction(false));
-        _onTake();
-      },
       currentTurn?.turnResult == null
           ? null
           : TurnResultDisplay.fromTurnResult(currentTurn?.turnResult),

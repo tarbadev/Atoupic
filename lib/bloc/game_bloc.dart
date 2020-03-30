@@ -31,15 +31,17 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       _appBloc.add(GameInitialized());
     } else if (event is Start) {
-//      _atoupicGame.setDomainPlayers(event.players);
-//      _atoupicGame.visible = true;
+      _atoupicGame.setDomainPlayers(event.players);
+      _atoupicGame.visible = true;
       yield Initialized();
     } else if (event is NewTurn) {
+      yield CreatingTurn();
+
       _atoupicGame.resetPlayersPassed();
       _atoupicGame.resetTrumpColor();
       _atoupicGame.resetPlayersCards();
 
-      GameContext gameContext = _gameService.startTurn(true);
+      GameContext gameContext = _gameService.startTurn(event.turnAlreadyCreated);
 
       gameContext.players.forEach((player) => _atoupicGame.addPlayerCards(player.cards, player.position));
 

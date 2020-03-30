@@ -24,3 +24,4 @@ class TurnCreated extends GameState {
     return 'TurnCreated{turn: $turn}';
   }
 }
+class CreatingTurn extends GameState {}

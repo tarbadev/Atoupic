@@ -79,10 +79,7 @@ class Mocks {
 
     when(store.state).thenReturn(applicationState);
     when(store.onChange).thenAnswer((_) => Stream.empty());
-    when(applicationState.showTakeOrPassDialog)
-        .thenReturn(showTakeOrPassDialog);
     when(applicationState.currentView).thenReturn(currentView);
-    when(applicationState.realPlayer).thenReturn(realPlayer);
     when(applicationState.currentTurn).thenReturn(currentTurn);
     when(applicationState.score).thenReturn(ScoreDisplay(usScore, themScore));
   }

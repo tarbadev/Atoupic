@@ -19,7 +19,7 @@ void main() {
       gameBloc = GameBloc(Mocks.atoupicGame, Mocks.appBloc, Mocks.gameService);
     });
 
-    tearDown((){
+    tearDown(() {
       gameBloc.close();
     });
 
@@ -47,28 +47,31 @@ void main() {
       },
     );
 
-    blocTest<GameBloc, GameEvent, GameState>(
-      'emits TurnCreated() state on NewTurn event',
-      build: () async => gameBloc,
-      act: (bloc) async {
-        when(Mocks.gameService.startTurn(any)).thenReturn(TestFactory.gameContext);
+    group('on NewTurn event', () {
+      blocTest<GameBloc, GameEvent, GameState>(
+        'emits TurnCreated() state on NewTurn event',
+        build: () async => gameBloc,
+        act: (bloc) async {
+          when(Mocks.gameService.startTurn(any)).thenReturn(TestFactory.gameContext);
 
-        bloc.add(NewTurn());
-      },
-      expect: [TurnCreated(TestFactory.gameContext.lastTurn)],
-      verify: (_) async {
-        verify(Mocks.atoupicGame.resetPlayersPassed());
-        verify(Mocks.atoupicGame.resetTrumpColor());
-        verify(Mocks.atoupicGame.resetPlayersCards());
+          bloc.add(NewTurn(turnAlreadyCreated: false));
+        },
+        expect: [CreatingTurn(), TurnCreated(TestFactory.gameContext.lastTurn)],
+        verify: (_) async {
+          verify(Mocks.atoupicGame.resetPlayersPassed());
+          verify(Mocks.atoupicGame.resetTrumpColor());
+          verify(Mocks.atoupicGame.resetPlayersCards());
 
-        verify(Mocks.gameService.startTurn(true));
+          verify(Mocks.gameService.startTurn(false));
 
-        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Left));
-        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Top));
-        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Right));
-        verify(Mocks.atoupicGame.addPlayerCards([Card(CardColor.Heart, CardHead.Ace)], Position.Bottom));
-      },
-    );
+          verify(Mocks.atoupicGame.addPlayerCards(null, Position.Left));
+          verify(Mocks.atoupicGame.addPlayerCards(null, Position.Top));
+          verify(Mocks.atoupicGame.addPlayerCards(null, Position.Right));
+          verify(Mocks.atoupicGame
+              .addPlayerCards([Card(CardColor.Heart, CardHead.Ace)], Position.Bottom));
+        },
+      );
+    });
 
     // Deprecated
     blocTest<GameBloc, GameEvent, GameState>(
@@ -181,8 +184,7 @@ void main() {
       blocTest<GameBloc, GameEvent, GameState>(
         'calls the game to reset the last played cards',
         build: () async => gameBloc,
-        act: (bloc) async =>
-            bloc.add(ResetLastPlayedCards()),
+        act: (bloc) async => bloc.add(ResetLastPlayedCards()),
         expect: [],
         verify: (_) async {
           verify(Mocks.atoupicGame.resetLastPlayedCards());

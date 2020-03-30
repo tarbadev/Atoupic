@@ -25,7 +25,7 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
     } else if (event is Pass) {
       yield* _mapPassEventToState(event);
     } else if (event is RealPlayerTurn) {
-      yield ShowTakeOrPassDialog(event.player, event.card);
+      yield ShowTakeOrPassDialog(event.player, event.turn.card, event.turn.round == 2);
     }
   }
 
@@ -68,12 +68,15 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
 
     if (gameContext.nextPlayer() == null && gameContext.lastTurn.round == 1) {
       gameContext = gameContext.nextRound();
+      _gameBloc.add(ResetPlayersPassedCaption());
     }
 
     _gameService.save(gameContext);
 
     if (gameContext.nextPlayer() == null && gameContext.lastTurn.round == 2) {
       yield NoOneTook();
+
+      _gameBloc.add(NewTurn());
     } else {
       yield PlayerPassed(gameContext);
     }

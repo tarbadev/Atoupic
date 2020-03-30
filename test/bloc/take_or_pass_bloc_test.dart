@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
@@ -142,6 +140,8 @@ void main() {
             verify(Mocks.gameBloc.add(DisplayPlayerPassedCaption(firstPlayer.position)));
             verify(mockedContext.setDecision(firstPlayer, Decision.Pass));
             verify(Mocks.gameService.read());
+            verify(mockedContext.nextRound());
+            verify(Mocks.gameBloc.add(ResetPlayersPassedCaption()));
             verify(Mocks.gameService.save(updatedGameContext2));
           }
       );
@@ -164,6 +164,7 @@ void main() {
             verify(mockedContext.setDecision(firstPlayer, Decision.Pass));
             verify(Mocks.gameService.read());
             verify(Mocks.gameService.save(mockedContext));
+            verify(Mocks.gameBloc.add(NewTurn()));
           }
       );
     });
@@ -171,12 +172,13 @@ void main() {
     group('on RealPlayerTurn event', () {
       var player = TestFactory.realPlayer;
       var card = Card(CardColor.Club, CardHead.King);
+      var turn = Turn(1, TestFactory.realPlayer)..card = card;
 
       blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
         'emits ShowTakeOrPassDialog',
         build: () async => currentTurnBloc,
-        act: (bloc) async => bloc.add(RealPlayerTurn(player, card)),
-        expect: [ShowTakeOrPassDialog(player, card)],
+        act: (bloc) async => bloc.add(RealPlayerTurn(player, turn)),
+        expect: [ShowTakeOrPassDialog(player, card, false)],
       );
     });
   });

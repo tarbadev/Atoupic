@@ -13,13 +13,7 @@ import 'package:atoupic/ui/application_state.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:redux/redux.dart';
 
-import 'atoupic_app.dart';
-
 List<Middleware<ApplicationState>> createApplicationMiddleware() => [
-      TypedMiddleware<ApplicationState, StartSoloGameAction>(startSoloGame),
-      TypedMiddleware<ApplicationState, StartTurnAction>(startTurn),
-      TypedMiddleware<ApplicationState, TakeOrPassDecisionAction>(takeOrPassDecision),
-      TypedMiddleware<ApplicationState, PassDecisionAction>(passDecision),
       TypedMiddleware<ApplicationState, TakeDecisionAction>(takeDecision),
       TypedMiddleware<ApplicationState, StartCardRoundAction>(startCardRound),
       TypedMiddleware<ApplicationState, ChooseCardDecisionAction>(chooseCardDecision),
@@ -29,93 +23,6 @@ List<Middleware<ApplicationState>> createApplicationMiddleware() => [
       TypedMiddleware<ApplicationState, EndTurnAction>(endTurn),
       TypedMiddleware<ApplicationState, EndGameAction>(endGame),
     ];
-
-void startSoloGame(
-  Store<ApplicationState> store,
-  StartSoloGameAction action,
-  NextDispatcher next,
-) {
-  final container = Container();
-  final GameService gameService = container<GameService>();
-  final GameBloc gameBloc = container<GameBloc>();
-
-  final gameContext = gameService.startSoloGame();
-
-  gameBloc.add(Start(gameContext.players));
-  gameBloc.listen((gameState) {
-    if (gameState is Initialized) {
-      store.dispatch(SetCurrentViewAction(AtoupicView.InGame));
-      store.dispatch(
-          SetRealPlayerAction(gameContext.players.firstWhere((player) => player.isRealPlayer)));
-      store.dispatch(StartTurnAction(turnAlreadyCreated: true));
-    }
-  });
-
-  next(action);
-}
-
-void startTurn(
-  Store<ApplicationState> store,
-  StartTurnAction action,
-  NextDispatcher next,
-) {
-  final container = Container();
-  final GameService gameService = container<GameService>();
-  final GameBloc gameBloc = container<GameBloc>();
-
-  GameContext gameContext = gameService.startTurn(action.turnAlreadyCreated);
-
-  gameBloc.add(NewTurn());
-
-  store.dispatch(SetCurrentTurnAction(gameContext.lastTurn));
-  store.dispatch(TakeOrPassDecisionAction(gameContext.nextPlayer()));
-
-  next(action);
-}
-
-void takeOrPassDecision(
-  Store<ApplicationState> store,
-  TakeOrPassDecisionAction action,
-  NextDispatcher next,
-) {
-  if (action.player.isRealPlayer) {
-    store.dispatch(ShowTakeOrPassDialogAction(true));
-  } else {
-    store.dispatch(PassDecisionAction(action.player));
-  }
-
-  next(action);
-}
-
-void passDecision(
-  Store<ApplicationState> store,
-  PassDecisionAction action,
-  NextDispatcher next,
-) {
-  final container = Container();
-  final GameService gameService = container<GameService>();
-  final GameBloc gameBloc = container<GameBloc>();
-
-  gameBloc.add(DisplayPlayerPassedCaption(action.player.position));
-
-  var gameContext = gameService.read().setDecision(action.player, Decision.Pass);
-  var nextPlayer = gameContext.nextPlayer();
-  if (nextPlayer == null && gameContext.lastTurn.round == 2) {
-    gameService.save(gameContext);
-    store.dispatch(StartTurnAction());
-  } else {
-    if (nextPlayer == null) {
-      gameBloc.add(ResetPlayersPassedCaption());
-      gameContext = gameContext.nextRound();
-      nextPlayer = gameContext.nextPlayer();
-    }
-
-    gameService.save(gameContext);
-    store.dispatch(TakeOrPassDecisionAction(nextPlayer));
-  }
-
-  next(action);
-}
 
 void takeDecision(
   Store<ApplicationState> store,

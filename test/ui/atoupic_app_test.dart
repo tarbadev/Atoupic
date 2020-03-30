@@ -5,8 +5,8 @@ import 'package:mockito/mockito.dart';
 
 import '../helper/fake_application_injector.dart';
 import '../helper/mock_definition.dart';
-import '../home_view_tester.dart';
-import '../in_game_view_tester.dart';
+import 'tester/home_view_tester.dart';
+import 'tester/in_game_view_tester.dart';
 
 void main() {
   setupDependencyInjectorForTest();
