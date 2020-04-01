@@ -9,7 +9,7 @@ import 'package:atoupic/ui/component/turn_result_dialog.dart';
 import 'package:atoupic/ui/controller/take_or_pass_controller.dart';
 import 'package:atoupic/ui/entity/score_display.dart';
 import 'package:atoupic/ui/entity/turn_result_display.dart';
-import 'package:atoupic/ui/widget/CurrentTurn.dart';
+import 'package:atoupic/ui/widget/current_turn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
