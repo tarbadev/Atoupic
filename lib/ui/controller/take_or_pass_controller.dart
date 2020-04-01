@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class TakeOrPassDialogController extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TakeOrPassBloc, TakeOrPassState>(
+    return BlocBuilder<TakeOrPassDialogBloc, TakeOrPassState>(
         builder: (BuildContext context, TakeOrPassState takeOrPassState) {
       if (takeOrPassState is ShowTakeOrPassDialog) {
         SchedulerBinding.instance.addPostFrameCallback(

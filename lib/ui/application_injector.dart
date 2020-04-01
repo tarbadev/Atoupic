@@ -28,7 +28,7 @@ abstract class ApplicationInjector {
   @Register.singleton(GameBloc)
   @Register.singleton(AppBloc)
   @Register.singleton(CurrentTurnBloc)
-  @Register.singleton(TakeOrPassBloc)
+  @Register.singleton(TakeOrPassDialogBloc)
   void configureAnnotations();
 
   void configureInstances() {

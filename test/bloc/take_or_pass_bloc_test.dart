@@ -16,15 +16,15 @@ import '../helper/test_factory.dart';
 void main() {
   setupDependencyInjectorForTest();
 
-  group('TakeOrPassBloc', () {
-    TakeOrPassBloc currentTurnBloc;
+  group('TakeOrPassDialogBloc', () {
+    TakeOrPassDialogBloc currentTurnBloc;
 
     setUp(() {
       reset(Mocks.gameBloc);
       reset(Mocks.gameService);
       reset(Mocks.cardService);
 
-      currentTurnBloc = TakeOrPassBloc(Mocks.gameBloc, Mocks.gameService, Mocks.cardService);
+      currentTurnBloc = TakeOrPassDialogBloc(Mocks.gameBloc, Mocks.gameService, Mocks.cardService);
     });
 
     tearDown(() {
@@ -61,7 +61,7 @@ void main() {
           ..playerDecisions[realPlayer.position] = Decision.Take
       ]);
 
-      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
+      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
           'emits PlayerTook',
           build: () async => currentTurnBloc,
           act: (bloc) async {
@@ -111,7 +111,7 @@ void main() {
       ]);
       var mockedContext = MockGameContext();
 
-      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
+      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
           'saves the pass decision and emit PlayerPassed',
           build: () async => currentTurnBloc,
           act: (bloc) async {
@@ -127,7 +127,7 @@ void main() {
           }
       );
 
-      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
+      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
           'saves the pass decision and emit PlayerPassed '
           'and saves new round if the next player is null',
           build: () async => currentTurnBloc,
@@ -151,7 +151,7 @@ void main() {
           }
       );
 
-      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
+      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
           'saves the pass decision and emit PlayerPassed '
           'and adds NewTurn event if the next player is null is round 2',
           build: () async => currentTurnBloc,
@@ -179,7 +179,7 @@ void main() {
       var card = Card(CardColor.Club, CardHead.King);
       var turn = Turn(1, TestFactory.realPlayer)..card = card;
 
-      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
+      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
         'emits ShowTakeOrPassDialog',
         build: () async => currentTurnBloc,
         act: (bloc) async => bloc.add(RealPlayerTurn(player, turn)),

@@ -15,7 +15,7 @@ void setupDependencyInjectorForTest() {
   container.registerInstance(Mocks.gameBloc);
   container.registerInstance(Mocks.appBloc);
   container.registerInstance(Mocks.currentTurnBloc);
-  container.registerInstance(Mocks.takeOrPassBloc);
+  container.registerInstance(Mocks.takeOrPassDialogBloc);
   container.registerInstance(Mocks.gameContextRepository);
 
   when(Mocks.atoupicGame.widget).thenReturn(Scaffold());

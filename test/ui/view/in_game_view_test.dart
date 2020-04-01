@@ -18,7 +18,7 @@ void main() {
   setupDependencyInjectorForTest();
 
   setUp(() {
-    reset(Mocks.takeOrPassBloc);
+    reset(Mocks.takeOrPassDialogBloc);
     reset(Mocks.gameBloc);
   });
 
@@ -39,7 +39,7 @@ void main() {
 
         await tester.pumpWidget(buildTestableWidget(InGameView()));
 
-        verify(Mocks.takeOrPassBloc.add(Pass(TestFactory.computerPlayer)));
+        verify(Mocks.takeOrPassDialogBloc.add(Pass(TestFactory.computerPlayer)));
       });
 
       testWidgets('adds RealPlayerTurn event when player is real player',
@@ -50,21 +50,21 @@ void main() {
 
         await tester.pumpWidget(buildTestableWidget(InGameView()));
 
-        verify(Mocks.takeOrPassBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
+        verify(Mocks.takeOrPassDialogBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
       });
     });
 
-    group('on PlayerPassed state from TakeOrPassBloc', () {
+    group('on PlayerPassed state from TakeOrPassDialogBloc', () {
       testWidgets('adds a Pass event when next player is computer', (WidgetTester tester) async {
         var mockedGameContext = MockGameContext();
 
-        when(Mocks.takeOrPassBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
+        when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
         when(mockedGameContext.lastTurn).thenReturn(Turn(1, TestFactory.computerPlayer));
         when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.computerPlayer);
 
         await tester.pumpWidget(buildTestableWidget(InGameView()));
 
-        verify(Mocks.takeOrPassBloc.add(Pass(TestFactory.computerPlayer)));
+        verify(Mocks.takeOrPassDialogBloc.add(Pass(TestFactory.computerPlayer)));
       });
 
       testWidgets('displays take of pass dialog when player is real player',
@@ -72,13 +72,13 @@ void main() {
         var mockedGameContext = MockGameContext();
         var turn = Turn(1, TestFactory.computerPlayer)..card = Card(CardColor.Heart, CardHead.Ace);
 
-        when(Mocks.takeOrPassBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
+        when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
         when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
         when(mockedGameContext.lastTurn).thenReturn(turn);
 
         await tester.pumpWidget(buildTestableWidget(InGameView()));
 
-        verify(Mocks.takeOrPassBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
+        verify(Mocks.takeOrPassDialogBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
       });
     });
 

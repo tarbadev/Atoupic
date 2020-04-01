@@ -33,7 +33,7 @@ Widget buildTestableWidget(
         BlocProvider(create: (_) => Mocks.gameBloc),
         BlocProvider(create: (_) => Mocks.appBloc),
         BlocProvider(create: (_) => Mocks.currentTurnBloc),
-        BlocProvider(create: (_) => Mocks.takeOrPassBloc),
+        BlocProvider(create: (_) => Mocks.takeOrPassDialogBloc),
       ],
       child: StoreProvider<ApplicationState>(
         store: Mocks.store,

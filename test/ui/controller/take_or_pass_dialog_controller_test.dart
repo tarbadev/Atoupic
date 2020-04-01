@@ -14,12 +14,12 @@ void main() {
   setupDependencyInjectorForTest();
 
   setUp(() {
-    reset(Mocks.takeOrPassBloc);
+    reset(Mocks.takeOrPassDialogBloc);
   });
 
-  group('on ShowTakeOrPassDialog state from TakeOrPassBloc', () {
+  group('on ShowTakeOrPassDialog state from TakeOrPassDialogBloc', () {
     testWidgets('displays take or pass dialog', (WidgetTester tester) async {
-      when(Mocks.takeOrPassBloc.state).thenAnswer((_) =>
+      when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) =>
           ShowTakeOrPassDialog(TestFactory.realPlayer, Card(CardColor.Heart, CardHead.Ace), false));
 
       await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogController()));
@@ -30,7 +30,7 @@ void main() {
     });
 
     testWidgets('adds a Take event on take tap', (WidgetTester tester) async {
-      when(Mocks.takeOrPassBloc.state).thenAnswer((_) =>
+      when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) =>
           ShowTakeOrPassDialog(TestFactory.realPlayer, Card(CardColor.Heart, CardHead.Ace), false));
 
       await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogController()));
@@ -38,11 +38,11 @@ void main() {
 
       var takeOrPassTester = TakeOrPassDialogTester(tester);
       await takeOrPassTester.tapOnTake();
-      verify(Mocks.takeOrPassBloc.add(Take(TestFactory.realPlayer, CardColor.Heart)));
+      verify(Mocks.takeOrPassDialogBloc.add(Take(TestFactory.realPlayer, CardColor.Heart)));
     });
 
     testWidgets('adds a Pass event on pass tap', (WidgetTester tester) async {
-      when(Mocks.takeOrPassBloc.state).thenAnswer((_) =>
+      when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) =>
           ShowTakeOrPassDialog(TestFactory.realPlayer, Card(CardColor.Heart, CardHead.Ace), false));
 
       await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogController()));
@@ -50,11 +50,11 @@ void main() {
 
       var takeOrPassTester = TakeOrPassDialogTester(tester);
       await takeOrPassTester.tapOnPass();
-      verify(Mocks.takeOrPassBloc.add(Pass(TestFactory.realPlayer)));
+      verify(Mocks.takeOrPassDialogBloc.add(Pass(TestFactory.realPlayer)));
     });
 
     testWidgets('displays take or pass round 2 dialog', (WidgetTester tester) async {
-      when(Mocks.takeOrPassBloc.state).thenAnswer((_) =>
+      when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) =>
           ShowTakeOrPassDialog(TestFactory.realPlayer, Card(CardColor.Heart, CardHead.Ace), true));
 
       await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogController()));
@@ -67,7 +67,7 @@ void main() {
       await takeOrPassTester.tapOnColorChoice(CardColor.Spade);
       await takeOrPassTester.tapOnTake();
 
-      verify(Mocks.takeOrPassBloc.add(Take(TestFactory.realPlayer, CardColor.Spade)));
+      verify(Mocks.takeOrPassDialogBloc.add(Take(TestFactory.realPlayer, CardColor.Spade)));
     });
   });
 }

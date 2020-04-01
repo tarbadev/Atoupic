@@ -46,7 +46,7 @@ class _MainPage extends StatelessWidget {
             providers: [
               BlocProvider(create: (_) => kiwi.Container().resolve<GameBloc>()),
               BlocProvider(create: (_) => kiwi.Container().resolve<AppBloc>()),
-              BlocProvider(create: (_) => kiwi.Container().resolve<TakeOrPassBloc>()),
+              BlocProvider(create: (_) => kiwi.Container().resolve<TakeOrPassDialogBloc>()),
             ],
             child: BlocBuilder<AppBloc, AppState>(
               builder: (context, state) {

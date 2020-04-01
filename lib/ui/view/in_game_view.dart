@@ -21,9 +21,9 @@ class InGameView extends StatelessWidget {
   Widget build(BuildContext context) {
     _takeOrPass(Player player, Turn turn) {
       if (player.isRealPlayer) {
-        BlocProvider.of<TakeOrPassBloc>(context).add(RealPlayerTurn(player, turn));
+        BlocProvider.of<TakeOrPassDialogBloc>(context).add(RealPlayerTurn(player, turn));
       } else {
-        BlocProvider.of<TakeOrPassBloc>(context).add(Pass(player));
+        BlocProvider.of<TakeOrPassDialogBloc>(context).add(Pass(player));
       }
     }
 
@@ -35,7 +35,7 @@ class InGameView extends StatelessWidget {
           _takeOrPass(gameState.turn.firstPlayer, gameState.turn);
         }
 
-        return BlocBuilder<TakeOrPassBloc, TakeOrPassState>(
+        return BlocBuilder<TakeOrPassDialogBloc, TakeOrPassState>(
             builder: (BuildContext context, TakeOrPassState takeOrPassState) {
           if (takeOrPassState is PlayerPassed) {
             var nextPlayer = takeOrPassState.gameContext.nextPlayer();

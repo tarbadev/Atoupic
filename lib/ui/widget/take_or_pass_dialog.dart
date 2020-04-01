@@ -66,7 +66,7 @@ class TakeOrPassDialog extends StatelessWidget {
                 color: Color(0xff27ae60),
                 onPressed: () {
                   var color = displayRound2 ? colorChoicesWidget.selectedColor : card.color;
-                  kiwi.Container().resolve<TakeOrPassBloc>().add(Take(player, color));
+                  kiwi.Container().resolve<TakeOrPassDialogBloc>().add(Take(player, color));
                   Navigator.of(context).pop();
                 },
                 child: Text(
@@ -79,7 +79,7 @@ class TakeOrPassDialog extends StatelessWidget {
                 key: Key('TakeOrPassDialog__PassButton'),
                 color: Color(0xffc0392b),
                 onPressed: () {
-                  kiwi.Container().resolve<TakeOrPassBloc>().add(Pass(player));
+                  kiwi.Container().resolve<TakeOrPassDialogBloc>().add(Pass(player));
                   Navigator.of(context).pop();
                 },
                 child: Text(

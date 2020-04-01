@@ -10,12 +10,12 @@ import 'package:redux/redux.dart';
 
 import './bloc.dart';
 
-class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
+class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
   final GameBloc _gameBloc;
   final GameService _gameService;
   final CardService _cardService;
 
-  TakeOrPassBloc(this._gameBloc, this._gameService, this._cardService);
+  TakeOrPassDialogBloc(this._gameBloc, this._gameService, this._cardService);
 
   @override
   TakeOrPassState get initialState => HideTakeOrPassDialog();
