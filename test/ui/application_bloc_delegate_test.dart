@@ -109,4 +109,103 @@ void main() {
       verify(Mocks.gameBloc.add(NewCardRound()));
     });
   });
+
+  group('On CardRoundCreated', () {
+    test('triggers a RealPlayerCanChooseCard when next card player is real player', () {
+      var mockGameContext = MockGameContext();
+
+      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.realPlayer);
+      when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([TestFactory.cards[0]]);
+
+      applicationBlocDelegate.onTransition(
+          Mocks.gameBloc,
+          Transition(
+            currentState: NotStarted(),
+            event: NewCardRound(),
+            nextState: CardRoundCreated(mockGameContext),
+          ));
+
+      verify(mockGameContext.nextCardPlayer());
+      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.realPlayer));
+      verify(Mocks.gameBloc.add(RealPlayerCanChooseCard([TestFactory.cards[0]])));
+    });
+
+    test('triggers a PlayCardForAi when next card player is computer player', () {
+      var card = TestFactory.cards[0];
+      var mockGameContext = MockGameContext();
+
+      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.computerPlayer);
+      when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([card]);
+
+      applicationBlocDelegate.onTransition(
+          Mocks.gameBloc,
+          Transition(
+            currentState: NotStarted(),
+            event: NewCardRound(),
+            nextState: CardRoundCreated(mockGameContext),
+          ));
+
+      verify(mockGameContext.nextCardPlayer());
+      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.computerPlayer));
+      verify(Mocks.gameBloc.add(PlayCardForAi(TestFactory.computerPlayer, [card])));
+    });
+  });
+
+  group('On CardPlayed', () {
+    test('triggers a RealPlayerCanChooseCard when next card player is real player', () {
+      var mockGameContext = MockGameContext();
+
+      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.realPlayer);
+      when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([TestFactory.cards[0]]);
+
+      applicationBlocDelegate.onTransition(
+          Mocks.gameBloc,
+          Transition(
+            currentState: NotStarted(),
+            event: NewCardRound(),
+            nextState: CardPlayed(mockGameContext),
+          ));
+
+      verify(mockGameContext.nextCardPlayer());
+      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.realPlayer));
+      verify(Mocks.gameBloc.add(RealPlayerCanChooseCard([TestFactory.cards[0]])));
+    });
+
+    test('triggers a PlayCardForAi when next card player is computer player', () {
+      var card = TestFactory.cards[0];
+      var mockGameContext = MockGameContext();
+
+      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.computerPlayer);
+      when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([card]);
+
+      applicationBlocDelegate.onTransition(
+          Mocks.gameBloc,
+          Transition(
+            currentState: NotStarted(),
+            event: NewCardRound(),
+            nextState: CardPlayed(mockGameContext),
+          ));
+
+      verify(mockGameContext.nextCardPlayer());
+      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.computerPlayer));
+      verify(Mocks.gameBloc.add(PlayCardForAi(TestFactory.computerPlayer, [card])));
+    });
+
+    test('triggers a EndCardRound when next card player null', () {
+      var mockGameContext = MockGameContext();
+
+      when(mockGameContext.nextCardPlayer()).thenReturn(null);
+
+      applicationBlocDelegate.onTransition(
+          Mocks.gameBloc,
+          Transition(
+            currentState: NotStarted(),
+            event: NewCardRound(),
+            nextState: CardPlayed(mockGameContext),
+          ));
+
+      verify(mockGameContext.nextCardPlayer());
+      verify(Mocks.gameBloc.add(EndCardRound()));
+    });
+  });
 }

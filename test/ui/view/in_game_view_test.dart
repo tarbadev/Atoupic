@@ -1,3 +1,4 @@
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/application_actions.dart';
@@ -65,7 +66,7 @@ void main() {
       await inGameViewTester.turnResult.tapOnNext();
 
       verify(Mocks.store.dispatch(SetTurnResultAction(null)));
-      verify(Mocks.store.dispatch(StartTurnAction()));
+      verify(Mocks.gameBloc.add(NewTurn()));
     });
 
     group('when game is over', () {
@@ -124,7 +125,7 @@ void main() {
 
         await inGameViewTester.gameResult.tapOnHome();
 
-        verify(Mocks.store.dispatch(SetCurrentViewAction(AtoupicView.Home)));
+        verify(Mocks.appBloc.add(GameFinished()));
       });
 
       testWidgets('when click on new game dispatches StartSoloGameAction',
@@ -142,7 +143,7 @@ void main() {
 
         await inGameViewTester.gameResult.tapOnNewGame();
 
-        verify(Mocks.store.dispatch(StartSoloGameAction()));
+        verify(Mocks.gameBloc.add(StartSoloGame()));
       });
     });
 

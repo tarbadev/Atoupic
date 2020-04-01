@@ -27,6 +27,9 @@ class TurnCreated extends GameState {
 }
 class CreatingTurn extends GameState {}
 class CreatingCardRound extends GameState {}
+class CardAnimationStarted extends GameState {}
+class CardAnimationEnded extends GameState {}
+class TurnEnded extends GameState {}
 
 class CardRoundCreated extends GameState {
   final GameContext gameContext;
@@ -39,5 +42,19 @@ class CardRoundCreated extends GameState {
   @override
   String toString() {
     return 'CardRoundCreated{gameContext: $gameContext}';
+  }
+}
+
+class CardPlayed extends GameState {
+  final GameContext gameContext;
+
+  CardPlayed(this.gameContext);
+
+  @override
+  List<Object> get props => [gameContext];
+
+  @override
+  String toString() {
+    return 'CardPlayed{gameContext: $gameContext}';
   }
 }

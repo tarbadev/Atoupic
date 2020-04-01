@@ -64,7 +64,6 @@ class Mocks {
 
   static setupMockStore({
     bool showTakeOrPassDialog: false,
-    AtoupicView currentView = AtoupicView.Home,
     Player realPlayer,
     Turn currentTurn,
     int usScore = 42,
@@ -79,7 +78,6 @@ class Mocks {
 
     when(store.state).thenReturn(applicationState);
     when(store.onChange).thenAnswer((_) => Stream.empty());
-    when(applicationState.currentView).thenReturn(currentView);
     when(applicationState.currentTurn).thenReturn(currentTurn);
     when(applicationState.score).thenReturn(ScoreDisplay(usScore, themScore));
   }

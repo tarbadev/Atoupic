@@ -1,10 +1,12 @@
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
+import 'package:atoupic/domain/entity/cart_round.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:collection/collection.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -20,7 +22,9 @@ void main() {
     GameBloc gameBloc;
 
     setUp(() {
-      gameBloc = GameBloc(Mocks.atoupicGame, Mocks.appBloc, Mocks.gameService);
+      reset(Mocks.atoupicGame);
+
+      gameBloc = GameBloc(Mocks.atoupicGame, Mocks.appBloc, Mocks.gameService, Mocks.aiService);
     });
 
     tearDown(() {
@@ -180,8 +184,124 @@ void main() {
       expect: [CreatingCardRound(), CardRoundCreated(TestFactory.gameContext)],
       verify: (_) async {
         verify(Mocks.gameService.save(TestFactory.gameContext));
-        verify(Mocks.store.dispatch(ChooseCardDecisionAction(TestFactory.gameContext)));
       },
     );
+
+    group('On PlayCardForAi', () {
+      final mockGameContext = MockGameContext();
+      final updatedGameContext = MockGameContext();
+      final cards = TestFactory.cards.toList().sublist(0, 3);
+      final card = cards.first;
+      final turn = Turn(1, TestFactory.realPlayer);
+      blocTest<GameBloc, GameEvent, GameState>(
+        'emits CardPlayed after calling the AiService to get a card',
+        build: () async => gameBloc,
+        act: (bloc) async {
+          when(Mocks.gameService.read()).thenReturn(mockGameContext);
+          when(Mocks.aiService.chooseCard(any, any, any)).thenReturn(card);
+          when(mockGameContext.lastTurn).thenReturn(turn);
+          when(mockGameContext.setCardDecision(any, any)).thenReturn(updatedGameContext);
+
+          bloc.add(PlayCardForAi(TestFactory.computerPlayer, cards));
+
+          await untilCalled(Mocks.atoupicGame.setLastCardPlayed(any, any, any));
+          var callback = verify(Mocks.atoupicGame.setLastCardPlayed(card, Position.Top, captureAny)).captured.single;
+          callback();
+        },
+        expect: [CardAnimationStarted(), CardAnimationEnded(), CardPlayed(updatedGameContext)],
+        verify: (_) async {
+          verify(Mocks.gameService.read());
+          verify(Mocks.aiService.chooseCard(cards, turn, true));
+          verify(mockGameContext.setCardDecision(card, TestFactory.computerPlayer));
+          verify(Mocks.gameService.save(updatedGameContext));
+        },
+      );
+    });
+
+    group('On PlayCard', () {
+      final mockGameContext = MockGameContext();
+      final updatedGameContext = MockGameContext();
+      final card = TestFactory.cards.first;
+      blocTest<GameBloc, GameEvent, GameState>(
+        'emits CardPlayed',
+        build: () async => gameBloc,
+        act: (bloc) async {
+          when(Mocks.gameService.read()).thenReturn(mockGameContext);
+          when(mockGameContext.setCardDecision(any, any)).thenReturn(updatedGameContext);
+
+          bloc.add(PlayCard(card, TestFactory.realPlayer));
+
+          await untilCalled(Mocks.atoupicGame.setLastCardPlayed(any, any, any));
+          var callback = verify(Mocks.atoupicGame.setLastCardPlayed(card, Position.Bottom, captureAny)).captured.single;
+          callback();
+        },
+        expect: [CardAnimationStarted(), CardAnimationEnded(), CardPlayed(updatedGameContext)],
+        verify: (_) async {
+          verify(Mocks.gameService.read());
+          verify(mockGameContext.setCardDecision(card, TestFactory.realPlayer));
+          verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
+          verify(Mocks.gameService.save(updatedGameContext));
+        },
+      );
+    });
+
+    group('On EndCardRound', () {
+      final mockGameContext = MockGameContext();
+      final mockTurn = MockTurn();
+      final updatedGameContext = MockGameContext();
+      blocTest<GameBloc, GameEvent, GameState>(
+        'emits CardRoundCreated when NOT the last round',
+        build: () async => gameBloc,
+        act: (bloc) async {
+          when(Mocks.gameService.read()).thenReturn(mockGameContext);
+          when(mockGameContext.lastTurn).thenReturn(Turn(1, null)..cardRounds = []);
+          when(mockGameContext.newCardRound()).thenReturn(updatedGameContext);
+          when(Mocks.gameService.save(any)).thenReturn(updatedGameContext);
+
+          bloc.add(EndCardRound());
+        },
+        expect: [CardRoundCreated(updatedGameContext)],
+        verify: (_) async {
+          verify(Mocks.gameService.read());
+          verify(mockGameContext.newCardRound());
+          verify(Mocks.atoupicGame.resetLastPlayedCards());
+          verify(Mocks.gameService.save(updatedGameContext));
+        },
+      );
+
+      blocTest<GameBloc, GameEvent, GameState>(
+        'emits CardRoundCreated when it is the last round',
+        build: () async => gameBloc,
+        act: (bloc) async {
+          List<CartRound> cardRounds = List();
+
+          for (int i = 0; i <= 7; i++) {
+            cardRounds.add(CartRound(Player(Position.Top))
+              ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
+              ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
+              ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
+              ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Seven));
+          }
+
+          when(Mocks.gameService.read()).thenReturn(mockGameContext);
+          when(mockGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayer]));
+          when(mockGameContext.lastTurn).thenReturn(mockTurn);
+          when(mockTurn.cardRounds).thenReturn(cardRounds);
+          when(Mocks.gameService.save(any)).thenReturn(mockGameContext);
+
+          bloc.add(EndCardRound());
+        },
+        expect: [TurnEnded()],
+        verify: (_) async {
+          verify(Mocks.atoupicGame.resetLastPlayedCards());
+          verify(Mocks.gameService.read());
+          verify(mockTurn.calculatePoints([TestFactory.realPlayer]));
+          verify(Mocks.gameService.save(mockGameContext));
+
+          verify(Mocks.store.dispatch(SetCurrentTurnAction(mockTurn)));
+          verify(Mocks.store.dispatch(SetTurnResultAction(null)));
+        },
+      );
+    });
   });
 }

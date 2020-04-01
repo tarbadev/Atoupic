@@ -1,29 +1,17 @@
-import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_state.dart';
-import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:atoupic/ui/entity/score_display.dart';
 import 'package:redux/redux.dart';
 
 ApplicationState applicationReducer(ApplicationState state, action) => ApplicationState(
-      setCurrentViewReducer(state.currentView, action),
       setCurrentTurnReducer(state.currentTurn, action),
       setScoreReducer(state.score, action),
     );
 
-final Reducer<AtoupicView> setCurrentViewReducer = combineReducers([
-  TypedReducer<AtoupicView, SetCurrentViewAction>(_setCurrentView),
-]);
-
-AtoupicView _setCurrentView(AtoupicView show, SetCurrentViewAction action) => action.view;
-
 final Reducer<ScoreDisplay> setScoreReducer = combineReducers([
-  TypedReducer<ScoreDisplay, SetScoreAction>(_setScore),
   TypedReducer<ScoreDisplay, SetTurnResultAction>(addToScore),
 ]);
-
-ScoreDisplay _setScore(ScoreDisplay scoreDisplay, SetScoreAction action) => action.newScore;
 
 ScoreDisplay addToScore(ScoreDisplay scoreDisplay, SetTurnResultAction action) =>
     action.turnResult == null

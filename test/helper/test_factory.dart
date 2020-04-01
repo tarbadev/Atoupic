@@ -59,24 +59,4 @@ abstract class TestFactory {
       ], [
         Turn(1, Player(Position.Top))
       ]);
-
-  static GameContext get finishedTurnGameContext =>
-      gameContext
-        ..lastTurn.playerDecisions[Position.Top] = Decision.Take
-        ..lastTurn.card = Card(CardColor.Spade, CardHead.Ten)
-        ..lastTurn.trumpColor = CardColor.Spade
-        ..lastTurn.cardRounds = fullGamePlayed;
-
-  static List<CartRound> get fullGamePlayed => [
-        CartRound(Player(Position.Top))
-          ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
-          ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
-          ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
-          ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Seven),
-        CartRound(Player(Position.Top))
-          ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Nine)
-          ..playedCards[Position.Right] = Card(CardColor.Club, CardHead.Eight)
-          ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
-          ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Seven),
-      ];
 }

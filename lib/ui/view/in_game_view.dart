@@ -1,6 +1,6 @@
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_state.dart';
-import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:atoupic/ui/component/score.dart';
 import 'package:atoupic/ui/component/turn_result_dialog.dart';
 import 'package:atoupic/ui/controller/take_or_pass_container.dart';
@@ -10,6 +10,7 @@ import 'package:atoupic/ui/widget/current_turn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
 import 'package:redux/redux.dart';
 
 class InGameView extends StatelessWidget {
@@ -166,11 +167,13 @@ class _InGameViewModel {
   factory _InGameViewModel.create(Store<ApplicationState> store) {
     final currentTurn = store.state.currentTurn;
     final isGameOver = store.state.score.us >= 501 || store.state.score.them >= 501;
+    var gameBloc = kiwi.Container().resolve<GameBloc>();
+    var appBloc = kiwi.Container().resolve<AppBloc>();
 
     _onEndTurnNext() {
       store.dispatch(SetTurnResultAction(null));
       if (!isGameOver) {
-        store.dispatch(StartTurnAction());
+        gameBloc.add(NewTurn());
       }
     }
 
@@ -181,8 +184,8 @@ class _InGameViewModel {
       _onEndTurnNext,
       store.state.score,
       currentTurn?.turnResult == null && isGameOver,
-      () => store.dispatch(SetCurrentViewAction(AtoupicView.Home)),
-      () => store.dispatch(StartSoloGameAction()),
+      () => appBloc.add(GameFinished()),
+      () => gameBloc.add(StartSoloGame()),
     );
   }
 }

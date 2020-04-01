@@ -106,3 +106,34 @@ class SetPlayedCard extends GameEvent {
 class ResetLastPlayedCards extends GameEvent {}
 class StartSoloGame extends GameEvent {}
 class NewCardRound extends GameEvent {}
+class EndCardRound extends GameEvent {}
+
+class PlayCardForAi extends GameEvent {
+  final Player player;
+  final List<Card> possibleCardsToPlay;
+
+  PlayCardForAi(this.player, this.possibleCardsToPlay);
+
+  @override
+  List<Object> get props => [player, possibleCardsToPlay];
+
+  @override
+  String toString() {
+    return 'PlayCardForAi{player: $player, possibleCardsToPlay: $possibleCardsToPlay}';
+  }
+}
+
+class PlayCard extends GameEvent {
+  final Card card;
+  final Player player;
+
+  PlayCard(this.card, this.player);
+
+  @override
+  List<Object> get props => [player, card];
+
+  @override
+  String toString() {
+    return 'PlayCard{card: $card, player: $player}';
+  }
+}

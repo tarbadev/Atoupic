@@ -1,14 +1,12 @@
 import 'dart:ui';
 
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
-import 'package:atoupic/ui/application_actions.dart';
-import 'package:atoupic/ui/application_state.dart';
 import 'package:atoupic/ui/component/card_component.dart';
 import 'package:atoupic/ui/component/player_component.dart';
 import 'package:flame/game.dart';
 import 'package:kiwi/kiwi.dart';
-import 'package:redux/redux.dart';
 
 class AtoupicGame extends BaseGame {
   bool visible = false;
@@ -68,9 +66,9 @@ class AtoupicGame extends BaseGame {
   void realPlayerCanChooseCard(bool canChooseCard, {List<Card> possiblePlayableCards}) {
     if (canChooseCard) {
       final container = Container();
-      final Store<ApplicationState> store = container.resolve();
+      final GameBloc gameBloc = container.resolve();
       _realPlayer.setCardsOnTapCallback(
-          (card) => store.dispatch(SetCardDecisionAction(card, _realPlayer.player)));
+          (card) => gameBloc.add(PlayCard(card, _realPlayer.player)));
       _realPlayer.cards.forEach((cardComponent) =>
           cardComponent.canBePlayed = possiblePlayableCards.contains(cardComponent.card));
     } else {
