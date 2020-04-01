@@ -1,10 +1,12 @@
 import 'package:atoupic/bloc/app_state.dart';
+import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 import '../helper/fake_application_injector.dart';
 import '../helper/mock_definition.dart';
+import '../helper/testable_widget.dart';
 import 'tester/home_view_tester.dart';
 import 'tester/in_game_view_tester.dart';
 
@@ -38,7 +40,7 @@ void main() {
 
       when(Mocks.appBloc.state).thenAnswer((_) => InGameAppState());
 
-      await tester.pumpWidget(AtoupicApp());
+      await tester.pumpWidget(buildTestableWidget(AtoupicApp(), currentTurn: Turn(1, null)));
 
       expect(homeViewTester.isVisible, isFalse);
       expect(inGameViewTester.isVisible, isTrue);

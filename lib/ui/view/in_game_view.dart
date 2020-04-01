@@ -29,9 +29,7 @@ class InGameView extends StatelessWidget {
 
     return BlocBuilder<GameBloc, GameState>(
       builder: (BuildContext context, GameState gameState) {
-        if (gameState is SoloGameInitialized) {
-          BlocProvider.of<GameBloc>(context).add(NewTurn(turnAlreadyCreated: true));
-        } else if (gameState is TurnCreated) {
+        if (gameState is TurnCreated) {
           _takeOrPass(gameState.turn.firstPlayer, gameState.turn);
         }
 

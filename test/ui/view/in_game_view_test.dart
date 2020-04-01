@@ -82,15 +82,6 @@ void main() {
       });
     });
 
-    testWidgets('triggers a NewTurn event on SoloGameInitialized', (WidgetTester tester) async {
-      when(Mocks.gameBloc.state).thenAnswer((_) => SoloGameInitialized());
-
-      await tester.pumpWidget(buildTestableWidget(InGameView()));
-      await tester.pump();
-
-      verify(Mocks.gameBloc.add(NewTurn(turnAlreadyCreated: true)));
-    });
-
     testWidgets('displays dialog when turnResult is not null', (WidgetTester tester) async {
       var inGameView = InGameView();
 

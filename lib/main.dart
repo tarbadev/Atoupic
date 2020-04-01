@@ -1,5 +1,7 @@
+import 'package:atoupic/ui/application_bloc_delegate.dart';
 import 'package:atoupic/ui/application_injector.dart';
 import 'package:atoupic/ui/atoupic_app.dart';
+import 'package:bloc/bloc.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/util.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/services.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  BlocSupervisor.delegate = ApplicationBlocDelegate();
   getApplicationInjector().configure();
 
   Util flameUtil = Util();
