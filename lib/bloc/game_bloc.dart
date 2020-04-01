@@ -5,12 +5,8 @@ import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/service/ai_service.dart';
 import 'package:atoupic/domain/service/game_service.dart';
-import 'package:atoupic/ui/application_actions.dart';
-import 'package:atoupic/ui/application_state.dart';
 import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:bloc/bloc.dart';
-import 'package:kiwi/kiwi.dart' as kiwi;
-import 'package:redux/redux.dart';
 
 import './bloc.dart';
 
@@ -120,11 +116,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (gameContext.lastTurn.cardRounds.length >= 8) {
       gameContext.lastTurn.calculatePoints(gameContext.players);
       _gameService.save(gameContext);
-      yield TurnEnded();
-
-      var store = kiwi.Container().resolve<Store<ApplicationState>>();
-      store.dispatch(SetCurrentTurnAction(gameContext.lastTurn));
-      store.dispatch(SetTurnResultAction(gameContext.lastTurn.turnResult));
+      yield TurnEnded(gameContext.lastTurn.turnResult);
     } else {
       gameContext = gameContext.newCardRound();
       _gameService.save(gameContext);

@@ -1,12 +1,10 @@
 import 'package:atoupic/bloc/bloc.dart';
-import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_state.dart';
 import 'package:atoupic/ui/component/score.dart';
-import 'package:atoupic/ui/component/turn_result_dialog.dart';
-import 'package:atoupic/ui/controller/take_or_pass_container.dart';
 import 'package:atoupic/ui/entity/score_display.dart';
-import 'package:atoupic/ui/entity/turn_result_display.dart';
 import 'package:atoupic/ui/widget/current_turn.dart';
+import 'package:atoupic/ui/widget/take_or_pass_container.dart';
+import 'package:atoupic/ui/widget/turn_result_dialog_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -51,21 +49,10 @@ class InGameView extends StatelessWidget {
               ),
             ),
             TakeOrPassDialogContainer(),
+            TurnResultDialogContainer(),
             StoreConnector<ApplicationState, _InGameViewModel>(
               converter: (Store<ApplicationState> store) => _InGameViewModel.create(store),
               builder: (BuildContext context, _InGameViewModel viewModel) {
-                if (viewModel.turnResultDisplay != null) {
-                  SchedulerBinding.instance.addPostFrameCallback(
-                    (_) => showDialog(
-                      barrierDismissible: false,
-                      context: context,
-                      child: TurnResultDialog(
-                        turnResultDisplay: viewModel.turnResultDisplay,
-                        onNextPressed: viewModel.onTurnResultNext,
-                      ),
-                    ),
-                  );
-                }
                 if (viewModel.showEndGameDialog) {
                   SchedulerBinding.instance.addPostFrameCallback(
                     (_) => showDialog(
@@ -148,16 +135,12 @@ class InGameView extends StatelessWidget {
 }
 
 class _InGameViewModel {
-  final TurnResultDisplay turnResultDisplay;
-  final Function onTurnResultNext;
   final ScoreDisplay score;
   final bool showEndGameDialog;
   final Function onHomeTap;
   final Function onNewGameTap;
 
   _InGameViewModel(
-    this.turnResultDisplay,
-    this.onTurnResultNext,
     this.score,
     this.showEndGameDialog,
     this.onHomeTap,
@@ -170,18 +153,7 @@ class _InGameViewModel {
     var gameBloc = kiwi.Container().resolve<GameBloc>();
     var appBloc = kiwi.Container().resolve<AppBloc>();
 
-    _onEndTurnNext() {
-      store.dispatch(SetTurnResultAction(null));
-      if (!isGameOver) {
-        gameBloc.add(NewTurn());
-      }
-    }
-
     return _InGameViewModel(
-      currentTurn?.turnResult == null
-          ? null
-          : TurnResultDisplay.fromTurnResult(currentTurn?.turnResult),
-      _onEndTurnNext,
       store.state.score,
       currentTurn?.turnResult == null && isGameOver,
       () => appBloc.add(GameFinished()),

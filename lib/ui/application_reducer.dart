@@ -10,16 +10,15 @@ ApplicationState applicationReducer(ApplicationState state, action) => Applicati
     );
 
 final Reducer<ScoreDisplay> setScoreReducer = combineReducers([
-  TypedReducer<ScoreDisplay, SetTurnResultAction>(addToScore),
 ]);
 
-ScoreDisplay addToScore(ScoreDisplay scoreDisplay, SetTurnResultAction action) =>
-    action.turnResult == null
-        ? scoreDisplay
-        : ScoreDisplay(
-            scoreDisplay.us + action.turnResult.verticalScore,
-            scoreDisplay.them + action.turnResult.horizontalScore,
-          );
+//ScoreDisplay addToScore(ScoreDisplay scoreDisplay, SetTurnResultAction action) =>
+//    action.turnResult == null
+//        ? scoreDisplay
+//        : ScoreDisplay(
+//            scoreDisplay.us + action.turnResult.verticalScore,
+//            scoreDisplay.them + action.turnResult.horizontalScore,
+//          );
 
 final Reducer<Turn> setCurrentTurnReducer = combineReducers([
   TypedReducer<Turn, SetCurrentTurnAction>(_setCurrentTurn),

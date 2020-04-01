@@ -291,15 +291,12 @@ void main() {
 
           bloc.add(EndCardRound());
         },
-        expect: [TurnEnded()],
+        expect: [TurnEnded(null)],
         verify: (_) async {
           verify(Mocks.atoupicGame.resetLastPlayedCards());
           verify(Mocks.gameService.read());
           verify(mockTurn.calculatePoints([TestFactory.realPlayer]));
           verify(Mocks.gameService.save(mockGameContext));
-
-          verify(Mocks.store.dispatch(SetCurrentTurnAction(mockTurn)));
-          verify(Mocks.store.dispatch(SetTurnResultAction(null)));
         },
       );
     });

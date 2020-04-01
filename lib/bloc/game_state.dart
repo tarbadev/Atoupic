@@ -1,5 +1,6 @@
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/turn.dart';
+import 'package:atoupic/domain/entity/turn_result.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class GameState extends Equatable {
@@ -29,7 +30,19 @@ class CreatingTurn extends GameState {}
 class CreatingCardRound extends GameState {}
 class CardAnimationStarted extends GameState {}
 class CardAnimationEnded extends GameState {}
-class TurnEnded extends GameState {}
+class TurnEnded extends GameState {
+  final TurnResult turnResult;
+
+  TurnEnded(this.turnResult);
+
+  @override
+  List<Object> get props => [turnResult];
+
+  @override
+  String toString() {
+    return 'TurnEnded{turnResult: $turnResult}';
+  }
+}
 
 class CardRoundCreated extends GameState {
   final GameContext gameContext;
