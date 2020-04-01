@@ -90,6 +90,7 @@ class AtoupicGame extends BaseGame {
     _players.forEach((player) {
       player.lastPlayedCard.shouldDestroy = true;
       player.lastPlayedCard = null;
+      player.resize(size);
     });
   }
 

@@ -10,7 +10,6 @@ class TurnResultDialogContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameBloc, GameState>(builder: (BuildContext context, GameState state) {
-      print(state);
       if (state is TurnEnded) {
         SchedulerBinding.instance.addPostFrameCallback(
           (_) => showDialog(
