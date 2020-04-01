@@ -16,13 +16,17 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
   final Paint maskPaint = Paint()..color = Color(0x88000000);
   bool fullyDisplayed = false;
   bool canBePlayed = false;
-  bool shouldDestroy = false;
+  bool _shouldDestroy = false;
   bool animatePlayedCard = false;
   DateTime animateStart;
   Rect playedCardTarget;
   double tileSize;
 
   Function onAnimationDoneCallback;
+
+  set shouldDestroy(newValue) {
+    return _shouldDestroy = newValue;
+  }
 
   CardComponent(this._spriteFileName, this.onCardPlayed, this.card) {
     sprite = Sprite(_spriteFileName);
@@ -31,7 +35,7 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
 
   @override
   bool destroy() {
-    return shouldDestroy;
+    return _shouldDestroy;
   }
 
   @override

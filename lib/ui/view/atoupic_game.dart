@@ -24,6 +24,10 @@ class AtoupicGame extends BaseGame {
   }
 
   void setDomainPlayers(List<Player> players) {
+    if (_players.isNotEmpty) {
+      _players.forEach((playerComponent) => playerComponent.setToDestroy());
+      _players.clear();
+    }
     players.map((player) => PlayerComponent.fromPlayer(player)).forEach((player) {
       if (player.isRealPlayer) {
         _realPlayer = player;
