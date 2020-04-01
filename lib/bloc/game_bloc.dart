@@ -30,10 +30,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       yield SoloGameInitialized();
 
       _appBloc.add(GameInitialized());
-    } else if (event is Start) {
-      _atoupicGame.setDomainPlayers(event.players);
-      _atoupicGame.visible = true;
-      yield Initialized();
     } else if (event is NewTurn) {
       yield CreatingTurn();
 

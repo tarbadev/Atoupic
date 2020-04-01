@@ -73,36 +73,6 @@ void main() {
       );
     });
 
-    // Deprecated
-    blocTest<GameBloc, GameEvent, GameState>(
-      'emits Initialized() state when starting game',
-      build: () async => gameBloc,
-      act: (bloc) async => bloc.add(Start(players)),
-      expect: [Initialized()],
-      verify: (_) async {
-        verify(Mocks.atoupicGame.visible = true);
-        verify(Mocks.atoupicGame.setDomainPlayers(players));
-      },
-    );
-
-    // Deprecated
-    blocTest<GameBloc, GameEvent, GameState>(
-      'resets the game on NewTurn',
-      build: () async => gameBloc,
-      act: (bloc) async => bloc.add(NewTurn()),
-      expect: [],
-      verify: (_) async {
-        verify(Mocks.atoupicGame.resetPlayersPassed());
-        verify(Mocks.atoupicGame.resetTrumpColor());
-        verify(Mocks.atoupicGame.resetPlayersCards());
-        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Left));
-        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Top));
-        verify(Mocks.atoupicGame.addPlayerCards(null, Position.Right));
-        verify(Mocks.atoupicGame
-            .addPlayerCards([Card(CardColor.Heart, CardHead.Ace)], Position.Bottom));
-      },
-    );
-
     blocTest<GameBloc, GameEvent, GameState>(
       'calls the game to display player passed',
       build: () async => gameBloc,

@@ -9,18 +9,6 @@ abstract class GameEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class Start extends GameEvent {
-  final List<Player> players;
-
-  Start(this.players);
-
-  @override
-  List<Object> get props => [players];
-
-  @override
-  String toString() => 'Start{players: $players}';
-}
-
 class NewTurn extends GameEvent {
   final bool turnAlreadyCreated;
 
