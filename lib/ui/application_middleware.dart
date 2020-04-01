@@ -6,7 +6,6 @@ import 'package:atoupic/bloc/game_event.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/service/ai_service.dart';
-import 'package:atoupic/domain/service/card_service.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_state.dart';
@@ -14,7 +13,6 @@ import 'package:kiwi/kiwi.dart';
 import 'package:redux/redux.dart';
 
 List<Middleware<ApplicationState>> createApplicationMiddleware() => [
-      TypedMiddleware<ApplicationState, TakeDecisionAction>(takeDecision),
       TypedMiddleware<ApplicationState, StartCardRoundAction>(startCardRound),
       TypedMiddleware<ApplicationState, ChooseCardDecisionAction>(chooseCardDecision),
       TypedMiddleware<ApplicationState, SetCardDecisionAction>(setCardDecision),
@@ -23,46 +21,6 @@ List<Middleware<ApplicationState>> createApplicationMiddleware() => [
       TypedMiddleware<ApplicationState, EndTurnAction>(endTurn),
       TypedMiddleware<ApplicationState, EndGameAction>(endGame),
     ];
-
-void takeDecision(
-  Store<ApplicationState> store,
-  TakeDecisionAction action,
-  NextDispatcher next,
-) {
-  final container = Container();
-  final GameService gameService = container<GameService>();
-  final CardService cardService = container<CardService>();
-  final GameBloc gameBloc = container<GameBloc>();
-
-  var gameContext = gameService.read().setDecision(action.player, Decision.Take);
-
-  action.player.cards.add(gameContext.lastTurn.card);
-  var takerCards = cardService.distributeCards(2);
-  action.player.cards.addAll(takerCards);
-
-  gameContext.lastTurn.trumpColor = action.color;
-
-  gameBloc.add(DisplayTrumpColor(action.color, action.player.position));
-  gameBloc.add(AddPlayerCards(takerCards, action.player.position));
-
-  gameContext.players.forEach((player) {
-    if (player != action.player) {
-      var newCards = cardService.distributeCards(3);
-      player.cards.addAll(newCards);
-      gameBloc.add(AddPlayerCards(newCards, player.position));
-    }
-  });
-  var realPlayer = gameContext.players.firstWhere((player) => player.isRealPlayer);
-  realPlayer.sortCards(trumpColor: action.color);
-
-  gameBloc.add(ResetPlayersPassedCaption());
-  gameBloc.add(ReplaceRealPlayersCards(realPlayer.cards));
-
-  gameService.save(gameContext);
-  store.dispatch(StartCardRoundAction(gameContext));
-
-  next(action);
-}
 
 void startCardRound(
   Store<ApplicationState> store,

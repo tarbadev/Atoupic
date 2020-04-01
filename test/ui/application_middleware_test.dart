@@ -4,7 +4,6 @@ import 'package:atoupic/domain/entity/cart_round.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
-import 'package:atoupic/domain/service/game_service.dart';
 import 'package:atoupic/ui/application_actions.dart';
 import 'package:atoupic/ui/application_middleware.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,114 +24,6 @@ void main() {
     reset(Mocks.gameService);
     reset(Mocks.cardService);
     reset(Mocks.gameBloc);
-  });
-
-  group('takeDecision', () {
-    test('distributes cards to players', () {
-      var card = Card(CardColor.Club, CardHead.Ace);
-      var firstPlayer = TestFactory.computerPlayer..cards = [];
-      var realPlayer = TestFactory.realPlayer..cards = [];
-      List<Player> players = [
-        Player(Position.Left)..cards = [],
-        firstPlayer,
-        realPlayer,
-        Player(Position.Right)..cards = [],
-      ];
-      List<Player> updatedPlayers = [
-        Player(Position.Left)..cards = [card],
-        TestFactory.computerPlayer..cards = [card],
-        TestFactory.realPlayer..cards = [card, card],
-        Player(Position.Right)..cards = [card],
-      ];
-      var gameContext = GameContext(players, [Turn(1, firstPlayer)..card = card]);
-      var updatedGameContext = GameContext(updatedPlayers, [
-        Turn(1, firstPlayer)
-          ..card = card
-          ..trumpColor = card.color
-          ..playerDecisions[realPlayer.position] = Decision.Take
-      ]);
-      var action = TakeDecisionAction(realPlayer, CardColor.Club);
-
-      when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(Mocks.cardService.distributeCards(any)).thenReturn([card]);
-
-      takeDecision(Mocks.store, action, Mocks.next);
-
-      expect(realPlayer.cards.length, 2);
-
-      verifyInOrder([
-        Mocks.gameService.read(),
-        Mocks.cardService.distributeCards(2),
-        Mocks.gameBloc.add(AddPlayerCards([card], realPlayer.position)),
-        Mocks.cardService.distributeCards(3),
-        Mocks.gameBloc.add(AddPlayerCards([card], Position.Left)),
-        Mocks.cardService.distributeCards(3),
-        Mocks.gameBloc.add(AddPlayerCards([card], firstPlayer.position)),
-        Mocks.cardService.distributeCards(3),
-        Mocks.gameBloc.add(AddPlayerCards([card], Position.Right)),
-        Mocks.gameBloc.add(ResetPlayersPassedCaption()),
-        Mocks.gameService.save(updatedGameContext),
-        Mocks.mockNext.next(action),
-      ]);
-    });
-
-    test('orders cards of real player', () {
-      Player mockPlayer = MockPlayer();
-      var gameContext = GameContext(
-          [mockPlayer], [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
-      var action = TakeDecisionAction(mockPlayer, CardColor.Club);
-
-      when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(Mocks.cardService.distributeCards(any))
-          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
-      when(mockPlayer.cards).thenReturn([]);
-      when(mockPlayer.isRealPlayer).thenReturn(true);
-
-      takeDecision(Mocks.store, action, Mocks.next);
-
-      verify(mockPlayer.sortCards(trumpColor: CardColor.Club));
-      verify(Mocks.gameBloc.add(ReplaceRealPlayersCards([
-        Card(CardColor.Club, CardHead.King),
-        Card(CardColor.Club, CardHead.Eight),
-      ])));
-    });
-
-    test('dispatches StartCardRound', () {
-      Player mockPlayer = MockPlayer();
-      var gameContext = GameContext(
-          [mockPlayer], [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
-      var action = TakeDecisionAction(mockPlayer, CardColor.Club);
-
-      when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(Mocks.cardService.distributeCards(any))
-          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
-      when(mockPlayer.cards).thenReturn([]);
-      when(mockPlayer.isRealPlayer).thenReturn(true);
-
-      takeDecision(Mocks.store, action, Mocks.next);
-
-      verify(Mocks.store.dispatch(StartCardRoundAction(gameContext)));
-    });
-
-    test('sets the trump color in game', () {
-      Player mockPlayer = MockPlayer();
-      var gameContext = GameContext(
-          [mockPlayer], [Turn(1, mockPlayer)..card = Card(CardColor.Club, CardHead.King)]);
-      var action = TakeDecisionAction(mockPlayer, CardColor.Club);
-
-      when(Mocks.gameService.read()).thenReturn(gameContext);
-      when(Mocks.cardService.distributeCards(any))
-          .thenReturn([Card(CardColor.Club, CardHead.Eight)]);
-      when(mockPlayer.cards).thenReturn([]);
-      when(mockPlayer.position).thenReturn(Position.Right);
-      when(mockPlayer.isRealPlayer).thenReturn(true);
-
-      takeDecision(Mocks.store, action, Mocks.next);
-
-      expect(gameContext.lastTurn.trumpColor, CardColor.Club);
-
-      verify(Mocks.gameBloc.add(DisplayTrumpColor(CardColor.Club, Position.Right)));
-    });
   });
 
   group('startCardRound', () {

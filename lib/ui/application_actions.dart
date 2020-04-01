@@ -40,15 +40,6 @@ class DecisionAction extends Equatable {
   List<Object> get props => [this.player];
 }
 
-class TakeDecisionAction extends DecisionAction {
-  final CardColor color;
-
-  TakeDecisionAction(Player player, this.color) : super(player);
-
-  @override
-  List<Object> get props => [this.player, this.color];
-}
-
 class StartCardRoundAction extends Equatable {
   final GameContext context;
 
