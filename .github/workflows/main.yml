@@ -1,4 +1,4 @@
-name: Atoupic Debug
+name: Atoupic Release
 on: push
 jobs:
   test:
@@ -13,6 +13,7 @@ jobs:
 
   build-release:
     name: Build - Release
+    needs: test
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v1
@@ -20,7 +21,7 @@ jobs:
         with:
           flutter-version: '1.12.13+hotfix.5'
       - name: "Build - Android - Release"
-        run: flutter build apk --release --build-number=$GitVersion_BuildMetaData
+        run: flutter build appbundle --release --build-number=$GitVersion_BuildMetaData
       - name: "Build - iOS - Release"
         run: flutter build ios --release --no-codesign --build-number=$GitVersion_BuildMetaData
       - name: Upload APK
