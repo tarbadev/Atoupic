@@ -77,6 +77,95 @@ class InGameView extends StatelessWidget {
                     ),
                   ),
                   TakeOrPassDialogController(),
+                  StoreConnector<ApplicationState, _InGameViewModel>(
+                    converter: (Store<ApplicationState> store) => _InGameViewModel.create(store),
+                    builder: (BuildContext context, _InGameViewModel viewModel) {
+                      if (viewModel.turnResultDisplay != null) {
+                        SchedulerBinding.instance.addPostFrameCallback(
+                          (_) => showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            child: TurnResultDialog(
+                              turnResultDisplay: viewModel.turnResultDisplay,
+                              onNextPressed: viewModel.onTurnResultNext,
+                            ),
+                          ),
+                        );
+                      }
+                      if (viewModel.showEndGameDialog) {
+                        SchedulerBinding.instance.addPostFrameCallback(
+                          (_) => showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            child: AlertDialog(
+                              key: Key('GameResultDialog'),
+                              title: Text(
+                                viewModel.score.us > viewModel.score.them
+                                    ? 'Congratulations!'
+                                    : 'You Lost!',
+                                key: Key('GameResultDialog__Result'),
+                                style: TextStyle(fontSize: 22.0),
+                              ),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text(
+                                        viewModel.score.us.toString(),
+                                        key: Key('GameResultDialog__UsScore'),
+                                        style: TextStyle(fontSize: 20.0),
+                                      ),
+                                      Container(
+                                          height: 20,
+                                          child: VerticalDivider(
+                                            color: Colors.grey,
+                                            thickness: 2,
+                                          )),
+                                      Text(
+                                        viewModel.score.them.toString(),
+                                        key: Key('GameResultDialog__ThemScore'),
+                                        style: TextStyle(fontSize: 20.0),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              actions: <Widget>[
+                                RaisedButton(
+                                  key: Key('GameResultDialog__HomeButton'),
+                                  color: Theme.of(context).backgroundColor,
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    viewModel.onHomeTap();
+                                  },
+                                  child: Text(
+                                    'Home',
+                                    style: Theme.of(context).textTheme.body1,
+                                  ),
+                                ),
+                                RaisedButton(
+                                  key: Key('GameResultDialog__NewGameButton'),
+                                  color: Theme.of(context).backgroundColor,
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    viewModel.onNewGameTap();
+                                  },
+                                  child: Text(
+                                    'New Game',
+                                    style: Theme.of(context).textTheme.body1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      return Container();
+                    },
+                  ),
                 ],
               ),
             ),
@@ -84,95 +173,6 @@ class InGameView extends StatelessWidget {
         });
       },
     );
-    return BlocBuilder<GameBloc, GameState>(builder: (BuildContext context, GameState state) {
-      return StoreConnector<ApplicationState, _InGameViewModel>(
-        converter: (Store<ApplicationState> store) => _InGameViewModel.create(store),
-        builder: (BuildContext context, _InGameViewModel viewModel) {
-          if (viewModel.turnResultDisplay != null) {
-            SchedulerBinding.instance.addPostFrameCallback(
-              (_) => showDialog(
-                barrierDismissible: false,
-                context: context,
-                child: TurnResultDialog(
-                  turnResultDisplay: viewModel.turnResultDisplay,
-                  onNextPressed: viewModel.onTurnResultNext,
-                ),
-              ),
-            );
-          }
-          if (viewModel.showEndGameDialog) {
-            SchedulerBinding.instance.addPostFrameCallback(
-              (_) => showDialog(
-                barrierDismissible: false,
-                context: context,
-                child: AlertDialog(
-                  key: Key('GameResultDialog'),
-                  title: Text(
-                    viewModel.score.us > viewModel.score.them ? 'Congratulations!' : 'You Lost!',
-                    key: Key('GameResultDialog__Result'),
-                    style: TextStyle(fontSize: 22.0),
-                  ),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            viewModel.score.us.toString(),
-                            key: Key('GameResultDialog__UsScore'),
-                            style: TextStyle(fontSize: 20.0),
-                          ),
-                          Container(
-                              height: 20,
-                              child: VerticalDivider(
-                                color: Colors.grey,
-                                thickness: 2,
-                              )),
-                          Text(
-                            viewModel.score.them.toString(),
-                            key: Key('GameResultDialog__ThemScore'),
-                            style: TextStyle(fontSize: 20.0),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  actions: <Widget>[
-                    RaisedButton(
-                      key: Key('GameResultDialog__HomeButton'),
-                      color: Theme.of(context).backgroundColor,
-                      onPressed: () {
-                        Navigator.pop(context);
-                        viewModel.onHomeTap();
-                      },
-                      child: Text(
-                        'Home',
-                        style: Theme.of(context).textTheme.body1,
-                      ),
-                    ),
-                    RaisedButton(
-                      key: Key('GameResultDialog__NewGameButton'),
-                      color: Theme.of(context).backgroundColor,
-                      onPressed: () {
-                        Navigator.pop(context);
-                        viewModel.onNewGameTap();
-                      },
-                      child: Text(
-                        'New Game',
-                        style: Theme.of(context).textTheme.body1,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-          return null;
-        },
-      );
-    });
   }
 }
 

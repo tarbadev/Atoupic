@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:atoupic/domain/service/card_service.dart';
 import 'package:atoupic/domain/service/game_service.dart';
+import 'package:atoupic/ui/application_actions.dart';
+import 'package:atoupic/ui/application_state.dart';
 import 'package:bloc/bloc.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
+import 'package:redux/redux.dart';
 
 import './bloc.dart';
 
@@ -11,7 +15,7 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
   final GameService _gameService;
   final CardService _cardService;
 
-  TakeOrPassBloc(this._gameBloc, this._gameService, this._cardService) {}
+  TakeOrPassBloc(this._gameBloc, this._gameService, this._cardService);
 
   @override
   TakeOrPassState get initialState => HideTakeOrPassDialog();
@@ -58,6 +62,9 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
 
     yield PlayerTook(
         gameContext.players.firstWhere((player) => player.position == event.player.position));
+
+    var store = kiwi.Container().resolve<Store<ApplicationState>>();
+    store.dispatch(StartCardRoundAction(gameContext));
   }
 
   Stream<TakeOrPassState> _mapPassEventToState(Pass event) async* {
