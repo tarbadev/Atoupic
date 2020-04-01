@@ -59,11 +59,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       _atoupicGame.replaceRealPlayersCards(event.cards);
     } else if (event is RealPlayerCanChooseCard) {
       _atoupicGame.realPlayerCanChooseCard(true, possiblePlayableCards: event.cards);
-    } else if (event is SetPlayedCard) {
-      _atoupicGame.realPlayerCanChooseCard(false);
-      _atoupicGame.setLastCardPlayed(event.card, event.position, event.onCardPlayed);
-    } else if (event is ResetLastPlayedCards) {
-      _atoupicGame.resetLastPlayedCards();
     } else if (event is NewCardRound) {
       yield CreatingCardRound();
 

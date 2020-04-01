@@ -142,34 +142,6 @@ void main() {
       },
     );
 
-    group('On SetPlayedCard', () {
-      final callback = () {};
-      blocTest<GameBloc, GameEvent, GameState>(
-        'calls the game to set the disable real players capability to play a card',
-        build: () async => gameBloc,
-        act: (bloc) async =>
-            bloc.add(SetPlayedCard(TestFactory.cards.first, Position.Right, callback)),
-        expect: [],
-        verify: (_) async {
-          verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
-          verify(Mocks.atoupicGame
-              .setLastCardPlayed(TestFactory.cards.first, Position.Right, callback));
-        },
-      );
-    });
-
-    group('On ResetLastPlayedCards', () {
-      blocTest<GameBloc, GameEvent, GameState>(
-        'calls the game to reset the last played cards',
-        build: () async => gameBloc,
-        act: (bloc) async => bloc.add(ResetLastPlayedCards()),
-        expect: [],
-        verify: (_) async {
-          verify(Mocks.atoupicGame.resetLastPlayedCards());
-        },
-      );
-    });
-
     blocTest<GameBloc, GameEvent, GameState>(
       'emits CardRoundCreated when done',
       build: () async => gameBloc,
@@ -291,7 +263,8 @@ void main() {
           when(Mocks.gameService.read()).thenReturn(mockGameContext);
           when(mockGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayer]));
           when(mockGameContext.turns).thenReturn(UnmodifiableListView([
-            Turn(1, null)..turnResult = TurnResult(Player(Position.Top), 102, 50, Result.Failure, 162, 0),
+            Turn(1, null)
+              ..turnResult = TurnResult(Player(Position.Top), 102, 50, Result.Failure, 162, 0),
             mockTurn,
           ]));
           when(mockGameContext.lastTurn).thenReturn(mockTurn);
@@ -327,7 +300,8 @@ void main() {
           when(Mocks.gameService.read()).thenReturn(mockGameContext);
           when(mockGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayer]));
           when(mockGameContext.turns).thenReturn(UnmodifiableListView([
-            Turn(1, null)..turnResult = TurnResult(Player(Position.Top), 102, 50, Result.Failure, 462, 0),
+            Turn(1, null)
+              ..turnResult = TurnResult(Player(Position.Top), 102, 50, Result.Failure, 462, 0),
             mockTurn,
           ]));
           when(mockGameContext.lastTurn).thenReturn(mockTurn);
@@ -363,7 +337,8 @@ void main() {
           when(Mocks.gameService.read()).thenReturn(mockGameContext);
           when(mockGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayer]));
           when(mockGameContext.turns).thenReturn(UnmodifiableListView([
-            Turn(1, null)..turnResult = TurnResult(Player(Position.Top), 50, 102, Result.Failure, 0, 462),
+            Turn(1, null)
+              ..turnResult = TurnResult(Player(Position.Top), 50, 102, Result.Failure, 0, 462),
             mockTurn,
           ]));
           when(mockGameContext.lastTurn).thenReturn(mockTurn);

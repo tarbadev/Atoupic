@@ -87,23 +87,6 @@ class RealPlayerCanChooseCard extends GameEvent {
   String toString() => 'RealPlayerCanChooseCard{cards: $cards}';
 }
 
-class SetPlayedCard extends GameEvent {
-  final Card card;
-  final Position position;
-  final Function onCardPlayed;
-
-  SetPlayedCard(this.card, this.position, this.onCardPlayed);
-
-  @override
-  List<Object> get props => [card, position, onCardPlayed];
-
-  @override
-  String toString() {
-    return 'SetPlayedCard{card: $card, position: $position, onCardPlayed: $onCardPlayed}';
-  }
-}
-
-class ResetLastPlayedCards extends GameEvent {}
 class StartSoloGame extends GameEvent {}
 class NewCardRound extends GameEvent {}
 class EndCardRound extends GameEvent {}
