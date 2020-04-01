@@ -2,11 +2,7 @@ import 'dart:async';
 
 import 'package:atoupic/domain/service/card_service.dart';
 import 'package:atoupic/domain/service/game_service.dart';
-import 'package:atoupic/ui/application_actions.dart';
-import 'package:atoupic/ui/application_state.dart';
 import 'package:bloc/bloc.dart';
-import 'package:kiwi/kiwi.dart' as kiwi;
-import 'package:redux/redux.dart';
 
 import './bloc.dart';
 
@@ -60,11 +56,7 @@ class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
     _gameBloc.add(ResetPlayersPassedCaption());
     _gameBloc.add(ReplaceRealPlayersCards(realPlayer.cards));
 
-    yield PlayerTook(
-        gameContext.players.firstWhere((player) => player.position == event.player.position));
-
-    var store = kiwi.Container().resolve<Store<ApplicationState>>();
-    store.dispatch(StartCardRoundAction(gameContext));
+    yield PlayerTook();
   }
 
   Stream<TakeOrPassState> _mapPassEventToState(Pass event) async* {

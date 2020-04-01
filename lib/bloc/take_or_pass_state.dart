@@ -11,19 +11,7 @@ abstract class TakeOrPassState extends Equatable {
 }
 
 class HideTakeOrPassDialog extends TakeOrPassState {}
-class PlayerTook extends TakeOrPassState {
-  final Player player;
-
-  PlayerTook(this.player);
-
-  @override
-  List<Object> get props => [player];
-
-  @override
-  String toString() {
-    return 'PlayerTook{player: $player}';
-  }
-}
+class PlayerTook extends TakeOrPassState {}
 class PlayerPassed extends TakeOrPassState {
   final GameContext gameContext;
 

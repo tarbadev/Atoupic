@@ -4,18 +4,14 @@ import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/game_service.dart';
-import 'package:atoupic/ui/application_actions.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import '../helper/fake_application_injector.dart';
 import '../helper/mock_definition.dart';
 import '../helper/test_factory.dart';
 
 void main() {
-  setupDependencyInjectorForTest();
-
   group('TakeOrPassDialogBloc', () {
     TakeOrPassDialogBloc currentTurnBloc;
 
@@ -70,7 +66,7 @@ void main() {
 
             currentTurnBloc.add(Take(realPlayer, card.color));
           },
-          expect: [PlayerTook(updatedRealPlayer)],
+          expect: [PlayerTook()],
           verify: (_) async {
             verify(Mocks.gameService.read());
             expect(verify(Mocks.cardService.distributeCards(2)).callCount, 1);
@@ -82,7 +78,6 @@ void main() {
             verify(Mocks.gameBloc.add(ResetPlayersPassedCaption()));
             verify(Mocks.gameBloc.add(DisplayTrumpColor(card.color, Position.Bottom)));
             verify(Mocks.gameBloc.add(ReplaceRealPlayersCards(updatedRealPlayer.cards)));
-            verify(Mocks.store.dispatch(StartCardRoundAction(updatedGameContext)));
             verify(Mocks.gameService.save(updatedGameContext));
           }
       );

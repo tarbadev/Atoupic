@@ -1,3 +1,4 @@
+import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:equatable/equatable.dart';
 
@@ -25,3 +26,18 @@ class TurnCreated extends GameState {
   }
 }
 class CreatingTurn extends GameState {}
+class CreatingCardRound extends GameState {}
+
+class CardRoundCreated extends GameState {
+  final GameContext gameContext;
+
+  CardRoundCreated(this.gameContext);
+
+  @override
+  List<Object> get props => [gameContext];
+
+  @override
+  String toString() {
+    return 'CardRoundCreated{gameContext: $gameContext}';
+  }
+}

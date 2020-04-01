@@ -2,8 +2,12 @@ import 'dart:async';
 
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/service/game_service.dart';
+import 'package:atoupic/ui/application_actions.dart';
+import 'package:atoupic/ui/application_state.dart';
 import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:bloc/bloc.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
+import 'package:redux/redux.dart';
 
 import './bloc.dart';
 
@@ -59,6 +63,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       _atoupicGame.setLastCardPlayed(event.card, event.position, event.onCardPlayed);
     } else if (event is ResetLastPlayedCards) {
       _atoupicGame.resetLastPlayedCards();
+    } else if (event is NewCardRound) {
+      yield CreatingCardRound();
+
+      final gameContext  = _gameService.save(_gameService.read().newCardRound());
+
+      yield CardRoundCreated(gameContext);
+
+      var store = kiwi.Container().resolve<Store<ApplicationState>>();
+      store.dispatch(ChooseCardDecisionAction(gameContext));
     }
   }
 }

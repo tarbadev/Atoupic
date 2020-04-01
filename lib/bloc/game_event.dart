@@ -105,3 +105,4 @@ class SetPlayedCard extends GameEvent {
 
 class ResetLastPlayedCards extends GameEvent {}
 class StartSoloGame extends GameEvent {}
+class NewCardRound extends GameEvent {}

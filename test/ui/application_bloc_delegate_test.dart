@@ -95,4 +95,18 @@ void main() {
       verify(Mocks.takeOrPassDialogBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
     });
   });
+
+  group('On PlayerTook', () {
+    test('triggers NewCardRound', () {
+      applicationBlocDelegate.onTransition(
+          Mocks.gameBloc,
+          Transition(
+            currentState: HideTakeOrPassDialog(),
+            event: Take(null, null),
+            nextState: PlayerTook(),
+          ));
+
+      verify(Mocks.gameBloc.add(NewCardRound()));
+    });
+  });
 }

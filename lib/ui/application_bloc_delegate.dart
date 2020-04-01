@@ -22,6 +22,8 @@ class ApplicationBlocDelegate extends BlocDelegate {
         transition.nextState.gameContext.nextPlayer(),
         transition.nextState.gameContext.lastTurn,
       );
+    } else if (transition.nextState is PlayerTook) {
+      _gameBloc.add(NewCardRound());
     }
   }
 

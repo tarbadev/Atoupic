@@ -3,14 +3,18 @@ import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
+import 'package:atoupic/ui/application_actions.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
+import '../helper/fake_application_injector.dart';
 import '../helper/mock_definition.dart';
 import '../helper/test_factory.dart';
 
 void main() {
+  setupDependencyInjectorForTest();
+
   group('GameBloc', () {
     List<Player> players = TestFactory.gameContext.players;
     GameBloc gameBloc;
@@ -161,5 +165,23 @@ void main() {
         },
       );
     });
+
+    blocTest<GameBloc, GameEvent, GameState>(
+      'emits CardRoundCreated when done',
+      build: () async => gameBloc,
+      act: (bloc) async {
+        final mockedContext = MockGameContext();
+        when(Mocks.gameService.read()).thenReturn(mockedContext);
+        when(mockedContext.newCardRound()).thenReturn(TestFactory.gameContext);
+        when(Mocks.gameService.save(any)).thenReturn(TestFactory.gameContext);
+
+        bloc.add(NewCardRound());
+      },
+      expect: [CreatingCardRound(), CardRoundCreated(TestFactory.gameContext)],
+      verify: (_) async {
+        verify(Mocks.gameService.save(TestFactory.gameContext));
+        verify(Mocks.store.dispatch(ChooseCardDecisionAction(TestFactory.gameContext)));
+      },
+    );
   });
 }
