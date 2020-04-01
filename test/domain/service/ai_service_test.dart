@@ -200,6 +200,15 @@ void main() {
                     Card(CardColor.Spade, CardHead.Queen));
               });
             });
+
+            test('when only one card', () {
+              var cards = [
+                Card(CardColor.Spade, CardHead.Eight),
+              ];
+
+              expect(
+                  aiService.chooseCard(cards, turn, true), Card(CardColor.Spade, CardHead.Eight));
+            });
           });
 
           group('when does not have trump cards', () {
@@ -214,6 +223,16 @@ void main() {
 
               expect(
                   aiService.chooseCard(cards, turn, true), Card(CardColor.Club, CardHead.Seven));
+            });
+
+            test('when in taker team', () {
+              var cards = [
+                Card(CardColor.Heart, CardHead.Eight),
+                Card(CardColor.Heart, CardHead.Seven),
+              ];
+
+              expect(
+                  aiService.chooseCard(cards, turn, false), Card(CardColor.Heart, CardHead.Eight));
             });
           });
         });

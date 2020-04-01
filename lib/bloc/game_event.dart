@@ -107,6 +107,7 @@ class ResetLastPlayedCards extends GameEvent {}
 class StartSoloGame extends GameEvent {}
 class NewCardRound extends GameEvent {}
 class EndCardRound extends GameEvent {}
+class EndGame extends GameEvent {}
 
 class PlayCardForAi extends GameEvent {
   final Player player;

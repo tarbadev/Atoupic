@@ -1,5 +1,4 @@
 import 'package:atoupic/bloc/app_state.dart';
-import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -20,8 +19,7 @@ void main() {
       verify(Mocks.atoupicGame.widget);
     });
 
-    testWidgets('displays HomeView when current view is Home',
-        (WidgetTester tester) async {
+    testWidgets('displays HomeView when current view is Home', (WidgetTester tester) async {
       var homeViewTester = HomeViewTester(tester);
       var inGameViewTester = InGameViewTester(tester);
 
@@ -33,14 +31,13 @@ void main() {
       expect(inGameViewTester.isVisible, isFalse);
     });
 
-    testWidgets('displays InGameView when current view is InGame',
-        (WidgetTester tester) async {
+    testWidgets('displays InGameView when current view is InGame', (WidgetTester tester) async {
       var homeViewTester = HomeViewTester(tester);
       var inGameViewTester = InGameViewTester(tester);
 
       when(Mocks.appBloc.state).thenAnswer((_) => InGameAppState());
 
-      await tester.pumpWidget(buildTestableWidget(AtoupicApp(), currentTurn: Turn(1, null)));
+      await tester.pumpWidget(buildTestableWidget(AtoupicApp()));
 
       expect(homeViewTester.isVisible, isFalse);
       expect(inGameViewTester.isVisible, isTrue);

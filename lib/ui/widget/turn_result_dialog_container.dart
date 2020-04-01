@@ -9,8 +9,8 @@ import 'package:kiwi/kiwi.dart' as kiwi;
 class TurnResultDialogContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GameBloc, GameState>(
-        builder: (BuildContext context, GameState state) {
+    return BlocBuilder<GameBloc, GameState>(builder: (BuildContext context, GameState state) {
+      print(state);
       if (state is TurnEnded) {
         SchedulerBinding.instance.addPostFrameCallback(
           (_) => showDialog(
@@ -18,7 +18,9 @@ class TurnResultDialogContainer extends StatelessWidget {
             context: context,
             child: TurnResultDialog(
               turnResultDisplay: TurnResultDisplay.fromTurnResult(state.turnResult),
-              onNextPressed: () => kiwi.Container().resolve<GameBloc>().add(NewTurn()),
+              onNextPressed: () => kiwi.Container()
+                  .resolve<GameBloc>()
+                  .add(state.isGameOver ? EndGame() : NewTurn()),
             ),
           ),
         );

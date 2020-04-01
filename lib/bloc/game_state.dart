@@ -32,15 +32,46 @@ class CardAnimationStarted extends GameState {}
 class CardAnimationEnded extends GameState {}
 class TurnEnded extends GameState {
   final TurnResult turnResult;
+  final bool isGameOver;
 
-  TurnEnded(this.turnResult);
+  TurnEnded(this.turnResult, {this.isGameOver = false});
 
   @override
-  List<Object> get props => [turnResult];
+  List<Object> get props => [turnResult, isGameOver];
 
   @override
   String toString() {
-    return 'TurnEnded{turnResult: $turnResult}';
+    return 'TurnEnded{turnResult: $turnResult, isGameOver: $isGameOver}';
+  }
+}
+
+class GameScoreUpdated extends GameState {
+  final int usScore;
+  final int themScore;
+
+  GameScoreUpdated(this.usScore, this.themScore);
+
+  @override
+  List<Object> get props => [usScore, themScore];
+
+  @override
+  String toString() {
+    return 'GameScoreUpdated{usScore: $usScore, themScore: $themScore}';
+  }
+}
+
+class GameEnded extends GameState {
+  final int usScore;
+  final int themScore;
+
+  GameEnded(this.usScore, this.themScore);
+
+  @override
+  List<Object> get props => [usScore, themScore];
+
+  @override
+  String toString() {
+    return 'GameEnded{usScore: $usScore, themScore: $themScore}';
   }
 }
 

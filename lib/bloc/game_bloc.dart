@@ -76,6 +76,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       yield* _mapPlayCardEventToState(event);
     } else if (event is EndCardRound) {
       yield* _mapEndCardRoundEventToState(event);
+    } else if (event is EndGame) {
+      yield* _mapEndGameEventToState(event);
     }
   }
 
@@ -116,12 +118,41 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (gameContext.lastTurn.cardRounds.length >= 8) {
       gameContext.lastTurn.calculatePoints(gameContext.players);
       _gameService.save(gameContext);
-      yield TurnEnded(gameContext.lastTurn.turnResult);
+
+      var usScore = 0;
+      var themScore = 0;
+
+      gameContext.turns.forEach((turn) {
+        usScore += turn.turnResult.verticalScore;
+        themScore += turn.turnResult.horizontalScore;
+      });
+
+      final pointsNeededToWin = 501;
+      var isGameOver = usScore >= pointsNeededToWin || themScore >= pointsNeededToWin;
+
+      yield TurnEnded(
+        gameContext.lastTurn.turnResult,
+        isGameOver: isGameOver,
+      );
     } else {
       gameContext = gameContext.newCardRound();
       _gameService.save(gameContext);
 
       yield CardRoundCreated(gameContext);
     }
+  }
+
+  Stream<GameState> _mapEndGameEventToState(EndGame event) async* {
+    var usScore = 0;
+    var themScore = 0;
+
+    var gameContext = _gameService.read();
+
+    gameContext.turns.forEach((turn) {
+      usScore += turn.turnResult.verticalScore;
+      themScore += turn.turnResult.horizontalScore;
+    });
+
+    yield GameEnded(usScore, themScore);
   }
 }

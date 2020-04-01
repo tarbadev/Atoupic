@@ -17,7 +17,8 @@ class AiService {
 
     if (lastCardRound.playedCards.isEmpty) {
       if (didCurrentTeamTake && winningCards.isEmpty) {
-        return _getBestCard(_filterCardsByTrump(cards, turn.trumpColor, true), true);
+        var trumpCards = _filterCardsByTrump(cards, turn.trumpColor, true);
+        return _getBestCard(trumpCards.isEmpty ? cards : trumpCards, true);
       } else if (didCurrentTeamTake) {
         winningCards = _filterCardsByTrump(winningCards, turn.trumpColor, true);
       } else {

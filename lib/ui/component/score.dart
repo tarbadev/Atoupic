@@ -1,10 +1,29 @@
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Score extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var usScore = 0;
+    var themScore = 0;
+
+    return BlocBuilder<GameBloc, GameState>(builder: (BuildContext context, GameState state) {
+      if (state is TurnEnded) {
+        usScore += state.turnResult.verticalScore;
+        themScore += state.turnResult.horizontalScore;
+      }
+
+      return ScoreDisplay(usScore: usScore, themScore: themScore);
+    });
+  }
+}
+
+class ScoreDisplay extends StatelessWidget {
   final int usScore;
   final int themScore;
 
-  const Score({Key key, this.usScore, this.themScore}) : super(key: key);
+  const ScoreDisplay({Key key, this.usScore, this.themScore}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

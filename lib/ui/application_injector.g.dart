@@ -7,7 +7,7 @@ part of 'application_injector.dart';
 // **************************************************************************
 
 class _$ApplicationInjector extends ApplicationInjector {
-  void configureAnnotations() {
+  void configure() {
     final Container container = Container();
     container.registerSingleton((c) => AtoupicGame());
     container.registerSingleton((c) => CardService());
