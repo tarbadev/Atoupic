@@ -14,7 +14,7 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
   TakeOrPassBloc(this._gameBloc, this._gameService, this._cardService) {}
 
   @override
-  TakeOrPassState get initialState => InitialTakeOrPassState();
+  TakeOrPassState get initialState => HideTakeOrPassDialog();
 
   @override
   Stream<TakeOrPassState> mapEventToState(
@@ -61,7 +61,7 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
   }
 
   Stream<TakeOrPassState> _mapPassEventToState(Pass event) async* {
-    yield InitialTakeOrPassState();
+    yield HideTakeOrPassDialog();
     var gameContext = _gameService.read().setDecision(event.player, Decision.Pass);
 
     _gameBloc.add(DisplayPlayerPassedCaption(event.player.position));

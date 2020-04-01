@@ -10,7 +10,7 @@ abstract class TakeOrPassState extends Equatable {
   List<Object> get props => [];
 }
 
-class InitialTakeOrPassState extends TakeOrPassState {}
+class HideTakeOrPassDialog extends TakeOrPassState {}
 class PlayerTook extends TakeOrPassState {
   final Player player;
 

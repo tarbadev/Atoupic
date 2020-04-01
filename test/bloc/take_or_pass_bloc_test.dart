@@ -28,7 +28,7 @@ void main() {
     });
 
     test('initial state is InitialTakeOrPassState', () {
-      expect(currentTurnBloc.initialState, InitialTakeOrPassState());
+      expect(currentTurnBloc.initialState, HideTakeOrPassDialog());
     });
 
     group('on Take event', () {
