@@ -6,7 +6,7 @@ import 'package:atoupic/ui/application_state.dart';
 import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:atoupic/ui/component/score.dart';
 import 'package:atoupic/ui/component/turn_result_dialog.dart';
-import 'package:atoupic/ui/controller/take_or_pass_controller.dart';
+import 'package:atoupic/ui/controller/take_or_pass_container.dart';
 import 'package:atoupic/ui/entity/score_display.dart';
 import 'package:atoupic/ui/entity/turn_result_display.dart';
 import 'package:atoupic/ui/widget/current_turn.dart';
@@ -76,7 +76,7 @@ class InGameView extends StatelessWidget {
                       ],
                     ),
                   ),
-                  TakeOrPassDialogController(),
+                  TakeOrPassDialogContainer(),
                   StoreConnector<ApplicationState, _InGameViewModel>(
                     converter: (Store<ApplicationState> store) => _InGameViewModel.create(store),
                     builder: (BuildContext context, _InGameViewModel viewModel) {

@@ -1,6 +1,6 @@
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
-import 'package:atoupic/ui/controller/take_or_pass_controller.dart';
+import 'package:atoupic/ui/controller/take_or_pass_container.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -22,7 +22,7 @@ void main() {
       when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) =>
           ShowTakeOrPassDialog(TestFactory.realPlayer, Card(CardColor.Heart, CardHead.Ace), false));
 
-      await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogController()));
+      await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogContainer()));
       await tester.pump();
 
       var takeOrPassTester = TakeOrPassDialogTester(tester);
@@ -33,7 +33,7 @@ void main() {
       when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) =>
           ShowTakeOrPassDialog(TestFactory.realPlayer, Card(CardColor.Heart, CardHead.Ace), false));
 
-      await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogController()));
+      await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogContainer()));
       await tester.pump();
 
       var takeOrPassTester = TakeOrPassDialogTester(tester);
@@ -45,7 +45,7 @@ void main() {
       when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) =>
           ShowTakeOrPassDialog(TestFactory.realPlayer, Card(CardColor.Heart, CardHead.Ace), false));
 
-      await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogController()));
+      await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogContainer()));
       await tester.pump();
 
       var takeOrPassTester = TakeOrPassDialogTester(tester);
@@ -57,7 +57,7 @@ void main() {
       when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) =>
           ShowTakeOrPassDialog(TestFactory.realPlayer, Card(CardColor.Heart, CardHead.Ace), true));
 
-      await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogController()));
+      await tester.pumpWidget(buildTestableWidget(TakeOrPassDialogContainer()));
       await tester.pump();
 
       var takeOrPassTester = TakeOrPassDialogTester(tester);

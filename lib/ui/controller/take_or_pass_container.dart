@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TakeOrPassDialogController extends StatelessWidget {
+class TakeOrPassDialogContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TakeOrPassDialogBloc, TakeOrPassState>(
