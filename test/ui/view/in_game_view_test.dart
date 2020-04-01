@@ -32,28 +32,6 @@ void main() {
       expect(inGameViewTester.turn, 'Turn 12');
     });
 
-    group('on TurnCreated state from GameBloc', () {
-      testWidgets('adds a Pass event when player is computer', (WidgetTester tester) async {
-        when(Mocks.gameBloc.state)
-            .thenAnswer((_) => TurnCreated(Turn(1, TestFactory.computerPlayer)));
-
-        await tester.pumpWidget(buildTestableWidget(InGameView()));
-
-        verify(Mocks.takeOrPassDialogBloc.add(Pass(TestFactory.computerPlayer)));
-      });
-
-      testWidgets('adds RealPlayerTurn event when player is real player',
-          (WidgetTester tester) async {
-        var card = Card(CardColor.Heart, CardHead.Ace);
-        var turn = Turn(1, TestFactory.realPlayer)..card = card;
-        when(Mocks.gameBloc.state).thenAnswer((_) => TurnCreated(turn));
-
-        await tester.pumpWidget(buildTestableWidget(InGameView()));
-
-        verify(Mocks.takeOrPassDialogBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
-      });
-    });
-
     group('on PlayerPassed state from TakeOrPassDialogBloc', () {
       testWidgets('adds a Pass event when next player is computer', (WidgetTester tester) async {
         var mockedGameContext = MockGameContext();

@@ -19,158 +19,146 @@ import 'package:redux/redux.dart';
 class InGameView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    _takeOrPass(Player player, Turn turn) {
-      if (player.isRealPlayer) {
-        BlocProvider.of<TakeOrPassDialogBloc>(context).add(RealPlayerTurn(player, turn));
-      } else {
-        BlocProvider.of<TakeOrPassDialogBloc>(context).add(Pass(player));
-      }
-    }
-
-    return BlocBuilder<GameBloc, GameState>(
-      builder: (BuildContext context, GameState gameState) {
-        if (gameState is TurnCreated) {
-          _takeOrPass(gameState.turn.firstPlayer, gameState.turn);
+    return BlocBuilder<TakeOrPassDialogBloc, TakeOrPassState>(
+        builder: (BuildContext context, TakeOrPassState takeOrPassState) {
+      if (takeOrPassState is PlayerPassed) {
+        var nextPlayer = takeOrPassState.gameContext.nextPlayer();
+        if (nextPlayer.isRealPlayer) {
+          BlocProvider.of<TakeOrPassDialogBloc>(context).add(RealPlayerTurn(nextPlayer, takeOrPassState.gameContext.lastTurn));
+        } else {
+          BlocProvider.of<TakeOrPassDialogBloc>(context).add(Pass(nextPlayer));
         }
-
-        return BlocBuilder<TakeOrPassDialogBloc, TakeOrPassState>(
-            builder: (BuildContext context, TakeOrPassState takeOrPassState) {
-          if (takeOrPassState is PlayerPassed) {
-            var nextPlayer = takeOrPassState.gameContext.nextPlayer();
-            _takeOrPass(nextPlayer, takeOrPassState.gameContext.lastTurn);
-          }
-          return Container(
-            child: Scaffold(
-              key: Key('InGame__Container'),
-              backgroundColor: Colors.transparent,
-              body: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Flexible(
-                          fit: FlexFit.loose,
-                          flex: 1,
-                          child: CurrentTurn(),
-                        ),
-                        Flexible(
-                          fit: FlexFit.tight,
-                          flex: 6,
-                          child: Divider(color: Colors.transparent),
-                        ),
-                        Flexible(
-                          fit: FlexFit.loose,
-                          flex: 2,
-                          child: StoreConnector<ApplicationState, _InGameViewModel>(
-                            converter: (Store<ApplicationState> store) =>
-                                _InGameViewModel.create(store),
-                            builder: (BuildContext context, _InGameViewModel viewModel) =>
-                                Score(usScore: viewModel.score.us, themScore: viewModel.score.them),
-                          ),
-                        ),
-                      ],
+      }
+      return Container(
+        child: Scaffold(
+          key: Key('InGame__Container'),
+          backgroundColor: Colors.transparent,
+          body: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Flexible(
+                      fit: FlexFit.loose,
+                      flex: 1,
+                      child: CurrentTurn(),
                     ),
-                  ),
-                  TakeOrPassDialogContainer(),
-                  StoreConnector<ApplicationState, _InGameViewModel>(
-                    converter: (Store<ApplicationState> store) => _InGameViewModel.create(store),
-                    builder: (BuildContext context, _InGameViewModel viewModel) {
-                      if (viewModel.turnResultDisplay != null) {
-                        SchedulerBinding.instance.addPostFrameCallback(
-                          (_) => showDialog(
-                            barrierDismissible: false,
-                            context: context,
-                            child: TurnResultDialog(
-                              turnResultDisplay: viewModel.turnResultDisplay,
-                              onNextPressed: viewModel.onTurnResultNext,
-                            ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      flex: 6,
+                      child: Divider(color: Colors.transparent),
+                    ),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      flex: 2,
+                      child: StoreConnector<ApplicationState, _InGameViewModel>(
+                        converter: (Store<ApplicationState> store) =>
+                            _InGameViewModel.create(store),
+                        builder: (BuildContext context, _InGameViewModel viewModel) =>
+                            Score(usScore: viewModel.score.us, themScore: viewModel.score.them),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TakeOrPassDialogContainer(),
+              StoreConnector<ApplicationState, _InGameViewModel>(
+                converter: (Store<ApplicationState> store) => _InGameViewModel.create(store),
+                builder: (BuildContext context, _InGameViewModel viewModel) {
+                  if (viewModel.turnResultDisplay != null) {
+                    SchedulerBinding.instance.addPostFrameCallback(
+                      (_) => showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        child: TurnResultDialog(
+                          turnResultDisplay: viewModel.turnResultDisplay,
+                          onNextPressed: viewModel.onTurnResultNext,
+                        ),
+                      ),
+                    );
+                  }
+                  if (viewModel.showEndGameDialog) {
+                    SchedulerBinding.instance.addPostFrameCallback(
+                      (_) => showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        child: AlertDialog(
+                          key: Key('GameResultDialog'),
+                          title: Text(
+                            viewModel.score.us > viewModel.score.them
+                                ? 'Congratulations!'
+                                : 'You Lost!',
+                            key: Key('GameResultDialog__Result'),
+                            style: TextStyle(fontSize: 22.0),
                           ),
-                        );
-                      }
-                      if (viewModel.showEndGameDialog) {
-                        SchedulerBinding.instance.addPostFrameCallback(
-                          (_) => showDialog(
-                            barrierDismissible: false,
-                            context: context,
-                            child: AlertDialog(
-                              key: Key('GameResultDialog'),
-                              title: Text(
-                                viewModel.score.us > viewModel.score.them
-                                    ? 'Congratulations!'
-                                    : 'You Lost!',
-                                key: Key('GameResultDialog__Result'),
-                                style: TextStyle(fontSize: 22.0),
-                              ),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Text(
-                                        viewModel.score.us.toString(),
-                                        key: Key('GameResultDialog__UsScore'),
-                                        style: TextStyle(fontSize: 20.0),
-                                      ),
-                                      Container(
-                                          height: 20,
-                                          child: VerticalDivider(
-                                            color: Colors.grey,
-                                            thickness: 2,
-                                          )),
-                                      Text(
-                                        viewModel.score.them.toString(),
-                                        key: Key('GameResultDialog__ThemScore'),
-                                        style: TextStyle(fontSize: 20.0),
-                                      ),
-                                    ],
+                                  Text(
+                                    viewModel.score.us.toString(),
+                                    key: Key('GameResultDialog__UsScore'),
+                                    style: TextStyle(fontSize: 20.0),
+                                  ),
+                                  Container(
+                                      height: 20,
+                                      child: VerticalDivider(
+                                        color: Colors.grey,
+                                        thickness: 2,
+                                      )),
+                                  Text(
+                                    viewModel.score.them.toString(),
+                                    key: Key('GameResultDialog__ThemScore'),
+                                    style: TextStyle(fontSize: 20.0),
                                   ),
                                 ],
                               ),
-                              actions: <Widget>[
-                                RaisedButton(
-                                  key: Key('GameResultDialog__HomeButton'),
-                                  color: Theme.of(context).backgroundColor,
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    viewModel.onHomeTap();
-                                  },
-                                  child: Text(
-                                    'Home',
-                                    style: Theme.of(context).textTheme.body1,
-                                  ),
-                                ),
-                                RaisedButton(
-                                  key: Key('GameResultDialog__NewGameButton'),
-                                  color: Theme.of(context).backgroundColor,
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    viewModel.onNewGameTap();
-                                  },
-                                  child: Text(
-                                    'New Game',
-                                    style: Theme.of(context).textTheme.body1,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            ],
                           ),
-                        );
-                      }
-                      return Container();
-                    },
-                  ),
-                ],
+                          actions: <Widget>[
+                            RaisedButton(
+                              key: Key('GameResultDialog__HomeButton'),
+                              color: Theme.of(context).backgroundColor,
+                              onPressed: () {
+                                Navigator.pop(context);
+                                viewModel.onHomeTap();
+                              },
+                              child: Text(
+                                'Home',
+                                style: Theme.of(context).textTheme.body1,
+                              ),
+                            ),
+                            RaisedButton(
+                              key: Key('GameResultDialog__NewGameButton'),
+                              color: Theme.of(context).backgroundColor,
+                              onPressed: () {
+                                Navigator.pop(context);
+                                viewModel.onNewGameTap();
+                              },
+                              child: Text(
+                                'New Game',
+                                style: Theme.of(context).textTheme.body1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return Container();
+                },
               ),
-            ),
-          );
-        });
-      },
-    );
+            ],
+          ),
+        ),
+      );
+    });
   }
 }
 

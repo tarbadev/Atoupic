@@ -22,5 +22,7 @@ class _$ApplicationInjector extends ApplicationInjector {
     container.registerSingleton((c) => CurrentTurnBloc(c<GameBloc>()));
     container.registerSingleton((c) => TakeOrPassDialogBloc(
         c<GameBloc>(), c<GameService>(), c<CardService>()));
+    container.registerSingleton((c) =>
+        ApplicationBlocDelegate(c<GameBloc>(), c<TakeOrPassDialogBloc>()));
   }
 }

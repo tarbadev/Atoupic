@@ -1,5 +1,6 @@
 import 'package:atoupic/bloc/app_state.dart';
 import 'package:atoupic/bloc/bloc.dart';
+import 'package:atoupic/ui/application_bloc_delegate.dart';
 import 'package:atoupic/ui/application_state.dart';
 import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:atoupic/ui/view/home_view.dart';
@@ -17,6 +18,7 @@ class AtoupicApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final container = kiwi.Container();
     final _store = container<Store<ApplicationState>>();
+    BlocSupervisor.delegate = container<ApplicationBlocDelegate>();
 
     return StoreProvider<ApplicationState>(
       store: _store,

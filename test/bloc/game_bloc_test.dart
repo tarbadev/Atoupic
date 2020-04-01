@@ -3,8 +3,6 @@ import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
-import 'package:atoupic/ui/application_bloc_delegate.dart';
-import 'package:bloc/bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -13,7 +11,6 @@ import '../helper/mock_definition.dart';
 import '../helper/test_factory.dart';
 
 void main() {
-  BlocSupervisor.delegate = ApplicationBlocDelegate();
   group('GameBloc', () {
     List<Player> players = TestFactory.gameContext.players;
     GameBloc gameBloc;

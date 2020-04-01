@@ -4,6 +4,7 @@ import 'package:atoupic/domain/service/card_service.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:atoupic/domain/service/player_service.dart';
 import 'package:atoupic/repository/game_context_repository.dart';
+import 'package:atoupic/ui/application_bloc_delegate.dart';
 import 'package:atoupic/ui/application_middleware.dart';
 import 'package:atoupic/ui/application_reducer.dart';
 import 'package:atoupic/ui/application_state.dart';
@@ -29,6 +30,7 @@ abstract class ApplicationInjector {
   @Register.singleton(AppBloc)
   @Register.singleton(CurrentTurnBloc)
   @Register.singleton(TakeOrPassDialogBloc)
+  @Register.singleton(ApplicationBlocDelegate)
   void configureAnnotations();
 
   void configureInstances() {
