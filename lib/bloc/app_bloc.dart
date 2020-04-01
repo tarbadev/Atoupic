@@ -12,6 +12,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   ) async* {
     if (event is GameInitialized) {
       yield InGameAppState();
+    } else {
+      if (event is GameFinished) {
+        yield HomeAppState();
+      }
     }
   }
 }

@@ -2,8 +2,6 @@ import 'package:atoupic/bloc/bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:test/test.dart';
 
-import '../helper/mock_definition.dart';
-
 void main() {
   group('AppBloc', () {
     AppBloc appBloc;
@@ -23,8 +21,20 @@ void main() {
     blocTest<AppBloc, AppEvent, AppState>(
       'emits InGameAppState() state on GameInitialized event',
       build: () async => appBloc,
-      act: (bloc) async => appBloc.add(GameInitialized()),
+      act: (bloc) async => bloc.add(GameInitialized()),
       expect: [InGameAppState()],
     );
+
+    blocTest<AppBloc, AppEvent, AppState>(
+      'emits HomeAppState() state on GameFinished event',
+      build: () async => TestAppBloc(),
+      act: (bloc) async => bloc.add(GameFinished()),
+      expect: [HomeAppState()],
+    );
   });
+}
+
+class TestAppBloc extends AppBloc {
+  @override
+  AppState get initialState => InGameAppState();
 }

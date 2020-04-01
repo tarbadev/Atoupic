@@ -1,5 +1,5 @@
 import 'package:atoupic/bloc/bloc.dart';
-import 'package:atoupic/ui/widget/end_game_dialog_container.dart';
+import 'package:atoupic/ui/widget/end_game_dialog.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -19,7 +19,7 @@ void main() {
     testWidgets('displays result for winner', (WidgetTester tester) async {
       when(Mocks.gameBloc.state).thenAnswer((_) => GameEnded(520, 102));
 
-      await tester.pumpWidget(buildTestableWidget(EndGameDialogContainer()));
+      await tester.pumpWidget(buildTestableWidget(EndGameDialog()));
 
       var gameResultTester = GameResultTester(tester);
       expect(gameResultTester.isVisible, isFalse);
@@ -35,7 +35,7 @@ void main() {
     testWidgets('displays result for looser', (WidgetTester tester) async {
       when(Mocks.gameBloc.state).thenAnswer((_) => GameEnded(102, 520));
 
-      await tester.pumpWidget(buildTestableWidget(EndGameDialogContainer()));
+      await tester.pumpWidget(buildTestableWidget(EndGameDialog()));
 
       var gameResultTester = GameResultTester(tester);
       expect(gameResultTester.isVisible, isFalse);
@@ -51,7 +51,7 @@ void main() {
     testWidgets('when click on home dispatches SetCurrentViewAction', (WidgetTester tester) async {
       when(Mocks.gameBloc.state).thenAnswer((_) => GameEnded(520, 102));
 
-      await tester.pumpWidget(buildTestableWidget(EndGameDialogContainer()));
+      await tester.pumpWidget(buildTestableWidget(EndGameDialog()));
       await tester.pump();
 
       var gameResultTester = GameResultTester(tester);
@@ -65,7 +65,7 @@ void main() {
         (WidgetTester tester) async {
       when(Mocks.gameBloc.state).thenAnswer((_) => GameEnded(520, 102));
 
-      await tester.pumpWidget(buildTestableWidget(EndGameDialogContainer()));
+      await tester.pumpWidget(buildTestableWidget(EndGameDialog()));
       await tester.pump();
 
       var gameResultTester = GameResultTester(tester);

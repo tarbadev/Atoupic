@@ -1,6 +1,6 @@
 import 'package:atoupic/ui/component/score.dart';
 import 'package:atoupic/ui/widget/current_turn.dart';
-import 'package:atoupic/ui/widget/end_game_dialog_container.dart';
+import 'package:atoupic/ui/widget/end_game_dialog.dart';
 import 'package:atoupic/ui/widget/take_or_pass_container.dart';
 import 'package:atoupic/ui/widget/turn_result_dialog_container.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +40,7 @@ class InGameView extends StatelessWidget {
             ),
             TakeOrPassDialogContainer(),
             TurnResultDialogContainer(),
-            EndGameDialogContainer(),
+            EndGameDialog(),
           ],
         ),
       ),
