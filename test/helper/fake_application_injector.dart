@@ -1,3 +1,4 @@
+import 'package:atoupic/ui/application_bloc_delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 import 'package:mockito/mockito.dart';
@@ -17,6 +18,7 @@ void setupDependencyInjectorForTest() {
   container.registerInstance(Mocks.currentTurnBloc);
   container.registerInstance(Mocks.takeOrPassDialogBloc);
   container.registerInstance(Mocks.gameContextRepository);
+  container.registerInstance(ApplicationBlocDelegate(Mocks.gameBloc, Mocks.takeOrPassDialogBloc));
 
   when(Mocks.atoupicGame.widget).thenReturn(Scaffold());
 }

@@ -58,4 +58,41 @@ void main() {
       verify(Mocks.takeOrPassDialogBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
     });
   });
+
+  group('on PlayerPassed state', () {
+    test('adds a Pass event when next player is computer', () {
+      var mockedGameContext = MockGameContext();
+
+      when(mockedGameContext.lastTurn).thenReturn(Turn(1, TestFactory.computerPlayer));
+      when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.computerPlayer);
+
+      applicationBlocDelegate.onTransition(
+          Mocks.gameBloc,
+          Transition(
+            currentState: HideTakeOrPassDialog(),
+            event: Pass(null),
+            nextState: PlayerPassed(mockedGameContext),
+          ));
+
+      verify(Mocks.takeOrPassDialogBloc.add(Pass(TestFactory.computerPlayer)));
+    });
+
+    test('displays take of pass dialog when player is real player', () {
+      var mockedGameContext = MockGameContext();
+      var turn = Turn(1, TestFactory.computerPlayer)..card = Card(CardColor.Heart, CardHead.Ace);
+
+      when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
+      when(mockedGameContext.lastTurn).thenReturn(turn);
+
+      applicationBlocDelegate.onTransition(
+          Mocks.gameBloc,
+          Transition(
+            currentState: HideTakeOrPassDialog(),
+            event: Pass(null),
+            nextState: PlayerPassed(mockedGameContext),
+          ));
+
+      verify(Mocks.takeOrPassDialogBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
+    });
+  });
 }

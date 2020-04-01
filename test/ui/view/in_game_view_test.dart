@@ -1,5 +1,3 @@
-import 'package:atoupic/bloc/bloc.dart';
-import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/application_actions.dart';
@@ -30,34 +28,6 @@ void main() {
 
       var inGameViewTester = InGameViewTester(tester);
       expect(inGameViewTester.turn, 'Turn 12');
-    });
-
-    group('on PlayerPassed state from TakeOrPassDialogBloc', () {
-      testWidgets('adds a Pass event when next player is computer', (WidgetTester tester) async {
-        var mockedGameContext = MockGameContext();
-
-        when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
-        when(mockedGameContext.lastTurn).thenReturn(Turn(1, TestFactory.computerPlayer));
-        when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.computerPlayer);
-
-        await tester.pumpWidget(buildTestableWidget(InGameView()));
-
-        verify(Mocks.takeOrPassDialogBloc.add(Pass(TestFactory.computerPlayer)));
-      });
-
-      testWidgets('displays take of pass dialog when player is real player',
-          (WidgetTester tester) async {
-        var mockedGameContext = MockGameContext();
-        var turn = Turn(1, TestFactory.computerPlayer)..card = Card(CardColor.Heart, CardHead.Ace);
-
-        when(Mocks.takeOrPassDialogBloc.state).thenAnswer((_) => PlayerPassed(mockedGameContext));
-        when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
-        when(mockedGameContext.lastTurn).thenReturn(turn);
-
-        await tester.pumpWidget(buildTestableWidget(InGameView()));
-
-        verify(Mocks.takeOrPassDialogBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
-      });
     });
 
     testWidgets('displays dialog when turnResult is not null', (WidgetTester tester) async {
