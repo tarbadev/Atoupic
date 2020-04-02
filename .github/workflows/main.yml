@@ -1,4 +1,4 @@
-name: Atoupic Release
+name: Release
 on: push
 jobs:
   test:
