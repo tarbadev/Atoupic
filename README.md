@@ -1,4 +1,4 @@
-# atoupic
+# Atoupic ![Atoupic Release](https://github.com/tarbadev/Atoupic/workflows/Atoupic%20Release/badge.svg?branch=master)
 
 A Belote card game
 
