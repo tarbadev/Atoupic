@@ -38,3 +38,7 @@ lib/generated_plugin_registrant.dart
 
 # Secrets
 **/*/key.properties
+**/*/*.jks
+**/*/api-key.json
+
+**/report.xml

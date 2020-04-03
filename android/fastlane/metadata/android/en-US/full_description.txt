@@ -1,0 +1,4 @@
+Atoupic
+
+Features:
+* Play solo with the AI

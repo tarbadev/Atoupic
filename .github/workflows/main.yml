@@ -11,8 +11,8 @@ jobs:
           flutter-version: '1.12.13+hotfix.5'
       - run: flutter test
 
-  build-release:
-    name: Build - Release
+  build-ios-release:
+    name: Build - iOS - Release
     needs: test
     runs-on: macOS-latest
     steps:
@@ -20,13 +20,29 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: '1.12.13+hotfix.5'
-      - name: "Build - Android - Release"
-        run: flutter build appbundle --release --build-number=$GitVersion_BuildMetaData
       - name: "Build - iOS - Release"
-        run: flutter build ios --release --no-codesign --build-number=$GitVersion_BuildMetaData
-      - name: Upload APK
-        uses: actions/upload-artifact@v1
-        with:
-          name: app
-          path: build/app/outputs/bundle/release/app-release.aab
+        run: flutter build ios --release --no-codesign --build-number=$GITHUB_RUN_ID
 
+  build-deploy-android-release:
+    name: Build and Deploy - Android - Release
+    needs: test
+    runs-on: macOS-latest
+    steps:
+      - name: "Install Fastlane"
+        run: brew install fastlane
+      - uses: actions/checkout@v1
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '1.12.13+hotfix.5'
+      - name: "Create android_key.jks"
+        run: echo ${{ secrets.AndroidReleaseKey }} | base64 -d > android/android_key.jks
+      - name: "Create key.properties"
+        run: printf 'keyAlias=%s\nkeyPassword=%s\nstoreFile=./../android_key.jks\nstorePassword=%s' ${{ secrets.keyAlias }} ${{ secrets.keyPassword }} ${{ secrets.storePassword }} > android/key.properties
+      - name: "Build Android Bundle"
+        run: flutter build appbundle --release --build-number=$GITHUB_RUN_ID
+      - name: "Create api-key.json"
+        run: echo ${{ secrets.PlayConsoleApiKey }} | base64 -d > api-key.json
+      - name: "Deploy for Internal Testing"
+        run: |
+          cd android
+          SUPPLY_VERSION_CODE=$GITHUB_RUN_ID fastlane deploy_internal_test
