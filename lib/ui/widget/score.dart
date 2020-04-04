@@ -12,6 +12,9 @@ class Score extends StatelessWidget {
       if (state is TurnEnded) {
         usScore += state.turnResult.verticalScore;
         themScore += state.turnResult.horizontalScore;
+      } else if (state is TurnCreated && state.turn.number == 1) {
+        usScore = 0;
+        themScore = 0;
       }
 
       return ScoreDisplay(usScore: usScore, themScore: themScore);
