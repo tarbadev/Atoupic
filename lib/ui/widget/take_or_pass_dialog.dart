@@ -2,7 +2,7 @@ import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart' as AtoupicCard;
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
-import 'package:atoupic/ui/component/color_choices.dart';
+import 'package:atoupic/ui/widget/color_choices.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;

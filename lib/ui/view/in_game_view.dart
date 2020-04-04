@@ -1,4 +1,4 @@
-import 'package:atoupic/ui/component/score.dart';
+import 'package:atoupic/ui/widget/score.dart';
 import 'package:atoupic/ui/widget/current_turn.dart';
 import 'package:atoupic/ui/widget/end_game_dialog.dart';
 import 'package:atoupic/ui/widget/take_or_pass_container.dart';
