@@ -5,6 +5,9 @@ abstract class CurrentTurnEvent extends Equatable {
 
   @override
   List<Object> get props => [];
+
+  @override
+  bool get stringify => true;
 }
 
 class UpdateCurrentTurn extends CurrentTurnEvent {
@@ -14,9 +17,4 @@ class UpdateCurrentTurn extends CurrentTurnEvent {
 
   @override
   List<Object> get props => [turnNumber];
-
-  @override
-  String toString() {
-    return 'UpdateCurrentTurn{turnNumber: $turnNumber}';
-  }
 }

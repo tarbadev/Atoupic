@@ -8,6 +8,9 @@ abstract class GameState extends Equatable {
 
   @override
   List<Object> get props => [];
+
+  @override
+  bool get stringify => true;
 }
 
 class NotStarted extends GameState {}
@@ -20,11 +23,6 @@ class TurnCreated extends GameState {
 
   @override
   List<Object> get props => [turn];
-
-  @override
-  String toString() {
-    return 'TurnCreated{turn: $turn}';
-  }
 }
 class CreatingTurn extends GameState {}
 class CreatingCardRound extends GameState {}
@@ -38,11 +36,6 @@ class TurnEnded extends GameState {
 
   @override
   List<Object> get props => [turnResult, isGameOver];
-
-  @override
-  String toString() {
-    return 'TurnEnded{turnResult: $turnResult, isGameOver: $isGameOver}';
-  }
 }
 
 class GameScoreUpdated extends GameState {
@@ -53,11 +46,6 @@ class GameScoreUpdated extends GameState {
 
   @override
   List<Object> get props => [usScore, themScore];
-
-  @override
-  String toString() {
-    return 'GameScoreUpdated{usScore: $usScore, themScore: $themScore}';
-  }
 }
 
 class GameEnded extends GameState {
@@ -68,11 +56,6 @@ class GameEnded extends GameState {
 
   @override
   List<Object> get props => [usScore, themScore];
-
-  @override
-  String toString() {
-    return 'GameEnded{usScore: $usScore, themScore: $themScore}';
-  }
 }
 
 class CardRoundCreated extends GameState {
@@ -82,11 +65,6 @@ class CardRoundCreated extends GameState {
 
   @override
   List<Object> get props => [gameContext];
-
-  @override
-  String toString() {
-    return 'CardRoundCreated{gameContext: $gameContext}';
-  }
 }
 
 class CardPlayed extends GameState {
@@ -96,9 +74,4 @@ class CardPlayed extends GameState {
 
   @override
   List<Object> get props => [gameContext];
-
-  @override
-  String toString() {
-    return 'CardPlayed{gameContext: $gameContext}';
-  }
 }

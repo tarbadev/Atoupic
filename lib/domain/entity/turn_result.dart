@@ -25,7 +25,5 @@ class TurnResult extends Equatable {
   ];
 
   @override
-  String toString() {
-    return 'TurnResult{taker: $taker, horizontalCardPoints: $horizontalCardPoints, verticalCardPoints: $verticalCardPoints, horizontalScore: $horizontalScore, verticalScore: $verticalScore, result: $result}';
-  }
+  bool get stringify => true;
 }

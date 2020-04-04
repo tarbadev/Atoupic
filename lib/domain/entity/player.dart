@@ -21,9 +21,7 @@ class Player extends Equatable {
   List<Object> get props => [isRealPlayer, position, cards];
 
   @override
-  String toString() {
-    return 'Player{isRealPlayer: $isRealPlayer, position: $position, cards: $cards}';
-  }
+  bool get stringify => true;
 
   void sortCards({CardColor trumpColor}) {
     cards.sort((card1, card2) => _compareCards(card1, card2, trumpColor));

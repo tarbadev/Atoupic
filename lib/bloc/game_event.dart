@@ -7,6 +7,9 @@ abstract class GameEvent extends Equatable {
 
   @override
   List<Object> get props => [];
+
+  @override
+  bool get stringify => true;
 }
 
 class NewTurn extends GameEvent {
@@ -16,11 +19,6 @@ class NewTurn extends GameEvent {
 
   @override
   List<Object> get props => [turnAlreadyCreated];
-
-  @override
-  String toString() {
-    return 'NewTurn{turnAlreadyCreated: $turnAlreadyCreated}';
-  }
 }
 
 class DisplayPlayerPassedCaption extends GameEvent {
@@ -30,9 +28,6 @@ class DisplayPlayerPassedCaption extends GameEvent {
 
   @override
   List<Object> get props => [position];
-
-  @override
-  String toString() => 'DisplayPlayerPassedCaption{position: $position}';
 }
 
 class ResetPlayersPassedCaption extends GameEvent {}
@@ -45,9 +40,6 @@ class DisplayTrumpColor extends GameEvent {
 
   @override
   List<Object> get props => [color, takerPosition];
-
-  @override
-  String toString() => 'DisplayTrumpColor{color: $color, taker: $takerPosition}';
 }
 
 class AddPlayerCards extends GameEvent {
@@ -58,9 +50,6 @@ class AddPlayerCards extends GameEvent {
 
   @override
   List<Object> get props => [cards, position];
-
-  @override
-  String toString() => 'AddPlayerCards{cards: $cards, position: $position}';
 }
 
 class ReplaceRealPlayersCards extends GameEvent {
@@ -70,9 +59,6 @@ class ReplaceRealPlayersCards extends GameEvent {
 
   @override
   List<Object> get props => [cards];
-
-  @override
-  String toString() => 'ReplaceRealPlayersCards{cards: $cards}';
 }
 
 class RealPlayerCanChooseCard extends GameEvent {
@@ -82,9 +68,6 @@ class RealPlayerCanChooseCard extends GameEvent {
 
   @override
   List<Object> get props => [cards];
-
-  @override
-  String toString() => 'RealPlayerCanChooseCard{cards: $cards}';
 }
 
 class StartSoloGame extends GameEvent {}
@@ -100,11 +83,6 @@ class PlayCardForAi extends GameEvent {
 
   @override
   List<Object> get props => [player, possibleCardsToPlay];
-
-  @override
-  String toString() {
-    return 'PlayCardForAi{player: $player, possibleCardsToPlay: $possibleCardsToPlay}';
-  }
 }
 
 class PlayCard extends GameEvent {
@@ -115,9 +93,4 @@ class PlayCard extends GameEvent {
 
   @override
   List<Object> get props => [player, card];
-
-  @override
-  String toString() {
-    return 'PlayCard{card: $card, player: $player}';
-  }
 }

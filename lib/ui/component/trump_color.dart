@@ -11,7 +11,7 @@ class TrumpColor extends TextBoxComponent {
 
   TrumpColor(this.color)
       : super(
-          '${color.symbol}  ',
+          '${color.symbol}',
           config: TextConfig(fontSize: 18, color: Color(0xFF000000), textAlign: TextAlign.left),
         ) {
     anchor = Anchor.center;

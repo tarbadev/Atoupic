@@ -5,6 +5,9 @@ abstract class AppState extends Equatable {
 
   @override
   List<Object> get props => [];
+
+  @override
+  bool get stringify => true;
 }
 
 class HomeAppState extends AppState{}

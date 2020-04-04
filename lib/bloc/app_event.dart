@@ -5,6 +5,9 @@ abstract class AppEvent extends Equatable {
 
   @override
   List<Object> get props => [];
+
+  @override
+  bool get stringify => true;
 }
 
 class GameInitialized extends AppEvent {}

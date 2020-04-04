@@ -7,7 +7,7 @@ import 'package:flame/text_config.dart';
 class PassedCaption extends TextBoxComponent {
   bool visible = false;
 
-  PassedCaption() : super('Passed   ', config: TextConfig(fontSize: 18)) {
+  PassedCaption() : super('Passed', config: TextConfig(fontSize: 18)) {
     anchor = Anchor.bottomRight;
   }
 

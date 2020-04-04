@@ -24,9 +24,7 @@ class Turn extends Equatable {
       [number, card, firstPlayer, playerDecisions, round, cardRounds, trumpColor, turnResult];
 
   @override
-  String toString() {
-    return 'Turn{number: $number, firstPlayer: $firstPlayer, card: $card, playerDecisions: $playerDecisions, cardRounds: $cardRounds, round: $round, trumpColor: $trumpColor, turnResult: $turnResult}';
-  }
+  bool get stringify => true;
 
   void calculatePoints(List<Player> players) {
     var takerPosition = playerDecisions.entries

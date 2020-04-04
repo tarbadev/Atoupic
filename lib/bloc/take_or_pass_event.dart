@@ -8,6 +8,9 @@ abstract class TakeOrPassEvent extends Equatable {
 
   @override
   List<Object> get props => [];
+
+  @override
+  bool get stringify => true;
 }
 
 class RealPlayerTurn extends TakeOrPassEvent {
@@ -18,11 +21,6 @@ class RealPlayerTurn extends TakeOrPassEvent {
 
   @override
   List<Object> get props => [player, turn];
-
-  @override
-  String toString() {
-    return 'RealPlayerTurn{player: $player, turn: $turn}';
-  }
 }
 
 class Take extends TakeOrPassEvent {
@@ -33,11 +31,6 @@ class Take extends TakeOrPassEvent {
 
   @override
   List<Object> get props => [this.player, this.color];
-
-  @override
-  String toString() {
-    return 'Take{player: $player, color: $color}';
-  }
 }
 
 class Pass extends TakeOrPassEvent {
@@ -47,9 +40,4 @@ class Pass extends TakeOrPassEvent {
 
   @override
   List<Object> get props => [this.player];
-
-  @override
-  String toString() {
-    return 'Pass{player: $player}';
-  }
 }

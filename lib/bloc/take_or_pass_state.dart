@@ -8,6 +8,9 @@ abstract class TakeOrPassState extends Equatable {
 
   @override
   List<Object> get props => [];
+
+  @override
+  bool get stringify => true;
 }
 
 class HideTakeOrPassDialog extends TakeOrPassState {}
@@ -19,11 +22,6 @@ class PlayerPassed extends TakeOrPassState {
 
   @override
   List<Object> get props => [gameContext];
-
-  @override
-  String toString() {
-    return 'PlayerPassed{gameContext: $gameContext}';
-  }
 }
 
 class ShowTakeOrPassDialog extends TakeOrPassState {
@@ -35,11 +33,6 @@ class ShowTakeOrPassDialog extends TakeOrPassState {
 
   @override
   List<Object> get props => [player, card, isRound2];
-
-  @override
-  String toString() {
-    return 'ShowTakeOrPassDialog{player: $player, card: $card, isRound2: $isRound2}';
-  }
 }
 
 class NoOneTook extends TakeOrPassState {}

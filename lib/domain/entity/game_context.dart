@@ -21,9 +21,7 @@ class GameContext extends Equatable {
   List<Object> get props => [players, turns];
 
   @override
-  String toString() {
-    return 'GameContext{players: $players, turns: $turns}';
-  }
+  bool get stringify => true;
 
   GameContext setDecision(Player player, Decision decision) {
     lastTurn.playerDecisions[player.position] = decision;

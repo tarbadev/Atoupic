@@ -12,7 +12,5 @@ class CartRound extends Equatable {
   List<Object> get props => [playedCards, firstPlayer];
 
   @override
-  String toString() {
-    return 'CartRound{playedCards: $playedCards, firstPlayer: $firstPlayer}';
-  }
+  bool get stringify => true;
 }
