@@ -20,7 +20,7 @@ void main() {
 
       verifyZeroInteractions(Mocks.gameBloc);
 
-      await homeViewTester.tapOnSolo();
+      await homeViewTester.tapOnStartSolo();
       verify(Mocks.gameBloc.add(StartSoloGame()));
     });
   });

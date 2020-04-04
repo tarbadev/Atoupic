@@ -8,6 +8,6 @@ class HomeViewTester extends BaseViewTester {
 
   bool get isVisible => widgetExists('Home__SoloButton');
 
-  Future<void> tapOnSolo() async =>
+  Future<void> tapOnStartSolo() async =>
       await tapOnButtonByWidgetAndText(RaisedButton, 'Solo');
 }
