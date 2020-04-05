@@ -191,7 +191,7 @@ void main() {
       verify(Mocks.gameBloc.add(PlayCardForAi(TestFactory.computerPlayer, [card])));
     });
 
-    test('triggers a EndCardRound when next card player null', () {
+    test('triggers a EndCardRound when next card player null', () async {
       var mockGameContext = MockGameContext();
 
       when(mockGameContext.nextCardPlayer()).thenReturn(null);
@@ -203,6 +203,8 @@ void main() {
             event: NewCardRound(),
             nextState: CardPlayed(mockGameContext),
           ));
+
+      await Future.delayed(Duration(seconds: 1));
 
       verify(mockGameContext.nextCardPlayer());
       verify(Mocks.gameBloc.add(EndCardRound()));

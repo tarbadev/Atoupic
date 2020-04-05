@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
@@ -48,19 +50,20 @@ class ApplicationBlocDelegate extends BlocDelegate {
 
   void _makePlayerPlayCard(GameContext gameContext) {
     var nextPlayer = gameContext.nextCardPlayer();
-    var event;
 
     if (nextPlayer == null) {
-      event = EndCardRound();
+      Timer(Duration(seconds: 1), () {
+        _gameBloc.add(EndCardRound());
+      });
     } else {
+      var event;
       var possibleCardsToPlay = gameContext.getPossibleCardsToPlay(nextPlayer);
       if (nextPlayer.isRealPlayer) {
         event = RealPlayerCanChooseCard(possibleCardsToPlay);
       } else {
         event = PlayCardForAi(nextPlayer, possibleCardsToPlay);
       }
+      _gameBloc.add(event);
     }
-
-    _gameBloc.add(event);
   }
 }
