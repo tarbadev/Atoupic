@@ -1,7 +1,7 @@
-import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/cart_round.dart';
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/ai_service.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,19 +27,36 @@ void main() {
     group('chooseCard', () {
       group('when cards have already been played', () {
         group('when has a card that can win the round', () {
-          test('returns highest card', () {
-            var cards = [
-              Card(CardColor.Heart, CardHead.Eight),
-              Card(CardColor.Heart, CardHead.Queen),
-              Card(CardColor.Heart, CardHead.Ace),
-            ];
-            turn.cardRounds = [
-              CartRound(firstPlayer)
-                ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
-                ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
-            ];
+          group('when has a card that can win the round', () {
+            test('when winning card is of requested color', () {
+              var cards = [
+                Card(CardColor.Heart, CardHead.Eight),
+                Card(CardColor.Heart, CardHead.Queen),
+                Card(CardColor.Heart, CardHead.Ace),
+              ];
+              turn.cardRounds = [
+                CartRound(firstPlayer)
+                  ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
+                  ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
+              ];
 
-            expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.Ace));
+              expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Heart, CardHead.Ace));
+            });
+
+            test('when no card of requested color available', () {
+              var cards = [
+                Card(CardColor.Diamond, CardHead.Eight),
+                Card(CardColor.Diamond, CardHead.Queen),
+                Card(CardColor.Diamond, CardHead.Ace),
+              ];
+              turn.cardRounds = [
+                CartRound(firstPlayer)
+                  ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
+                  ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
+              ];
+
+              expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Diamond, CardHead.Eight));
+            });
           });
 
           group('when not winning the current round and winner is trump color', () {
@@ -221,8 +238,7 @@ void main() {
                 Card(CardColor.Club, CardHead.King),
               ];
 
-              expect(
-                  aiService.chooseCard(cards, turn, true), Card(CardColor.Club, CardHead.Seven));
+              expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Club, CardHead.Seven));
             });
 
             test('when in taker team', () {
