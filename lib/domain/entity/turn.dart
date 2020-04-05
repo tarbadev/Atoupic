@@ -15,7 +15,10 @@ class Turn extends Equatable {
   CardColor trumpColor;
   TurnResult turnResult;
 
-  CartRound get lastCardRound => cardRounds.length > 0 ? cardRounds.last : null;
+  CartRound get lastCardRound =>
+      cardRounds.length > 0
+          ? cardRounds.last
+          : null;
 
   Turn(this.number, this.firstPlayer);
 
@@ -50,24 +53,34 @@ class Turn extends Equatable {
     final minimumPoints = 82;
     var isSuccessful = isTakerVertical && verticalPoints >= minimumPoints ||
         !isTakerVertical && horizontalPoints >= minimumPoints;
-    var result = isSuccessful ? Result.Success : Result.Failure;
+    var result = isSuccessful
+        ? Result.Success
+        : Result.Failure;
     var verticalScore = 0;
     var horizontalScore = 0;
 
     if (isTakerVertical) {
       if (isSuccessful) {
-        verticalScore = horizontalPoints == 0 ? 252 : verticalPoints;
+        verticalScore = horizontalPoints == 0
+            ? 252
+            : verticalPoints;
         horizontalScore = horizontalPoints;
       } else {
         verticalScore = 0;
-        horizontalScore = verticalPoints == 0 ? 252 : 162;
+        horizontalScore = verticalPoints == 0
+            ? 252
+            : 162;
       }
     } else {
       if (isSuccessful) {
         verticalScore = verticalPoints;
-        horizontalScore = verticalPoints == 0 ? 252 : horizontalPoints;
+        horizontalScore = verticalPoints == 0
+            ? 252
+            : horizontalPoints;
       } else {
-        verticalScore = horizontalPoints == 0 ? 252 : 162;
+        verticalScore = horizontalPoints == 0
+            ? 252
+            : 162;
         horizontalScore = 0;
       }
     }
@@ -91,8 +104,18 @@ class Turn extends Equatable {
       points += 10;
     }
 
-    cardRound.playedCards.values.forEach((card) => points +=
-        card.color == trumpColor ? card.head.trumpPoints : card.head.points);
+    points+= calculatePointsFromCards(cardRound.playedCards.values.toList(), trumpColor);
+
+    return points;
+  }
+
+  int calculatePointsFromCards(List<Card> cards, CardColor trumpColor) {
+    var points = 0;
+
+    cards.forEach((card) =>
+    points += card.color == trumpColor
+        ? card.head.trumpPoints
+        : card.head.points);
 
     return points;
   }
@@ -109,15 +132,15 @@ class Turn extends Equatable {
       winner = cartRound.playedCards.entries
           .where((entry) => entry.value.color == requestedColor)
           .reduce((entry1, entry2) =>
-              entry1.value.head.order > entry2.value.head.order
-                  ? entry1
-                  : entry2);
+      entry1.value.head.order > entry2.value.head.order
+          ? entry1
+          : entry2);
     } else {
       winner = trumpCards
           .reduce((entry1, entry2) =>
-              entry1.value.head.trumpOrder > entry2.value.head.trumpOrder
-                  ? entry1
-                  : entry2);
+      entry1.value.head.trumpOrder > entry2.value.head.trumpOrder
+          ? entry1
+          : entry2);
     }
     return winner;
   }

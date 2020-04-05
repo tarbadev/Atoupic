@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:atoupic/domain/entity/card.dart';
+import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/domain/service/ai_service.dart';
 import 'package:atoupic/domain/service/card_service.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:bloc/bloc.dart';
@@ -10,8 +13,9 @@ class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
   final GameBloc _gameBloc;
   final GameService _gameService;
   final CardService _cardService;
+  final AiService _aiService;
 
-  TakeOrPassDialogBloc(this._gameBloc, this._gameService, this._cardService);
+  TakeOrPassDialogBloc(this._gameBloc, this._gameService, this._cardService, this._aiService);
 
   @override
   TakeOrPassState get initialState => HideTakeOrPassDialog();
@@ -21,38 +25,40 @@ class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
     TakeOrPassEvent event,
   ) async* {
     if (event is Take) {
-      yield* _mapTakeEventToState(event);
+      yield* _takeAndMapToState(event.player, event.color);
     } else if (event is Pass) {
       yield* _mapPassEventToState(event);
     } else if (event is RealPlayerTurn) {
       yield ShowTakeOrPassDialog(event.player, event.turn.card, event.turn.round == 2);
+    } else if (event is ComputerPlayerTurn) {
+      yield* _mapComputerPlayerTurnEventToState(event);
     }
   }
 
-  Stream<TakeOrPassState> _mapTakeEventToState(Take event) async* {
-    var gameContext = _gameService.read().setDecision(event.player, Decision.Take);
+  Stream<TakeOrPassState> _takeAndMapToState(Player player, CardColor color) async* {
+    var gameContext = _gameService.read().setDecision(player, Decision.Take);
     var takerCards = _cardService.distributeCards(2).toList()..add(gameContext.lastTurn.card);
 
-    gameContext.players.forEach((player) {
+    gameContext.players.forEach((gamePlayer) {
       var newCards;
-      if (player.position == event.player.position) {
+      if (gamePlayer.position == player.position) {
         newCards = takerCards;
       } else {
         newCards = _cardService.distributeCards(3);
       }
 
-      player.cards.addAll(newCards);
-      _gameBloc.add(AddPlayerCards(newCards, player.position));
+      gamePlayer.cards.addAll(newCards);
+      _gameBloc.add(AddPlayerCards(newCards, gamePlayer.position));
     });
 
-    gameContext.lastTurn.trumpColor = event.color;
+    gameContext.lastTurn.trumpColor = color;
 
     var realPlayer = gameContext.players.firstWhere((player) => player.isRealPlayer);
-    realPlayer.sortCards(trumpColor: event.color);
+    realPlayer.sortCards(trumpColor: color);
 
     _gameService.save(gameContext);
 
-    _gameBloc.add(DisplayTrumpColor(event.color, event.player.position));
+    _gameBloc.add(DisplayTrumpColor(color, player.position));
     _gameBloc.add(ResetPlayersPassedCaption());
     _gameBloc.add(ReplaceRealPlayersCards(realPlayer.cards));
 
@@ -60,10 +66,14 @@ class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
   }
 
   Stream<TakeOrPassState> _mapPassEventToState(Pass event) async* {
-    yield HideTakeOrPassDialog();
-    var gameContext = _gameService.read().setDecision(event.player, Decision.Pass);
+    yield* _passAndMapToState(event.player);
+  }
 
-    _gameBloc.add(DisplayPlayerPassedCaption(event.player.position));
+  Stream<TakeOrPassState> _passAndMapToState(Player player) async* {
+    yield HideTakeOrPassDialog();
+    var gameContext = _gameService.read().setDecision(player, Decision.Pass);
+
+    _gameBloc.add(DisplayPlayerPassedCaption(player.position));
 
     if (gameContext.nextPlayer() == null && gameContext.lastTurn.round == 1) {
       gameContext = gameContext.nextRound();
@@ -78,6 +88,15 @@ class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
       _gameBloc.add(NewTurn());
     } else {
       yield PlayerPassed(gameContext);
+    }
+  }
+
+  Stream<TakeOrPassState> _mapComputerPlayerTurnEventToState(ComputerPlayerTurn event) async* {
+    var result = _aiService.takeOrPass(event.player.cards, event.turn);
+    if (result == null) {
+      yield* _passAndMapToState(event.player);
+    } else {
+      yield* _takeAndMapToState(event.player, result);
     }
   }
 }

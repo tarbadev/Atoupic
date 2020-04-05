@@ -35,11 +35,9 @@ class ApplicationBlocDelegate extends BlocDelegate {
   }
 
   void _makePlayerTakeOrPass(Player player, Turn turn) {
-    if (player.isRealPlayer) {
-      _takeOrPassDialogBloc.add(RealPlayerTurn(player, turn));
-    } else {
-      _takeOrPassDialogBloc.add(Pass(player));
-    }
+    _takeOrPassDialogBloc.add(
+      player.isRealPlayer ? RealPlayerTurn(player, turn) : ComputerPlayerTurn(player, turn),
+    );
   }
 
   @override

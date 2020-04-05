@@ -101,4 +101,44 @@ class AiService {
       return cards.reduce((card1, card2) => card1.head.order > card2.head.order ? card1 : card2);
     }
   }
+
+  CardColor takeOrPass(List<Card> cards, Turn turn) {
+    final potentialCards = cards.toList()..add(turn.card);
+    if (turn.round == 1 && _canTakeForTrumpColor(turn, potentialCards, turn.card.color)) {
+      return turn.card.color;
+    } else {
+      final otherColors = CardColor.values.where((color) => color != turn.card.color);
+      var selectedColor;
+      for(final color in otherColors){
+        if (_canTakeForTrumpColor(turn, potentialCards, color)) {
+          selectedColor = color;
+          break;
+        }
+      }
+      return selectedColor;
+    }
+  }
+
+  bool _canTakeForTrumpColor(Turn turn, List<Card> cards, CardColor trumpColor) {
+    final bestTrumpCards = [
+      Card(trumpColor, CardHead.Jack),
+      Card(trumpColor, CardHead.Nine),
+      Card(trumpColor, CardHead.Ace),
+    ];
+    final trumpCards = cards.where((card) => card.color == trumpColor);
+    final numberOfBestTrumpCards = bestTrumpCards.where((card) => trumpCards.contains(card)).length;
+    if (trumpCards.length >= 5) {
+      return true;
+    } else {
+      if (numberOfBestTrumpCards >= 2) {
+        final nonTrumpCards = cards.where((card) => !trumpCards.contains(card)).toList();
+        final nonTrumpPoints = turn.calculatePointsFromCards(nonTrumpCards, trumpColor);
+        if (nonTrumpPoints >= 6) {
+          return true;
+        }
+      }
+    }
+    
+    return false;
+  }
 }

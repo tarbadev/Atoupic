@@ -23,6 +23,16 @@ class RealPlayerTurn extends TakeOrPassEvent {
   List<Object> get props => [player, turn];
 }
 
+class ComputerPlayerTurn extends TakeOrPassEvent {
+  final Player player;
+  final Turn turn;
+
+  ComputerPlayerTurn(this.player, this.turn);
+
+  @override
+  List<Object> get props => [player, turn];
+}
+
 class Take extends TakeOrPassEvent {
   final Player player;
   final CardColor color;

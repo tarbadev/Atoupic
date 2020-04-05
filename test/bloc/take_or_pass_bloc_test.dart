@@ -5,8 +5,9 @@ import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:test/test.dart';
 
 import '../helper/mock_definition.dart';
 import '../helper/test_factory.dart';
@@ -19,8 +20,9 @@ void main() {
       reset(Mocks.gameBloc);
       reset(Mocks.gameService);
       reset(Mocks.cardService);
+      reset(Mocks.aiService);
 
-      currentTurnBloc = TakeOrPassDialogBloc(Mocks.gameBloc, Mocks.gameService, Mocks.cardService);
+      currentTurnBloc = TakeOrPassDialogBloc(Mocks.gameBloc, Mocks.gameService, Mocks.cardService, Mocks.aiService);
     });
 
     tearDown(() {
@@ -179,6 +181,52 @@ void main() {
         build: () async => currentTurnBloc,
         act: (bloc) async => bloc.add(RealPlayerTurn(player, turn)),
         expect: [ShowTakeOrPassDialog(player, card, false)],
+      );
+    });
+
+    group('on ComputerPlayerTurn event', () {
+      var cards = [TestFactory.cards.first];
+      var player = TestFactory.computerPlayer..cards = cards;
+      var card = Card(CardColor.Club, CardHead.King);
+      var turn = Turn(1, TestFactory.computerPlayer)..card = card;
+      var mockGameContext = MockGameContext();
+
+      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
+        'emits PlayerPassed when aiService returns null',
+        build: () async => currentTurnBloc,
+        act: (bloc) async {
+          when(Mocks.aiService.takeOrPass(any, any)).thenReturn(null);
+          when(Mocks.gameService.read()).thenReturn(mockGameContext);
+          when(mockGameContext.setDecision(any, any)).thenReturn(mockGameContext);
+          when(mockGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
+
+          bloc.add(ComputerPlayerTurn(player, turn));
+        },
+        expect: [PlayerPassed(mockGameContext)],
+        verify: (_) async {
+          verify(mockGameContext.setDecision(player, Decision.Pass));
+          verify(Mocks.aiService.takeOrPass(cards, turn));
+        }
+      );
+
+      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
+          'emits PlayerTook when aiService returns CardColor',
+          build: () async => currentTurnBloc,
+          act: (bloc) async {
+            when(Mocks.aiService.takeOrPass(any, any)).thenReturn(CardColor.Heart);
+            when(Mocks.gameService.read()).thenReturn(mockGameContext);
+            when(mockGameContext.setDecision(any, any)).thenReturn(mockGameContext);
+            when(mockGameContext.lastTurn).thenReturn(turn);
+            when(mockGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayerWithCards([])]));
+            when(Mocks.cardService.distributeCards(any)).thenReturn([]);
+
+            bloc.add(ComputerPlayerTurn(player, turn));
+          },
+          expect: [PlayerTook()],
+          verify: (_) async {
+            expect(turn.trumpColor, CardColor.Heart);
+            verify(Mocks.aiService.takeOrPass(cards, turn));
+          }
       );
     });
   });

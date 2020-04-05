@@ -15,6 +15,7 @@ void main() {
     Player firstPlayer = TestFactory.realPlayer;
     AiService aiService;
     var turn = Turn(1, firstPlayer)
+      ..card = Card(CardColor.Spade, CardHead.Ace)
       ..trumpColor = CardColor.Spade
       ..playerDecisions[Position.Left] = Decision.Take;
 
@@ -55,7 +56,8 @@ void main() {
                   ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
               ];
 
-              expect(aiService.chooseCard(cards, turn, true), Card(CardColor.Diamond, CardHead.Eight));
+              expect(
+                  aiService.chooseCard(cards, turn, true), Card(CardColor.Diamond, CardHead.Eight));
             });
           });
 
@@ -251,6 +253,103 @@ void main() {
                   aiService.chooseCard(cards, turn, false), Card(CardColor.Heart, CardHead.Eight));
             });
           });
+        });
+      });
+    });
+
+    group('takeOrPass', () {
+      group('when turn.round == 1', () {
+        test('returns card color when computer has enough points to take', () {
+          var cards = [
+            Card(CardColor.Spade, CardHead.Jack),
+            Card(CardColor.Spade, CardHead.Nine),
+            Card(CardColor.Spade, CardHead.King),
+            Card(CardColor.Heart, CardHead.Ace),
+            Card(CardColor.Heart, CardHead.Seven),
+          ];
+          expect(aiService.takeOrPass(cards, turn), CardColor.Spade);
+        });
+
+        test('returns card color when computer has only trump cards', () {
+          var cards = [
+            Card(CardColor.Spade, CardHead.Jack),
+            Card(CardColor.Spade, CardHead.Nine),
+            Card(CardColor.Spade, CardHead.King),
+            Card(CardColor.Spade, CardHead.Queen),
+            Card(CardColor.Spade, CardHead.Seven),
+          ];
+          expect(aiService.takeOrPass(cards, turn), CardColor.Spade);
+        });
+
+        test('returns card color when added card makes it feasible', () {
+          var cards = [
+            Card(CardColor.Spade, CardHead.Jack),
+            Card(CardColor.Diamond, CardHead.Eight),
+            Card(CardColor.Spade, CardHead.King),
+            Card(CardColor.Heart, CardHead.Ace),
+            Card(CardColor.Heart, CardHead.Seven),
+          ];
+          expect(aiService.takeOrPass(cards, turn), CardColor.Spade);
+        });
+
+        test('returns null when too difficult', () {
+          var cards = [
+            Card(CardColor.Club, CardHead.Jack),
+            Card(CardColor.Diamond, CardHead.Eight),
+            Card(CardColor.Spade, CardHead.King),
+            Card(CardColor.Heart, CardHead.Ace),
+            Card(CardColor.Heart, CardHead.Seven),
+          ];
+          expect(aiService.takeOrPass(cards, turn), isNull);
+        });
+      });
+
+      group('when turn.round == 2', () {
+        var turn = Turn(1, firstPlayer)
+          ..card = Card(CardColor.Spade, CardHead.Ace)
+          ..round = 2;
+        test('returns false when too difficult', () {
+          var cards = [
+            Card(CardColor.Club, CardHead.Jack),
+            Card(CardColor.Diamond, CardHead.Eight),
+            Card(CardColor.Spade, CardHead.King),
+            Card(CardColor.Heart, CardHead.Ace),
+            Card(CardColor.Heart, CardHead.Seven),
+          ];
+          expect(aiService.takeOrPass(cards, turn), isNull);
+        });
+
+        test('returns chosen color when computer has enough points to take', () {
+          var cards = [
+            Card(CardColor.Diamond, CardHead.Jack),
+            Card(CardColor.Diamond, CardHead.Nine),
+            Card(CardColor.Diamond, CardHead.King),
+            Card(CardColor.Heart, CardHead.Ace),
+            Card(CardColor.Heart, CardHead.Seven),
+          ];
+          expect(aiService.takeOrPass(cards, turn), CardColor.Diamond);
+        });
+
+        test('returns chosen color when computer has only trump cards', () {
+          var cards = [
+            Card(CardColor.Diamond, CardHead.Jack),
+            Card(CardColor.Diamond, CardHead.Nine),
+            Card(CardColor.Diamond, CardHead.King),
+            Card(CardColor.Diamond, CardHead.Queen),
+            Card(CardColor.Diamond, CardHead.Seven),
+          ];
+          expect(aiService.takeOrPass(cards, turn), CardColor.Diamond);
+        });
+
+        test('returns card color when added card makes it feasible', () {
+          var cards = [
+            Card(CardColor.Spade, CardHead.Jack),
+            Card(CardColor.Diamond, CardHead.Eight),
+            Card(CardColor.Heart, CardHead.Jack),
+            Card(CardColor.Heart, CardHead.Ace),
+            Card(CardColor.Heart, CardHead.Seven),
+          ];
+          expect(aiService.takeOrPass(cards, turn), CardColor.Heart);
         });
       });
     });

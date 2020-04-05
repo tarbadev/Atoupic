@@ -40,7 +40,7 @@ void main() {
             nextState: TurnCreated(Turn(1, TestFactory.computerPlayer)),
           ));
 
-      verify(Mocks.takeOrPassDialogBloc.add(Pass(TestFactory.computerPlayer)));
+      verify(Mocks.takeOrPassDialogBloc.add(ComputerPlayerTurn(TestFactory.computerPlayer, Turn(1, TestFactory.computerPlayer))));
     });
 
     test('adds RealPlayerTurn event when player is real player', () {
@@ -60,10 +60,11 @@ void main() {
   });
 
   group('on PlayerPassed state', () {
-    test('adds a Pass event when next player is computer', () {
+    test('adds a ComputerPlayerTurn event when next player is computer', () {
       var mockedGameContext = MockGameContext();
 
-      when(mockedGameContext.lastTurn).thenReturn(Turn(1, TestFactory.computerPlayer));
+      var turn = Turn(1, TestFactory.computerPlayer);
+      when(mockedGameContext.lastTurn).thenReturn(turn);
       when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.computerPlayer);
 
       applicationBlocDelegate.onTransition(
@@ -74,7 +75,7 @@ void main() {
             nextState: PlayerPassed(mockedGameContext),
           ));
 
-      verify(Mocks.takeOrPassDialogBloc.add(Pass(TestFactory.computerPlayer)));
+      verify(Mocks.takeOrPassDialogBloc.add(ComputerPlayerTurn(TestFactory.computerPlayer, turn)));
     });
 
     test('displays take of pass dialog when player is real player', () {
