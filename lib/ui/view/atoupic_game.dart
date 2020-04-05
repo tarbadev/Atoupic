@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:atoupic/bloc/bloc.dart';
@@ -71,8 +72,7 @@ class AtoupicGame extends BaseGame {
     if (canChooseCard) {
       final container = Container();
       final GameBloc gameBloc = container.resolve();
-      _realPlayer.setCardsOnTapCallback(
-          (card) => gameBloc.add(PlayCard(card, _realPlayer.player)));
+      _realPlayer.setCardsOnTapCallback((card) => gameBloc.add(PlayCard(card, _realPlayer.player)));
       _realPlayer.cards.forEach((cardComponent) =>
           cardComponent.canBePlayed = possiblePlayableCards.contains(cardComponent.card));
     } else {
@@ -90,12 +90,35 @@ class AtoupicGame extends BaseGame {
     playerComponent.playCard(playedCard, onAnimationDoneCallback);
   }
 
-  void resetLastPlayedCards() {
-    _players.forEach((player) {
-      player.lastPlayedCard.shouldDestroy = true;
-      player.lastPlayedCard = null;
-      player.resize(size);
+  void removePlayedCardsToWinnerPile(Position winner, Function onAnimationEnd) async {
+    resize(size);
+    var playedCards = _players.map((player) => player.lastPlayedCard);
+    List<Completer> completerList = List();
+    playedCards.forEach((card) {
+      var completer = Completer();
+      card.animateToCenter(() => completer.complete());
+      completerList.add(completer);
     });
+    for(var completer in completerList) {
+      await completer.future;
+    }
+
+    completerList.clear();
+    playedCards.forEach((card) {
+      var completer = Completer();
+      card.animateToWinnerPile(winner, () {
+        card.shouldDestroy = true;
+        completer.complete();
+      });
+      completerList.add(completer);
+    });
+    for(var completer in completerList) {
+      await completer.future;
+    }
+    _players.forEach((player) {
+      player.lastPlayedCard = null;
+    });
+    Timer(Duration(milliseconds: 500), onAnimationEnd);
   }
 
   void setTrumpColor(CardColor color, Position position) {
@@ -103,15 +126,15 @@ class AtoupicGame extends BaseGame {
     playerComponent.displayTrumpColor(color);
     resize(size);
   }
-  
+
   void resetPlayersCards() {
     _players.forEach((player) => _resetPlayerCards(player));
   }
 
   void _resetPlayerCards(PlayerComponent player) {
     player.cards.forEach((card) {
-        card.shouldDestroy = true;
-      });
+      card.shouldDestroy = true;
+    });
     player.cards.clear();
   }
 

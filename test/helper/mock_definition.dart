@@ -1,4 +1,5 @@
 import 'package:atoupic/bloc/bloc.dart';
+import 'package:atoupic/domain/entity/cart_round.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
@@ -26,6 +27,7 @@ class MockAiService extends Mock implements AiService {}
 class MockGameContextRepository extends Mock implements GameContextRepository {}
 
 class MockGameContext extends Mock implements GameContext {}
+class MockCardRound extends Mock implements CartRound {}
 
 class MockPlayer extends Mock implements Player {}
 

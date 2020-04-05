@@ -227,6 +227,7 @@ class PlayerComponent extends PositionComponent
     lastPlayedCard = cardToPlay;
     cards.remove(cardToPlay);
     cardToPlay.angle = 0;
+    cardToPlay.fullyDisplayed = true;
     cardToPlay.animateStart = DateTime.now();
     cardToPlay.animatePlayedCard = true;
     cardToPlay.onAnimationDoneCallback = onAnimationDoneCallback;

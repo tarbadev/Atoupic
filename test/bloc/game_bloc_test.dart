@@ -5,6 +5,7 @@ import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/entity/turn_result.dart';
+import 'package:bloc/bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:collection/collection.dart';
 import 'package:mockito/mockito.dart';
@@ -12,10 +13,12 @@ import 'package:test/test.dart';
 
 import '../helper/fake_application_injector.dart';
 import '../helper/mock_definition.dart';
+import '../helper/test_bloc_delegate.dart';
 import '../helper/test_factory.dart';
 
 void main() {
   setupDependencyInjectorForTest();
+  BlocSupervisor.delegate = TestBlocDelegate();
 
   group('GameBloc', () {
     List<Player> players = TestFactory.gameContext.players;
@@ -226,22 +229,32 @@ void main() {
       final mockGameContext = MockGameContext();
       final mockTurn = MockTurn();
       final updatedGameContext = MockGameContext();
+      final mockCardRound = MockCardRound();
       blocTest<GameBloc, GameEvent, GameState>(
         'emits CardRoundCreated when NOT the last round',
         build: () async => gameBloc,
         act: (bloc) async {
           when(Mocks.gameService.read()).thenReturn(mockGameContext);
-          when(mockGameContext.lastTurn).thenReturn(Turn(1, null)..cardRounds = []);
+          when(mockGameContext.lastTurn).thenReturn(Turn(1, null)..cardRounds = [mockCardRound]);
           when(mockGameContext.newCardRound()).thenReturn(updatedGameContext);
+          when(mockCardRound.getCardRoundWinner(any))
+              .thenReturn(MapEntry(Position.Left, TestFactory.cards.first));
           when(Mocks.gameService.save(any)).thenReturn(updatedGameContext);
 
           bloc.add(EndCardRound());
+
+          await untilCalled(Mocks.atoupicGame.removePlayedCardsToWinnerPile(any, any));
+          var callback =
+              verify(Mocks.atoupicGame.removePlayedCardsToWinnerPile(Position.Left, captureAny))
+                  .captured
+                  .single;
+          callback();
         },
         expect: [CardRoundCreated(updatedGameContext)],
         verify: (_) async {
           verify(Mocks.gameService.read());
           verify(mockGameContext.newCardRound());
-          verify(Mocks.atoupicGame.resetLastPlayedCards());
+          verify(mockCardRound.getCardRoundWinner(null));
           verify(Mocks.gameService.save(updatedGameContext));
         },
       );
@@ -268,16 +281,25 @@ void main() {
             mockTurn,
           ]));
           when(mockGameContext.lastTurn).thenReturn(mockTurn);
+          when(mockTurn.lastCardRound).thenReturn(mockCardRound);
           when(mockTurn.cardRounds).thenReturn(cardRounds);
           when(mockTurn.turnResult).thenReturn(TestFactory.turnResult);
+          when(mockCardRound.getCardRoundWinner(any)).thenReturn(MapEntry(Position.Left, null));
           when(Mocks.gameService.save(any)).thenReturn(mockGameContext);
 
           bloc.add(EndCardRound());
+
+          await untilCalled(Mocks.atoupicGame.removePlayedCardsToWinnerPile(any, any));
+          var callback =
+              verify(Mocks.atoupicGame.removePlayedCardsToWinnerPile(Position.Left, captureAny))
+                  .captured
+                  .single;
+          callback();
         },
         expect: [TurnEnded(TestFactory.turnResult)],
         verify: (_) async {
-          verify(Mocks.atoupicGame.resetLastPlayedCards());
           verify(Mocks.gameService.read());
+          verify(mockCardRound.getCardRoundWinner(null));
           verify(mockTurn.calculatePoints([TestFactory.realPlayer]));
           verify(Mocks.gameService.save(mockGameContext));
         },
@@ -310,10 +332,16 @@ void main() {
           when(Mocks.gameService.save(any)).thenReturn(mockGameContext);
 
           bloc.add(EndCardRound());
+
+          await untilCalled(Mocks.atoupicGame.removePlayedCardsToWinnerPile(any, any));
+          var callback =
+              verify(Mocks.atoupicGame.removePlayedCardsToWinnerPile(Position.Left, captureAny))
+                  .captured
+                  .single;
+          callback();
         },
         expect: [TurnEnded(TestFactory.turnResult, isGameOver: true)],
         verify: (_) async {
-          verify(Mocks.atoupicGame.resetLastPlayedCards());
           verify(Mocks.gameService.read());
           verify(mockTurn.calculatePoints([TestFactory.realPlayer]));
           verify(Mocks.gameService.save(mockGameContext));
@@ -347,10 +375,16 @@ void main() {
           when(Mocks.gameService.save(any)).thenReturn(mockGameContext);
 
           bloc.add(EndCardRound());
+
+          await untilCalled(Mocks.atoupicGame.removePlayedCardsToWinnerPile(any, any));
+          var callback =
+              verify(Mocks.atoupicGame.removePlayedCardsToWinnerPile(Position.Left, captureAny))
+                  .captured
+                  .single;
+          callback();
         },
         expect: [TurnEnded(TestFactory.turnResult, isGameOver: true)],
         verify: (_) async {
-          verify(Mocks.atoupicGame.resetLastPlayedCards());
           verify(Mocks.gameService.read());
           verify(mockTurn.calculatePoints([TestFactory.realPlayer]));
           verify(Mocks.gameService.save(mockGameContext));

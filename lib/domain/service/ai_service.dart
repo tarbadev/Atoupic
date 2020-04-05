@@ -28,7 +28,7 @@ class AiService {
       return winningCards.isEmpty ? _getLowestCard(cards) : winningCards.first;
     } else {
       var requestedColor = lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
-      var cardRoundWinner = turn.getCardRoundWinner(lastCardRound);
+      var cardRoundWinner = lastCardRound.getCardRoundWinner(turn.trumpColor);
       var isPartnerWinning = cardRoundWinner.key.isVertical == isVertical;
       if (isPartnerWinning) {
         return _getBestCard(cards, requestedColor == turn.trumpColor);

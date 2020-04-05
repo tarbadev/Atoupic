@@ -96,6 +96,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _atoupicGame.setLastCardPlayed(card, player.position, () => completer.complete());
     await completer.future;
     yield CardAnimationEnded();
+    await Future.delayed(Duration(milliseconds: 500));
 
     yield CardPlayed(newGameContext);
   }
@@ -107,9 +108,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   Stream<GameState> _mapEndCardRoundEventToState(EndCardRound event) async* {
-    _atoupicGame.resetLastPlayedCards();
-
     var gameContext = _gameService.read();
+    
+    var winner = gameContext.lastTurn.lastCardRound.getCardRoundWinner(gameContext.lastTurn.trumpColor).key;
+    Completer completer = new Completer();
+    _atoupicGame.removePlayedCardsToWinnerPile(winner, () => completer.complete());
+    await completer.future;
+
     if (gameContext.lastTurn.cardRounds.length >= 8) {
       gameContext.lastTurn.calculatePoints(gameContext.players);
       _gameService.save(gameContext);

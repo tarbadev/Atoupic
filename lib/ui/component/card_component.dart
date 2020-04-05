@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:atoupic/domain/entity/card.dart';
+import 'package:atoupic/domain/entity/player.dart';
 import 'package:flame/anchor.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/components/mixins/resizable.dart';
@@ -21,6 +22,7 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
   DateTime animateStart;
   Rect playedCardTarget;
   double tileSize;
+  Offset destinationOffset;
 
   Function onAnimationDoneCallback;
 
@@ -91,12 +93,31 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
       height -= (height - playedCardTarget.height) * differencePercent;
 
       if ((x == playedCardTarget.left &&
-          y == playedCardTarget.top &&
-          width == playedCardTarget.width &&
-          height == playedCardTarget.height) || differencePercent == 1) {
+              y == playedCardTarget.top &&
+              width == playedCardTarget.width &&
+              height == playedCardTarget.height) ||
+          differencePercent == 1) {
         animatePlayedCard = false;
         onAnimationDoneCallback();
       }
+    }
+
+    if (destinationOffset != null) {
+      var speed = tileSize * 6;
+      double stepDistance = speed * t;
+      Rect currentRect = super.toRect();
+      Offset toTarget = destinationOffset - Offset(currentRect.left, currentRect.top);
+      if (stepDistance < toTarget.distance) {
+        Offset stepToTarget = Offset.fromDirection(toTarget.direction, stepDistance);
+        currentRect = currentRect.shift(stepToTarget);
+      } else {
+        currentRect = currentRect.shift(toTarget);
+        destinationOffset = null;
+        onAnimationDoneCallback();
+      }
+
+      x = currentRect.left + (width / 2);
+      y = currentRect.top + (height / 2);
     }
   }
 
@@ -123,5 +144,31 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
       onCardPlayed,
       card,
     );
+  }
+
+  void animateToCenter(Function onAnimationEnd) {
+    onAnimationDoneCallback = onAnimationEnd;
+    destinationOffset = Offset(
+      size.width / 2 - (width / 2),
+      size.height / 2 - (height),
+    );
+  }
+
+  void animateToWinnerPile(Position winner, Function onAnimationEnd) {
+    onAnimationDoneCallback = onAnimationEnd;
+    switch (winner) {
+      case Position.Top:
+        destinationOffset = Offset(size.width / 2 - (width / 2), -height);
+        break;
+      case Position.Bottom:
+        destinationOffset = Offset(size.width / 2 - (width / 2), size.height + height);
+        break;
+      case Position.Left:
+        destinationOffset = Offset(-width, size.height / 2 - (height / 2));
+        break;
+      case Position.Right:
+        destinationOffset = Offset(size.width + width, size.height / 2 - (height / 2));
+        break;
+    }
   }
 }
