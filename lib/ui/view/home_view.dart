@@ -12,16 +12,36 @@ class HomeView extends StatelessWidget {
     return Container(
       height: (MediaQuery.of(context).size.height),
       width: (MediaQuery.of(context).size.width),
-      color: Colors.white,
+      color: Color(0xFF006a64),
       child: Center(
-        child: RaisedButton(
-          key: Key('Home__SoloButton'),
-          onPressed: _homeViewModel.onStartSoloTap,
-          color: Theme.of(context).backgroundColor,
-          child: Text(
-            'Solo',
-            style: Theme.of(context).textTheme.title,
-          ),
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 80),
+              child: Text(
+                'Atoupic',
+                style: TextStyle(
+                  fontSize: 46.0,
+                  color: Colors.white,
+                  decoration: TextDecoration.none,
+                  fontFamily: "EmilysCandy",
+                  letterSpacing: 3,
+                ),
+              ),
+            ),
+            OutlineButton(
+              key: Key('Home__SoloButton'),
+              onPressed: _homeViewModel.onStartSoloTap,
+              textColor: Colors.white,
+              borderSide: BorderSide(color: Colors.white, width: 2),
+              highlightedBorderColor: Color(0xFF079992),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+              child: Text(
+                'Solo Game',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ],
         ),
       ),
     );

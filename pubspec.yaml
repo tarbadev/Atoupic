@@ -28,6 +28,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: EmilysCandy
+      fonts:
+        - asset: fonts/EmilysCandy-Regular.ttf
   assets:
     - assets/images/cards/clubs/7.png
     - assets/images/cards/clubs/8.png
