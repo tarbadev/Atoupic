@@ -121,7 +121,7 @@ class PlayerComponent extends PositionComponent
       card.playedCardTarget = playedCardTarget;
     });
 
-    _resizeTrumpColor(cardX, initialX, size, cardY, fullDeckWidth, cardWidth);
+    _resizeTrumpColor(cardX, initialX, size, cardY, fullDeckWidth, cardWidth, cardHeight);
     _resizePassedCaption(cardX, cardY, cardHeight, fullDeckWidth, cardWidth);
 
     super.resize(size);
@@ -154,13 +154,14 @@ class PlayerComponent extends PositionComponent
     double cardY,
     double fullDeckWidth,
     double cardWidth,
+    double cardHeight,
   ) {
     if (_trumpColor != null) {
       switch (position) {
         case Position.Top:
           _trumpColor
             ..anchor = Anchor.topLeft
-            ..x = cardX + (cardWidth / 2) + 10
+            ..x = cardX - fullDeckWidth
             ..y = 0;
           break;
         case Position.Bottom:
@@ -171,15 +172,15 @@ class PlayerComponent extends PositionComponent
           break;
         case Position.Left:
           _trumpColor
-            ..anchor = Anchor.bottomLeft
-            ..x = 0
-            ..y = cardY - (fullDeckWidth - (cardWidth / 2)) - 10;
+            ..anchor = Anchor.centerLeft
+            ..x = (cardHeight * .25) + 10
+            ..y = size.height / 2;
           break;
         case Position.Right:
           _trumpColor
-            ..anchor = Anchor.bottomRight
-            ..x = size.width
-            ..y = cardY + cardWidth + 10;
+            ..anchor = Anchor.centerRight
+            ..x = size.width - (cardHeight * .25) - 10
+            ..y = size.height / 2;
           break;
       }
     }
