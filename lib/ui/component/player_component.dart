@@ -121,29 +121,29 @@ class PlayerComponent extends PositionComponent
       card.playedCardTarget = playedCardTarget;
     });
 
-    _resizeTrumpColor(cardX, initialX, size, cardY, fullDeckWidth, cardWidth, cardHeight);
-    _resizePassedCaption(cardX, cardY, cardHeight, fullDeckWidth, cardWidth);
+    _resizeTrumpColor(cardX, initialX, size, fullDeckWidth, cardWidth, cardHeight);
+    _resizePassedCaption(cardX, cardY, cardHeight, fullDeckWidth, cardWidth, size);
 
     super.resize(size);
   }
 
   void _resizePassedCaption(
-      double cardX, double cardY, double cardHeight, double fullDeckWidth, double cardWidth) {
+      double cardX, double cardY, double cardHeight, double fullDeckWidth, double cardWidth, Size size) {
     if (position == Position.Top) {
       _passedCaption
-        ..anchor = Anchor.topLeft
-        ..x = cardX + (cardWidth / 2)
-        ..y = 0;
+        ..anchor = Anchor.topCenter
+        ..x = size.width / 2
+        ..y = 10;
     } else if (position == Position.Left) {
       _passedCaption
-        ..anchor = Anchor.bottomLeft
-        ..x = 0
-        ..y = cardY - (fullDeckWidth - (cardWidth / 2));
+        ..anchor = Anchor.centerLeft
+        ..x = 10
+        ..y = size.height / 2;
     } else if (position == Position.Right) {
       _passedCaption
-        ..anchor = Anchor.bottomRight
-        ..x = cardX - cardHeight * .25
-        ..y = cardY - (fullDeckWidth - (cardWidth / 2));
+        ..anchor = Anchor.centerRight
+        ..x = size.width - 10
+        ..y = size.height / 2;
     }
   }
 
@@ -151,7 +151,6 @@ class PlayerComponent extends PositionComponent
     double cardX,
     double initialX,
     Size size,
-    double cardY,
     double fullDeckWidth,
     double cardWidth,
     double cardHeight,
@@ -213,6 +212,9 @@ class PlayerComponent extends PositionComponent
   void addCards(List<CardComponent> newCards) {
     cards.addAll(newCards);
     newCards.forEach((newCard) => add(newCard));
+
+    components.remove(_passedCaption);
+    add(_passedCaption);
   }
 
   void setCardsOnTapCallback(Function(Card card) callback) {
@@ -227,6 +229,10 @@ class PlayerComponent extends PositionComponent
   void playCard(CardComponent cardToPlay, Function onAnimationDoneCallback) {
     lastPlayedCard = cardToPlay;
     cards.remove(cardToPlay);
+
+    components.remove(cardToPlay);
+    add(cardToPlay);
+    
     cardToPlay.angle = 0;
     cardToPlay.fullyDisplayed = true;
     cardToPlay.animateStart = DateTime.now();
