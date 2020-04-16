@@ -37,10 +37,10 @@ void main() {
           Transition(
             currentState: SoloGameInitialized(),
             event: NewTurn(turnAlreadyCreated: true),
-            nextState: TurnCreated(Turn(1, TestFactory.computerPlayer)),
+            nextState: TurnCreated(Turn(1, TestFactory.topPlayer)),
           ));
 
-      verify(Mocks.takeOrPassDialogBloc.add(ComputerPlayerTurn(TestFactory.computerPlayer, Turn(1, TestFactory.computerPlayer))));
+      verify(Mocks.takeOrPassDialogBloc.add(ComputerPlayerTurn(TestFactory.topPlayer, Turn(1, TestFactory.topPlayer))));
     });
 
     test('adds RealPlayerTurn event when player is real player', () {
@@ -63,9 +63,9 @@ void main() {
     test('adds a ComputerPlayerTurn event when next player is computer', () {
       var mockedGameContext = MockGameContext();
 
-      var turn = Turn(1, TestFactory.computerPlayer);
+      var turn = Turn(1, TestFactory.topPlayer);
       when(mockedGameContext.lastTurn).thenReturn(turn);
-      when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.computerPlayer);
+      when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.topPlayer);
 
       applicationBlocDelegate.onTransition(
           Mocks.gameBloc,
@@ -75,12 +75,12 @@ void main() {
             nextState: PlayerPassed(mockedGameContext),
           ));
 
-      verify(Mocks.takeOrPassDialogBloc.add(ComputerPlayerTurn(TestFactory.computerPlayer, turn)));
+      verify(Mocks.takeOrPassDialogBloc.add(ComputerPlayerTurn(TestFactory.topPlayer, turn)));
     });
 
     test('displays take of pass dialog when player is real player', () {
       var mockedGameContext = MockGameContext();
-      var turn = Turn(1, TestFactory.computerPlayer)..card = Card(CardColor.Heart, CardHead.Ace);
+      var turn = Turn(1, TestFactory.topPlayer)..card = Card(CardColor.Heart, CardHead.Ace);
 
       when(mockedGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
       when(mockedGameContext.lastTurn).thenReturn(turn);
@@ -135,7 +135,7 @@ void main() {
       var card = TestFactory.cards[0];
       var mockGameContext = MockGameContext();
 
-      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.computerPlayer);
+      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.topPlayer);
       when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([card]);
 
       applicationBlocDelegate.onTransition(
@@ -147,8 +147,8 @@ void main() {
           ));
 
       verify(mockGameContext.nextCardPlayer());
-      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.computerPlayer));
-      verify(Mocks.gameBloc.add(PlayCardForAi(TestFactory.computerPlayer, [card])));
+      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.topPlayer));
+      verify(Mocks.gameBloc.add(PlayCardForAi(TestFactory.topPlayer, [card])));
     });
   });
 
@@ -176,7 +176,7 @@ void main() {
       var card = TestFactory.cards[0];
       var mockGameContext = MockGameContext();
 
-      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.computerPlayer);
+      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.topPlayer);
       when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([card]);
 
       applicationBlocDelegate.onTransition(
@@ -188,8 +188,8 @@ void main() {
           ));
 
       verify(mockGameContext.nextCardPlayer());
-      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.computerPlayer));
-      verify(Mocks.gameBloc.add(PlayCardForAi(TestFactory.computerPlayer, [card])));
+      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.topPlayer));
+      verify(Mocks.gameBloc.add(PlayCardForAi(TestFactory.topPlayer, [card])));
     });
 
     test('triggers a EndCardRound when next card player null', () async {

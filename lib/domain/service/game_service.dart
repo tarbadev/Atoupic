@@ -20,9 +20,9 @@ class GameService {
     PlayerService playerService = Container().resolve();
     Player realPlayer = playerService.buildRealPlayer();
     List<Player> players = [
-      playerService.buildComputerPlayer(Position.Left),
-      playerService.buildComputerPlayer(Position.Top),
-      playerService.buildComputerPlayer(Position.Right),
+      playerService.buildComputerPlayer(Position.Left, 'Lillian'),
+      playerService.buildComputerPlayer(Position.Top, 'Samuel'),
+      playerService.buildComputerPlayer(Position.Right, 'Olivia'),
       realPlayer
     ];
 

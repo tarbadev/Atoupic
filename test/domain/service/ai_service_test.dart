@@ -122,7 +122,7 @@ void main() {
                   Card(CardColor.Heart, CardHead.King),
                 ];
                 turn.cardRounds = [
-                  CartRound(Player(Position.Left))
+                  CartRound(TestFactory.leftPlayer)
                     ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ace)
                     ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.Seven)
                 ];

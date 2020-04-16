@@ -2,6 +2,8 @@ import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../helper/test_factory.dart';
+
 void main() {
   group('Player', () {
     group('sortCards', () {
@@ -16,7 +18,7 @@ void main() {
           Card(CardColor.Heart, CardHead.Eight),
           Card(CardColor.Heart, CardHead.Seven),
         ];
-        var player = Player(Position.Right)
+        var player = TestFactory.rightPlayer
           ..cards = (cards.toList()
             ..shuffle());
         expect(player.cards, isNot(cards));
@@ -47,7 +49,7 @@ void main() {
           Card(CardColor.Spade, CardHead.Eight),
           Card(CardColor.Spade, CardHead.Seven),
         ];
-        var player = Player(Position.Right)
+        var player = TestFactory.rightPlayer
           ..cards = (cards.toList()
             ..shuffle());
         expect(player.cards, isNot(cards));

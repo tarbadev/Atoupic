@@ -13,12 +13,13 @@ extension PositionExtension on Position {
 class Player extends Equatable {
   final bool isRealPlayer;
   final Position position;
+  final String name;
   List<Card> cards;
 
-  Player(this.position, {this.isRealPlayer = false});
+  Player(this.position, this.name, {this.isRealPlayer = false});
 
   @override
-  List<Object> get props => [isRealPlayer, position, cards];
+  List<Object> get props => [isRealPlayer, position, cards, name];
 
   @override
   bool get stringify => true;

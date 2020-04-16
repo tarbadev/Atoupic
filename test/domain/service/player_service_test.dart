@@ -23,8 +23,8 @@ void main() {
     });
 
     test('buildComputerPlayer returns a player', () {
-      var expectedPlayer = Player(Position.Top);
-      var actualPlayer = playerService.buildComputerPlayer(Position.Top);
+      var expectedPlayer = TestFactory.topPlayer;
+      var actualPlayer = playerService.buildComputerPlayer(Position.Top, expectedPlayer.name);
 
       expect(actualPlayer, expectedPlayer);
     });

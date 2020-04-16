@@ -42,7 +42,7 @@ void main() {
       'emits SoloGameInitialized() state on StartSoloGame event',
       build: () async => gameBloc,
       act: (bloc) async {
-        var firstPlayer = TestFactory.computerPlayer;
+        var firstPlayer = TestFactory.topPlayer;
         var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
 
         when(Mocks.gameService.startSoloGame()).thenReturn(gameContext);
@@ -177,7 +177,7 @@ void main() {
           when(mockGameContext.lastTurn).thenReturn(turn);
           when(mockGameContext.setCardDecision(any, any)).thenReturn(updatedGameContext);
 
-          bloc.add(PlayCardForAi(TestFactory.computerPlayer, cards));
+          bloc.add(PlayCardForAi(TestFactory.topPlayer, cards));
 
           await untilCalled(Mocks.atoupicGame.setLastCardPlayed(any, any, any));
           var callback = verify(Mocks.atoupicGame.setLastCardPlayed(card, Position.Top, captureAny))
@@ -189,7 +189,7 @@ void main() {
         verify: (_) async {
           verify(Mocks.gameService.read());
           verify(Mocks.aiService.chooseCard(cards, turn, true));
-          verify(mockGameContext.setCardDecision(card, TestFactory.computerPlayer));
+          verify(mockGameContext.setCardDecision(card, TestFactory.topPlayer));
           verify(Mocks.gameService.save(updatedGameContext));
         },
       );
@@ -266,7 +266,7 @@ void main() {
           List<CartRound> cardRounds = List();
 
           for (int i = 0; i <= 7; i++) {
-            cardRounds.add(CartRound(Player(Position.Top))
+            cardRounds.add(CartRound(TestFactory.topPlayer)
               ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
               ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
               ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
@@ -277,7 +277,7 @@ void main() {
           when(mockGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayer]));
           when(mockGameContext.turns).thenReturn(UnmodifiableListView([
             Turn(1, null)
-              ..turnResult = TurnResult(Player(Position.Top), 102, 50, Result.Failure, 162, 0),
+              ..turnResult = TurnResult(TestFactory.topPlayer, 102, 50, Result.Failure, 162, 0),
             mockTurn,
           ]));
           when(mockGameContext.lastTurn).thenReturn(mockTurn);
@@ -312,7 +312,7 @@ void main() {
           List<CartRound> cardRounds = List();
 
           for (int i = 0; i <= 7; i++) {
-            cardRounds.add(CartRound(Player(Position.Top))
+            cardRounds.add(CartRound(TestFactory.topPlayer)
               ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
               ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
               ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
@@ -323,7 +323,7 @@ void main() {
           when(mockGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayer]));
           when(mockGameContext.turns).thenReturn(UnmodifiableListView([
             Turn(1, null)
-              ..turnResult = TurnResult(Player(Position.Top), 102, 50, Result.Failure, 462, 0),
+              ..turnResult = TurnResult(TestFactory.topPlayer, 102, 50, Result.Failure, 462, 0),
             mockTurn,
           ]));
           when(mockGameContext.lastTurn).thenReturn(mockTurn);
@@ -355,7 +355,7 @@ void main() {
           List<CartRound> cardRounds = List();
 
           for (int i = 0; i <= 7; i++) {
-            cardRounds.add(CartRound(Player(Position.Top))
+            cardRounds.add(CartRound(TestFactory.topPlayer)
               ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
               ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
               ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
@@ -366,7 +366,7 @@ void main() {
           when(mockGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayer]));
           when(mockGameContext.turns).thenReturn(UnmodifiableListView([
             Turn(1, null)
-              ..turnResult = TurnResult(Player(Position.Top), 50, 102, Result.Failure, 0, 462),
+              ..turnResult = TurnResult(TestFactory.topPlayer, 50, 102, Result.Failure, 0, 462),
             mockTurn,
           ]));
           when(mockGameContext.lastTurn).thenReturn(mockTurn);

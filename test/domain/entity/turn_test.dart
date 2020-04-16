@@ -15,7 +15,7 @@ void main() {
 
     setUp(() {
       players = TestFactory.gameContext.players;
-      firstPlayer = TestFactory.computerPlayer;
+      firstPlayer = TestFactory.topPlayer;
     });
 
     group('calculatePoints', () {
@@ -26,7 +26,7 @@ void main() {
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Club
             ..cardRounds = [
-              CartRound(Player(Position.Top))
+              CartRound(TestFactory.topPlayer)
                 ..playedCards[Position.Top] =
                     Card(CardColor.Spade, CardHead.Jack)
                 ..playedCards[Position.Right] =
@@ -49,7 +49,7 @@ void main() {
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Spade
             ..cardRounds = [
-              CartRound(Player(Position.Top))
+              CartRound(TestFactory.topPlayer)
                 ..playedCards[Position.Top] =
                     Card(CardColor.Spade, CardHead.Jack)
                 ..playedCards[Position.Right] =
@@ -72,7 +72,7 @@ void main() {
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Spade
             ..cardRounds = [
-              CartRound(Player(Position.Top)) // 35
+              CartRound(TestFactory.topPlayer) // 35
                 ..playedCards[Position.Top] =
                     Card(CardColor.Spade, CardHead.Jack)
                 ..playedCards[Position.Right] =
@@ -81,7 +81,7 @@ void main() {
                     Card(CardColor.Spade, CardHead.Ace)
                 ..playedCards[Position.Left] =
                     Card(CardColor.Spade, CardHead.Seven),
-              CartRound(Player(Position.Top)) // 27
+              CartRound(TestFactory.topPlayer) // 27
                 ..playedCards[Position.Top] =
                     Card(CardColor.Spade, CardHead.Nine)
                 ..playedCards[Position.Right] =
@@ -90,7 +90,7 @@ void main() {
                     Card(CardColor.Heart, CardHead.Queen)
                 ..playedCards[Position.Left] =
                     Card(CardColor.Diamond, CardHead.Seven),
-              CartRound(Player(Position.Top)) // 17
+              CartRound(TestFactory.topPlayer) // 17
                 ..playedCards[Position.Top] =
                 Card(CardColor.Heart, CardHead.Eight)
                 ..playedCards[Position.Right] =
@@ -99,7 +99,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.King)
                 ..playedCards[Position.Left] =
                 Card(CardColor.Heart, CardHead.Jack),
-              CartRound(Player(Position.Top)) // 27
+              CartRound(TestFactory.topPlayer) // 27
                 ..playedCards[Position.Top] =
                     Card(CardColor.Diamond, CardHead.Ace)
                 ..playedCards[Position.Right] =
@@ -122,7 +122,7 @@ void main() {
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Spade
             ..cardRounds = [
-              CartRound(Player(Position.Top)) // 35
+              CartRound(TestFactory.topPlayer) // 35
                 ..playedCards[Position.Top] =
                 Card(CardColor.Spade, CardHead.Jack)
                 ..playedCards[Position.Right] =
@@ -131,7 +131,7 @@ void main() {
                 Card(CardColor.Spade, CardHead.Ace)
                 ..playedCards[Position.Left] =
                 Card(CardColor.Spade, CardHead.Seven),
-              CartRound(Player(Position.Top)) // 27
+              CartRound(TestFactory.topPlayer) // 27
                 ..playedCards[Position.Top] =
                 Card(CardColor.Spade, CardHead.Nine)
                 ..playedCards[Position.Right] =
@@ -140,7 +140,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.Queen)
                 ..playedCards[Position.Left] =
                 Card(CardColor.Diamond, CardHead.Seven),
-              CartRound(Player(Position.Top)) // 27
+              CartRound(TestFactory.topPlayer) // 27
                 ..playedCards[Position.Top] =
                 Card(CardColor.Diamond, CardHead.Ace)
                 ..playedCards[Position.Right] =
@@ -163,7 +163,7 @@ void main() {
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Spade
             ..cardRounds = [
-              CartRound(Player(Position.Left)) // H35
+              CartRound(TestFactory.leftPlayer) // H35
                 ..playedCards[Position.Left] =
                 Card(CardColor.Spade, CardHead.Jack)
                 ..playedCards[Position.Top] =
@@ -172,7 +172,7 @@ void main() {
                 Card(CardColor.Spade, CardHead.King)
                 ..playedCards[Position.Bottom] =
                 Card(CardColor.Spade, CardHead.Ace),
-              CartRound(Player(Position.Top)) // H15
+              CartRound(TestFactory.topPlayer) // H15
                 ..playedCards[Position.Top] =
                 Card(CardColor.Diamond, CardHead.Nine)
                 ..playedCards[Position.Right] =
@@ -181,7 +181,7 @@ void main() {
                 Card(CardColor.Diamond, CardHead.Seven)
                 ..playedCards[Position.Left] =
                 Card(CardColor.Diamond, CardHead.Ace),
-              CartRound(Player(Position.Left)) // H35
+              CartRound(TestFactory.leftPlayer) // H35
                 ..playedCards[Position.Left] =
                 Card(CardColor.Heart, CardHead.Nine)
                 ..playedCards[Position.Top] =
@@ -201,7 +201,7 @@ void main() {
 
       group('when taker is horizontal', () {
         setUp(() {
-          firstPlayer = Player(Position.Left);
+          firstPlayer = TestFactory.leftPlayer;
         });
 
         test('when last round adds 10 points', () {
@@ -210,7 +210,7 @@ void main() {
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Club
             ..cardRounds = [
-              CartRound(Player(Position.Left))
+              CartRound(TestFactory.leftPlayer)
                 ..playedCards[Position.Left] =
                     Card(CardColor.Spade, CardHead.Jack)
                 ..playedCards[Position.Top] =
@@ -233,7 +233,7 @@ void main() {
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Spade
             ..cardRounds = [
-              CartRound(Player(Position.Left))
+              CartRound(TestFactory.leftPlayer)
                 ..playedCards[Position.Left] =
                 Card(CardColor.Spade, CardHead.Jack)
                 ..playedCards[Position.Top] =
@@ -256,7 +256,7 @@ void main() {
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Spade
             ..cardRounds = [
-              CartRound(Player(Position.Left)) // H35
+              CartRound(TestFactory.leftPlayer) // H35
                 ..playedCards[Position.Left] =
                 Card(CardColor.Spade, CardHead.Jack)
                 ..playedCards[Position.Top] =
@@ -265,7 +265,7 @@ void main() {
                     Card(CardColor.Spade, CardHead.King)
                 ..playedCards[Position.Bottom] =
                     Card(CardColor.Spade, CardHead.Ace),
-              CartRound(Player(Position.Left)) // V27
+              CartRound(TestFactory.leftPlayer) // V27
                 ..playedCards[Position.Left] =
                 Card(CardColor.Diamond, CardHead.Seven)
                 ..playedCards[Position.Top] =
@@ -274,7 +274,7 @@ void main() {
                     Card(CardColor.Spade, CardHead.Ten)
                 ..playedCards[Position.Bottom] =
                     Card(CardColor.Heart, CardHead.Queen),
-              CartRound(Player(Position.Top)) // H15
+              CartRound(TestFactory.topPlayer) // H15
                 ..playedCards[Position.Top] =
                     Card(CardColor.Diamond, CardHead.Nine)
                 ..playedCards[Position.Right] =
@@ -283,7 +283,7 @@ void main() {
                     Card(CardColor.Diamond, CardHead.Seven)
                 ..playedCards[Position.Left] =
                     Card(CardColor.Diamond, CardHead.Ace),
-              CartRound(Player(Position.Left)) // H35
+              CartRound(TestFactory.leftPlayer) // H35
                 ..playedCards[Position.Left] =
                 Card(CardColor.Heart, CardHead.Nine)
                 ..playedCards[Position.Top] =
@@ -306,7 +306,7 @@ void main() {
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Spade
             ..cardRounds = [
-              CartRound(Player(Position.Left)) // H35
+              CartRound(TestFactory.leftPlayer) // H35
                 ..playedCards[Position.Left] =
                 Card(CardColor.Spade, CardHead.Jack)
                 ..playedCards[Position.Top] =
@@ -315,7 +315,7 @@ void main() {
                 Card(CardColor.Spade, CardHead.King)
                 ..playedCards[Position.Bottom] =
                 Card(CardColor.Spade, CardHead.Ace),
-              CartRound(Player(Position.Top)) // H15
+              CartRound(TestFactory.topPlayer) // H15
                 ..playedCards[Position.Top] =
                 Card(CardColor.Diamond, CardHead.Nine)
                 ..playedCards[Position.Right] =
@@ -324,7 +324,7 @@ void main() {
                 Card(CardColor.Diamond, CardHead.Seven)
                 ..playedCards[Position.Left] =
                 Card(CardColor.Diamond, CardHead.Ace),
-              CartRound(Player(Position.Left)) // H35
+              CartRound(TestFactory.leftPlayer) // H35
                 ..playedCards[Position.Left] =
                 Card(CardColor.Heart, CardHead.Nine)
                 ..playedCards[Position.Top] =
@@ -347,7 +347,7 @@ void main() {
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Spade
             ..cardRounds = [
-              CartRound(Player(Position.Top)) // 35
+              CartRound(TestFactory.topPlayer) // 35
                 ..playedCards[Position.Top] =
                 Card(CardColor.Spade, CardHead.Jack)
                 ..playedCards[Position.Right] =
@@ -356,7 +356,7 @@ void main() {
                 Card(CardColor.Spade, CardHead.Ace)
                 ..playedCards[Position.Left] =
                 Card(CardColor.Spade, CardHead.Seven),
-              CartRound(Player(Position.Top)) // 27
+              CartRound(TestFactory.topPlayer) // 27
                 ..playedCards[Position.Top] =
                 Card(CardColor.Spade, CardHead.Nine)
                 ..playedCards[Position.Right] =
@@ -365,7 +365,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.Queen)
                 ..playedCards[Position.Left] =
                 Card(CardColor.Diamond, CardHead.Seven),
-              CartRound(Player(Position.Top)) // 27
+              CartRound(TestFactory.topPlayer) // 27
                 ..playedCards[Position.Top] =
                 Card(CardColor.Diamond, CardHead.Ace)
                 ..playedCards[Position.Right] =

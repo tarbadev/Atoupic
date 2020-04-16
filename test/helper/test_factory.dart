@@ -42,21 +42,23 @@ abstract class TestFactory {
         Card(CardColor.Diamond, CardHead.Ace),
       ];
 
-  static Player get realPlayer => Player(Position.Bottom, isRealPlayer: true);
+  static Player get realPlayer => Player(Position.Bottom, '', isRealPlayer: true);
 
-  static Player get computerPlayer => Player(Position.Top);
+  static Player get leftPlayer => Player(Position.Left, 'Lillian');
+  static Player get topPlayer => Player(Position.Top, 'Samuel');
+  static Player get rightPlayer => Player(Position.Right, 'Olivia');
 
   static Player realPlayerWithCards(List<Card> cards) =>
-      Player(Position.Bottom, isRealPlayer: true)..cards = cards;
+      Player(Position.Bottom, '', isRealPlayer: true)..cards = cards;
 
-  static TurnResult get turnResult => TurnResult(Player(Position.Left), 102, 50, Result.Success, 102, 50);
+  static TurnResult get turnResult => TurnResult(Player(Position.Left, ''), 102, 50, Result.Success, 102, 50);
 
   static GameContext get gameContext => GameContext([
-        Player(Position.Left),
-        Player(Position.Top),
-        Player(Position.Right),
+        leftPlayer,
+        topPlayer,
+        rightPlayer,
         realPlayerWithCards([Card(CardColor.Heart, CardHead.Ace)])
       ], [
-        Turn(1, Player(Position.Top))
+        Turn(1, topPlayer)
       ]);
 }

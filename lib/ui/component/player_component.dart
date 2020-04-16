@@ -4,6 +4,7 @@ import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/ui/component/card_component.dart';
 import 'package:atoupic/ui/component/passed_caption.dart';
+import 'package:atoupic/ui/component/player_name.dart';
 import 'package:atoupic/ui/component/trump_color.dart';
 import 'package:flame/anchor.dart';
 import 'package:flame/components/component.dart';
@@ -24,11 +25,14 @@ class PlayerComponent extends PositionComponent
   PassedCaption _passedCaption;
   bool _shouldDestroy = false;
   TrumpColor _trumpColor;
+  PlayerName _playerName;
 
   set passed(bool newPassed) => _passedCaption.visible = newPassed;
 
-  PlayerComponent(this.player, this.position, this.isRealPlayer) {
+  PlayerComponent(this.player, this.position, this.isRealPlayer, String name) {
+    _playerName = PlayerName(name);
     _passedCaption = PassedCaption();
+    add(_playerName);
     add(_passedCaption);
   }
 
@@ -121,14 +125,33 @@ class PlayerComponent extends PositionComponent
       card.playedCardTarget = playedCardTarget;
     });
 
+    _resizePlayerName(size);
     _resizeTrumpColor(cardX, initialX, size, fullDeckWidth, cardWidth, cardHeight);
-    _resizePassedCaption(cardX, cardY, cardHeight, fullDeckWidth, cardWidth, size);
+    _resizePassedCaption(size);
 
     super.resize(size);
   }
 
-  void _resizePassedCaption(
-      double cardX, double cardY, double cardHeight, double fullDeckWidth, double cardWidth, Size size) {
+  void _resizePlayerName(Size size) {
+    if (position == Position.Top) {
+      _playerName
+        ..anchor = Anchor.topCenter
+        ..x = size.width / 2
+        ..y = 10;
+    } else if (position == Position.Left) {
+      _playerName
+        ..anchor = Anchor.bottomLeft
+        ..x = 10
+        ..y = size.height / 2 - 5;
+    } else if (position == Position.Right) {
+      _playerName
+        ..anchor = Anchor.bottomRight
+        ..x = size.width - 10
+        ..y = size.height / 2 - 5;
+    }
+  }
+
+  void _resizePassedCaption(Size size) {
     if (position == Position.Top) {
       _passedCaption
         ..anchor = Anchor.topCenter
@@ -136,12 +159,12 @@ class PlayerComponent extends PositionComponent
         ..y = 10;
     } else if (position == Position.Left) {
       _passedCaption
-        ..anchor = Anchor.centerLeft
+        ..anchor = Anchor.topLeft
         ..x = 10
         ..y = size.height / 2;
     } else if (position == Position.Right) {
       _passedCaption
-        ..anchor = Anchor.centerRight
+        ..anchor = Anchor.topRight
         ..x = size.width - 10
         ..y = size.height / 2;
     }
@@ -160,8 +183,8 @@ class PlayerComponent extends PositionComponent
         case Position.Top:
           _trumpColor
             ..anchor = Anchor.topLeft
-            ..x = cardX - fullDeckWidth
-            ..y = 0;
+            ..x = _playerName.x + (_playerName.width / 2)
+            ..y = _playerName.y;
           break;
         case Position.Bottom:
           _trumpColor
@@ -171,15 +194,15 @@ class PlayerComponent extends PositionComponent
           break;
         case Position.Left:
           _trumpColor
-            ..anchor = Anchor.centerLeft
-            ..x = (cardHeight * .25) + 10
-            ..y = size.height / 2;
+            ..anchor = _playerName.anchor
+            ..x = _playerName.x + _playerName.width
+            ..y = _playerName.y;
           break;
         case Position.Right:
           _trumpColor
-            ..anchor = Anchor.centerRight
-            ..x = size.width - (cardHeight * .25) - 10
-            ..y = size.height / 2;
+            ..anchor = _playerName.anchor
+            ..x = _playerName.x - _playerName.width
+            ..y = _playerName.y;
           break;
       }
     }
@@ -190,6 +213,7 @@ class PlayerComponent extends PositionComponent
       player,
       player.position,
       player.isRealPlayer,
+      player.name,
     );
   }
 
@@ -213,7 +237,9 @@ class PlayerComponent extends PositionComponent
     cards.addAll(newCards);
     newCards.forEach((newCard) => add(newCard));
 
+    components.remove(_playerName);
     components.remove(_passedCaption);
+    add(_playerName);
     add(_passedCaption);
   }
 
@@ -232,7 +258,7 @@ class PlayerComponent extends PositionComponent
 
     components.remove(cardToPlay);
     add(cardToPlay);
-    
+
     cardToPlay.angle = 0;
     cardToPlay.fullyDisplayed = true;
     cardToPlay.animateStart = DateTime.now();

@@ -35,14 +35,14 @@ void main() {
         gameService.startSoloGame();
 
         verifyInOrder([
-          Mocks.playerService.buildComputerPlayer(Position.Left),
-          Mocks.playerService.buildComputerPlayer(Position.Top),
-          Mocks.playerService.buildComputerPlayer(Position.Right),
+          Mocks.playerService.buildComputerPlayer(Position.Left, 'Lillian'),
+          Mocks.playerService.buildComputerPlayer(Position.Top, 'Samuel'),
+          Mocks.playerService.buildComputerPlayer(Position.Right, 'Olivia'),
         ]);
       });
 
       test('sets the random first current player and saves the game context', () {
-        var computerPlayer = Player(Position.Top);
+        var computerPlayer = TestFactory.topPlayer;
         List<Player> players = [
           computerPlayer,
           computerPlayer,
@@ -50,7 +50,7 @@ void main() {
           TestFactory.realPlayer
         ];
         when(Mocks.playerService.buildRealPlayer()).thenReturn(TestFactory.realPlayer);
-        when(Mocks.playerService.buildComputerPlayer(any)).thenReturn(computerPlayer);
+        when(Mocks.playerService.buildComputerPlayer(any, any)).thenReturn(computerPlayer);
         var returnedGameContext = gameService.startSoloGame();
 
         GameContext savedGameContext =
@@ -65,8 +65,8 @@ void main() {
       test('returns the saved context', () {
         var gameContext = MockGameContext();
         var savedGameContext = GameContext(
-          [TestFactory.computerPlayer, TestFactory.realPlayer],
-          [Turn(1, TestFactory.computerPlayer)],
+          [TestFactory.topPlayer, TestFactory.realPlayer],
+          [Turn(1, TestFactory.topPlayer)],
         );
 
         when(Mocks.gameContextRepository.save(any)).thenReturn(savedGameContext);
@@ -80,8 +80,8 @@ void main() {
     group('read', () {
       test('returns the read context', () {
         var readGameContext = GameContext(
-          [TestFactory.computerPlayer, TestFactory.realPlayer],
-          [Turn(1, TestFactory.computerPlayer)],
+          [TestFactory.topPlayer, TestFactory.realPlayer],
+          [Turn(1, TestFactory.topPlayer)],
         );
 
         when(Mocks.gameContextRepository.read()).thenReturn(readGameContext);
@@ -95,7 +95,7 @@ void main() {
     group('startTurn', () {
       test('returns the new turn when turnAlreadyCreated is false', () {
         GameContext mockedGameContext = MockGameContext();
-        var turn = Turn(1, TestFactory.computerPlayer);
+        var turn = Turn(1, TestFactory.topPlayer);
         var readGameContext = GameContext([TestFactory.realPlayer], [turn]);
 
         when(mockedGameContext.nextTurn()).thenReturn(readGameContext);
@@ -111,7 +111,7 @@ void main() {
 
       test('returns the new turn when turnAlreadyCreated is true', () {
         GameContext mockedGameContext = MockGameContext();
-        var turn = Turn(1, TestFactory.computerPlayer);
+        var turn = Turn(1, TestFactory.topPlayer);
 
         when(Mocks.gameContextRepository.read()).thenReturn(mockedGameContext);
         when(mockedGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayer]));
@@ -128,7 +128,7 @@ void main() {
       test('distributes cards to players and sorts real players cards', () {
         Player mockedPlayer = MockPlayer();
         Player mockedRealPlayer = MockPlayer();
-        var turn = Turn(1, TestFactory.computerPlayer);
+        var turn = Turn(1, TestFactory.topPlayer);
         GameContext gameContext = GameContext([mockedPlayer, mockedRealPlayer], [turn]);
         var cards = [TestFactory.cards[0]];
 
@@ -148,8 +148,8 @@ void main() {
 
       test('distributes 1 card to display and stores new gameContext', () {
         var cards = [TestFactory.cards[0]];
-        var turn = Turn(1, TestFactory.computerPlayer);
-        var newTurn = Turn(1, TestFactory.computerPlayer)..card = TestFactory.cards[0];
+        var turn = Turn(1, TestFactory.topPlayer);
+        var newTurn = Turn(1, TestFactory.topPlayer)..card = TestFactory.cards[0];
         GameContext gameContext = GameContext([TestFactory.realPlayer], [turn]);
         GameContext newGameContext =
             GameContext([TestFactory.realPlayerWithCards(cards)], [newTurn]);

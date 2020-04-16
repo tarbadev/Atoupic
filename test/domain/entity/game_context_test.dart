@@ -12,11 +12,11 @@ void main() {
   group('GameContext', () {
     group('setDecision', () {
       test('stores the players decision', () {
-        var firstPlayer = TestFactory.computerPlayer;
+        var firstPlayer = TestFactory.topPlayer;
         List<Player> players = [
-          Player(Position.Left),
+          TestFactory.leftPlayer,
           firstPlayer,
-          Player(Position.Right),
+          TestFactory.rightPlayer,
           TestFactory.realPlayer
         ];
         var gameContext = GameContext(players, [Turn(1, firstPlayer)]);
@@ -27,10 +27,10 @@ void main() {
 
     group('nextPlayer', () {
       test('when no decision yet returns the first player', () {
-        var firstPlayer = TestFactory.computerPlayer;
+        var firstPlayer = TestFactory.topPlayer;
         List<Player> players = [
-          Player(Position.Left),
-          Player(Position.Right),
+          TestFactory.leftPlayer,
+          TestFactory.rightPlayer,
           firstPlayer,
           TestFactory.realPlayer,
         ];
@@ -39,10 +39,10 @@ void main() {
       });
 
       test('when next player is after the first player', () {
-        var firstPlayer = TestFactory.computerPlayer;
+        var firstPlayer = TestFactory.topPlayer;
         List<Player> players = [
-          Player(Position.Left),
-          Player(Position.Right),
+          TestFactory.leftPlayer,
+          TestFactory.rightPlayer,
           firstPlayer,
           TestFactory.realPlayer,
         ];
@@ -54,11 +54,11 @@ void main() {
       });
 
       test('when next player is first players list', () {
-        var firstPlayer = TestFactory.computerPlayer;
+        var firstPlayer = TestFactory.topPlayer;
         List<Player> players = [
           TestFactory.realPlayer,
-          Player(Position.Left),
-          Player(Position.Right),
+          TestFactory.leftPlayer,
+          TestFactory.rightPlayer,
           firstPlayer,
         ];
         var gameContext = GameContext(
@@ -69,9 +69,9 @@ void main() {
       });
 
       test('when other players already passed', () {
-        var firstPlayer = TestFactory.computerPlayer;
-        var secondPlayer = Player(Position.Left);
-        var thirdPlayer = Player(Position.Right);
+        var firstPlayer = TestFactory.topPlayer;
+        var secondPlayer = TestFactory.leftPlayer;
+        var thirdPlayer = TestFactory.rightPlayer;
         List<Player> players = [
           thirdPlayer,
           TestFactory.realPlayer,
@@ -88,9 +88,9 @@ void main() {
       });
 
       test('when all passed return null', () {
-        var firstPlayer = TestFactory.computerPlayer;
-        var secondPlayer = Player(Position.Left);
-        var thirdPlayer = Player(Position.Right);
+        var firstPlayer = TestFactory.topPlayer;
+        var secondPlayer = TestFactory.leftPlayer;
+        var thirdPlayer = TestFactory.rightPlayer;
         List<Player> players = [
           thirdPlayer,
           TestFactory.realPlayer,
@@ -110,7 +110,7 @@ void main() {
 
     group('nextRound', () {
       test('when round is 1 changes the round to 2', () {
-        var turn = Turn(1, TestFactory.computerPlayer)
+        var turn = Turn(1, TestFactory.topPlayer)
           ..playerDecisions[TestFactory.realPlayer.position] = Decision.Pass;
         var gameContext = GameContext([], [turn]);
         var newGameContext = gameContext.nextRound();
@@ -121,15 +121,15 @@ void main() {
 
     group('nextTurn', () {
       test('returns new gameContext with new turn and first player', () {
-        var turn = Turn(1, TestFactory.computerPlayer);
-        var gameContext = GameContext([TestFactory.computerPlayer, TestFactory.realPlayer], [turn]);
+        var turn = Turn(1, TestFactory.topPlayer);
+        var gameContext = GameContext([TestFactory.topPlayer, TestFactory.realPlayer], [turn]);
         var newGameContext = gameContext.nextTurn();
         expect(newGameContext.turns[1], Turn(2, TestFactory.realPlayer));
       });
 
       test('when first player is last in players list', () {
-        var turn = Turn(1, TestFactory.computerPlayer);
-        var gameContext = GameContext([TestFactory.realPlayer, TestFactory.computerPlayer], [turn]);
+        var turn = Turn(1, TestFactory.topPlayer);
+        var gameContext = GameContext([TestFactory.realPlayer, TestFactory.topPlayer], [turn]);
         var newGameContext = gameContext.nextTurn();
         expect(newGameContext.turns[1], Turn(2, TestFactory.realPlayer));
       });
@@ -173,7 +173,7 @@ void main() {
         test('adds a new CardRound with the highest card player', () {
           var gameContext = TestFactory.gameContext
             ..lastTurn.cardRounds = [
-              CartRound(Player(Position.Top))
+              CartRound(TestFactory.topPlayer)
                 ..playedCards[TestFactory.realPlayer.position] =
                 Card(CardColor.Heart, CardHead.Eight)
                 ..playedCards[Position.Right] = Card(CardColor.Heart, CardHead.King)
@@ -183,14 +183,14 @@ void main() {
           var newGameContext = gameContext.newCardRound();
           expect(
             newGameContext.turns[0].cardRounds[1],
-            CartRound(Player(Position.Right)),
+            CartRound(TestFactory.rightPlayer),
           );
         });
 
         test('and only card of the requested color adds a new CardRound with the first player', () {
           var gameContext = TestFactory.gameContext
             ..lastTurn.cardRounds = [
-              CartRound(Player(Position.Top))
+              CartRound(TestFactory.topPlayer)
                 ..playedCards[TestFactory.realPlayer.position] =
                 Card(CardColor.Heart, CardHead.Eight)
                 ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
@@ -200,7 +200,7 @@ void main() {
           var newGameContext = gameContext.newCardRound();
           expect(
             newGameContext.turns[0].cardRounds[1],
-            CartRound(Player(Position.Top)),
+            CartRound(TestFactory.topPlayer),
           );
         });
 
@@ -209,7 +209,7 @@ void main() {
               var gameContext = TestFactory.gameContext
                 ..lastTurn.trumpColor = CardColor.Club
                 ..lastTurn.cardRounds = [
-                  CartRound(Player(Position.Top))
+                  CartRound(TestFactory.topPlayer)
                     ..playedCards[TestFactory.realPlayer.position] =
                     Card(CardColor.Heart, CardHead.Eight)
                     ..playedCards[Position.Right] = Card(CardColor.Heart, CardHead.King)
@@ -219,7 +219,7 @@ void main() {
               var newGameContext = gameContext.newCardRound();
               expect(
                 newGameContext.turns[0].cardRounds[1],
-                CartRound(Player(Position.Left)),
+                CartRound(TestFactory.leftPlayer),
               );
             });
       });
@@ -227,7 +227,7 @@ void main() {
 
     group('nextCardPlayer', () {
       test('returns firstPlayer when no card played', () {
-        var firstPlayer = TestFactory.computerPlayer;
+        var firstPlayer = TestFactory.topPlayer;
         var gameContext = GameContext([
           TestFactory.realPlayer,
           firstPlayer
@@ -243,10 +243,10 @@ void main() {
       });
 
       test('returns next player when firstplayer already played', () {
-        var firstPlayer = TestFactory.computerPlayer;
-        var player = Player(Position.Right);
+        var firstPlayer = TestFactory.topPlayer;
+        var player = TestFactory.rightPlayer;
         List<Player> players = [
-          Player(Position.Left),
+          TestFactory.leftPlayer,
           firstPlayer,
           player,
           TestFactory.realPlayer,
@@ -265,11 +265,11 @@ void main() {
 
       test('returns next player when firstplayer already played and firstPlayer is last in list',
               () {
-            var firstPlayer = TestFactory.computerPlayer;
-            var player = Player(Position.Right);
+            var firstPlayer = TestFactory.topPlayer;
+            var player = TestFactory.rightPlayer;
             List<Player> players = [
               player,
-              Player(Position.Left),
+              TestFactory.leftPlayer,
               TestFactory.realPlayer,
               firstPlayer,
             ];
@@ -286,11 +286,11 @@ void main() {
           });
 
       test('returns null when all cards played', () {
-        var firstPlayer = TestFactory.computerPlayer;
-        var player = Player(Position.Right);
+        var firstPlayer = TestFactory.topPlayer;
+        var player = TestFactory.rightPlayer;
         List<Player> players = [
           player,
-          Player(Position.Left),
+          TestFactory.leftPlayer,
           TestFactory.realPlayer,
           firstPlayer,
         ];
@@ -326,7 +326,7 @@ void main() {
           test('returns cards of requested color', () {
             var card1 = Card(CardColor.Heart, CardHead.Eight);
             var card2 = Card(CardColor.Heart, CardHead.Seven);
-            var player = TestFactory.computerPlayer
+            var player = TestFactory.topPlayer
               ..cards = [
                 Card(CardColor.Club, CardHead.Eight),
                 Card(CardColor.Spade, CardHead.Eight),
@@ -346,7 +346,7 @@ void main() {
               ];
             var card1 = Card(CardColor.Spade, CardHead.Ace);
             var card2 = Card(CardColor.Spade, CardHead.Jack);
-            var player = TestFactory.computerPlayer
+            var player = TestFactory.topPlayer
               ..cards = [
                 Card(CardColor.Club, CardHead.Eight),
                 Card(CardColor.Spade, CardHead.Eight),
@@ -361,7 +361,7 @@ void main() {
 
         group('when does not have card of requested color', () {
           test('returns all cards', () {
-            var player = TestFactory.computerPlayer
+            var player = TestFactory.topPlayer
               ..cards = [
                 Card(CardColor.Club, CardHead.Eight),
                 Card(CardColor.Diamond, CardHead.Eight),
@@ -374,7 +374,7 @@ void main() {
             test('returns all trump cards', () {
               gameContext.lastTurn.lastCardRound.playedCards[Position.Left] = Card(CardColor.Heart,
                   CardHead.Ace);
-              var player = TestFactory.computerPlayer
+              var player = TestFactory.topPlayer
                 ..cards = [
                   Card(CardColor.Club, CardHead.Eight),
                   Card(CardColor.Spade, CardHead.Eight),
@@ -393,7 +393,7 @@ void main() {
                   Card(CardColor.Spade, CardHead.Eight),
                   Card(CardColor.Diamond, CardHead.Eight),
                 ];
-                var player = TestFactory.computerPlayer..cards = cards;
+                var player = TestFactory.topPlayer..cards = cards;
 
                 expect(gameContext.getPossibleCardsToPlay(player), cards);
               });
@@ -403,7 +403,7 @@ void main() {
               test('and player does not have higher card returns all trump cards', () {
                 gameContext.lastTurn.lastCardRound
                   ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Nine);
-                var player = TestFactory.computerPlayer
+                var player = TestFactory.topPlayer
                   ..cards = [
                     Card(CardColor.Club, CardHead.Eight),
                     Card(CardColor.Spade, CardHead.Eight),
@@ -417,7 +417,7 @@ void main() {
               test('and player has higher card returns all higher trump cards', () {
                 gameContext.lastTurn.lastCardRound
                   ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Nine);
-                var player = TestFactory.computerPlayer
+                var player = TestFactory.topPlayer
                   ..cards = [
                     Card(CardColor.Club, CardHead.Eight),
                     Card(CardColor.Spade, CardHead.Eight),

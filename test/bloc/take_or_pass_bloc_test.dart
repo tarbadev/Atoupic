@@ -36,20 +36,20 @@ void main() {
     group('on Take event', () {
       var card = Card(CardColor.Spade, CardHead.Ace);
       var distributedCard = Card(CardColor.Heart, CardHead.Seven);
-      var firstPlayer = TestFactory.computerPlayer..cards = [];
+      var firstPlayer = TestFactory.topPlayer..cards = [];
       var realPlayer = TestFactory.realPlayer..cards = [Card(CardColor.Spade, CardHead.Jack)];
       List<Player> players = [
-        Player(Position.Left)..cards = [],
+        TestFactory.leftPlayer..cards = [],
         firstPlayer,
         realPlayer,
-        Player(Position.Right)..cards = [],
+        TestFactory.rightPlayer..cards = [],
       ];
       var updatedRealPlayer = TestFactory.realPlayer..cards = [distributedCard, Card(CardColor.Spade, CardHead.Jack), card];
       List<Player> updatedPlayers = [
-        Player(Position.Left)..cards = [distributedCard],
-        Player(Position.Top)..cards = [distributedCard],
+        TestFactory.leftPlayer..cards = [distributedCard],
+        TestFactory.topPlayer..cards = [distributedCard],
         updatedRealPlayer,
-        Player(Position.Right)..cards = [distributedCard],
+        TestFactory.rightPlayer..cards = [distributedCard],
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)..card = card]);
       var updatedGameContext = GameContext(updatedPlayers, [
@@ -87,12 +87,12 @@ void main() {
 
     group('on Pass event', () {
       var card = Card(CardColor.Club, CardHead.Ace);
-      var firstPlayer = TestFactory.computerPlayer;
+      var firstPlayer = TestFactory.topPlayer;
       List<Player> players = [
-        Player(Position.Left),
+        TestFactory.leftPlayer,
         firstPlayer,
         TestFactory.realPlayer,
-        Player(Position.Right),
+        TestFactory.rightPlayer,
       ];
       var gameContext = GameContext(players, [Turn(1, firstPlayer)..card = card]);
       var updatedGameContext = GameContext(players, [
@@ -186,9 +186,9 @@ void main() {
 
     group('on ComputerPlayerTurn event', () {
       var cards = [TestFactory.cards.first];
-      var player = TestFactory.computerPlayer..cards = cards;
+      var player = TestFactory.topPlayer..cards = cards;
       var card = Card(CardColor.Club, CardHead.King);
-      var turn = Turn(1, TestFactory.computerPlayer)..card = card;
+      var turn = Turn(1, TestFactory.topPlayer)..card = card;
       var mockGameContext = MockGameContext();
 
       blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
