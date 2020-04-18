@@ -37,7 +37,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     } else if (event is NewTurn) {
       yield CreatingTurn();
 
-      _atoupicGame.resetPlayersPassed();
+      _atoupicGame.resetPlayersDialog();
       _atoupicGame.resetTrumpColor();
       _atoupicGame.resetPlayersCards();
 
@@ -48,11 +48,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       yield TurnCreated(gameContext.lastTurn);
     } else if (event is DisplayPlayerPassedCaption) {
-      _atoupicGame.setPlayerPassed(event.position);
+      _atoupicGame.setPlayerDialogText(event.position, 'Pass!');
     } else if (event is DisplayTrumpColor) {
       _atoupicGame.setTrumpColor(event.color, event.takerPosition);
     } else if (event is ResetPlayersPassedCaption) {
-      _atoupicGame.resetPlayersPassed();
+      _atoupicGame.resetPlayersDialog();
     } else if (event is AddPlayerCards) {
       _atoupicGame.addPlayerCards(event.cards, event.position);
     } else if (event is ReplaceRealPlayersCards) {

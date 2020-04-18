@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/ui/component/player_dialog.dart';
 import 'package:atoupic/ui/component/card_component.dart';
-import 'package:atoupic/ui/component/passed_caption.dart';
 import 'package:atoupic/ui/component/player_name.dart';
 import 'package:atoupic/ui/component/trump_color.dart';
 import 'package:flame/anchor.dart';
@@ -22,18 +22,14 @@ class PlayerComponent extends PositionComponent
   final bool isRealPlayer;
   CardComponent lastPlayedCard;
   bool isDown = false;
-  PassedCaption _passedCaption;
+  PlayerDialog _playerDialog;
   bool _shouldDestroy = false;
   TrumpColor _trumpColor;
   PlayerName _playerName;
 
-  set passed(bool newPassed) => _passedCaption.visible = newPassed;
-
   PlayerComponent(this.player, this.position, this.isRealPlayer, String name) {
     _playerName = PlayerName(name);
-    _passedCaption = PassedCaption();
     add(_playerName);
-    add(_passedCaption);
   }
 
   void setToDestroy() {
@@ -127,7 +123,7 @@ class PlayerComponent extends PositionComponent
 
     _resizePlayerName(size);
     _resizeTrumpColor(cardX, initialX, size, fullDeckWidth, cardWidth, cardHeight);
-    _resizePassedCaption(size);
+    _resizePlayerDialog(size);
 
     super.resize(size);
   }
@@ -151,22 +147,24 @@ class PlayerComponent extends PositionComponent
     }
   }
 
-  void _resizePassedCaption(Size size) {
-    if (position == Position.Top) {
-      _passedCaption
-        ..anchor = Anchor.topCenter
-        ..x = size.width / 2
-        ..y = 10;
-    } else if (position == Position.Left) {
-      _passedCaption
-        ..anchor = Anchor.topLeft
-        ..x = 10
-        ..y = size.height / 2;
-    } else if (position == Position.Right) {
-      _passedCaption
-        ..anchor = Anchor.topRight
-        ..x = size.width - 10
-        ..y = size.height / 2;
+  void _resizePlayerDialog(Size size) {
+    if (_playerDialog != null) {
+      if (position == Position.Top) {
+        _playerDialog
+          ..anchor = Anchor.topCenter
+          ..x = size.width / 2
+          ..y = 10;
+      } else if (position == Position.Left) {
+        _playerDialog
+          ..anchor = Anchor.topLeft
+          ..x = 10
+          ..y = size.height / 2;
+      } else if (position == Position.Right) {
+        _playerDialog
+          ..anchor = Anchor.topRight
+          ..x = size.width - 10
+          ..y = size.height / 2;
+      }
     }
   }
 
@@ -238,9 +236,7 @@ class PlayerComponent extends PositionComponent
     newCards.forEach((newCard) => add(newCard));
 
     components.remove(_playerName);
-    components.remove(_passedCaption);
     add(_playerName);
-    add(_passedCaption);
   }
 
   void setCardsOnTapCallback(Function(Card card) callback) {
@@ -271,6 +267,22 @@ class PlayerComponent extends PositionComponent
     if (_trumpColor != null) {
       _trumpColor.shouldDestroy = true;
       _trumpColor = null;
+    }
+  }
+
+  void displayDialog(String text) {
+    _playerDialog = PlayerDialog(text);
+    components.add(_playerDialog);
+
+    resize(size);
+  }
+
+  void hideDialog() {
+    if (_playerDialog != null) {
+      components.remove(_playerDialog);
+      _playerDialog = null;
+
+      resize(size);
     }
   }
 }

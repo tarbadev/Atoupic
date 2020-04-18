@@ -69,7 +69,7 @@ void main() {
         },
         expect: [CreatingTurn(), TurnCreated(TestFactory.gameContext.lastTurn)],
         verify: (_) async {
-          verify(Mocks.atoupicGame.resetPlayersPassed());
+          verify(Mocks.atoupicGame.resetPlayersDialog());
           verify(Mocks.atoupicGame.resetTrumpColor());
           verify(Mocks.atoupicGame.resetPlayersCards());
 
@@ -90,7 +90,7 @@ void main() {
       act: (bloc) async => bloc.add(DisplayPlayerPassedCaption(Position.Left)),
       expect: [],
       verify: (_) async {
-        verify(Mocks.atoupicGame.setPlayerPassed(Position.Left));
+        verify(Mocks.atoupicGame.setPlayerDialogText(Position.Left, 'Pass!'));
       },
     );
 
@@ -100,7 +100,7 @@ void main() {
       act: (bloc) async => bloc.add(ResetPlayersPassedCaption()),
       expect: [],
       verify: (_) async {
-        verify(Mocks.atoupicGame.resetPlayersPassed());
+        verify(Mocks.atoupicGame.resetPlayersDialog());
       },
     );
 

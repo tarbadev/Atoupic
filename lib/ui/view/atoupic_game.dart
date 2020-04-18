@@ -38,8 +38,8 @@ class AtoupicGame extends BaseGame {
     });
   }
 
-  void setPlayerPassed(Position position) {
-    _players.firstWhere((player) => player.position == position).passed = true;
+  void setPlayerDialogText(Position position, String text) {
+    _players.firstWhere((player) => player.position == position).displayDialog(text);
   }
 
   void addPlayerCards(List<Card> cards, Position position) {
@@ -59,8 +59,8 @@ class AtoupicGame extends BaseGame {
     super.resize(size);
   }
 
-  void resetPlayersPassed() {
-    _players.forEach((player) => player.passed = false);
+  void resetPlayersDialog() {
+    _players.forEach((player) => player.hideDialog());
   }
 
   void replaceRealPlayersCards(List<Card> cards) {
