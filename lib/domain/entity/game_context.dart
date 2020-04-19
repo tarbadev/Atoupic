@@ -157,8 +157,9 @@ class GameContext extends Equatable {
       if (allPlayerCards.where((playerCard) => beloteCards.contains(playerCard)).length == 2) {
         return BeloteResult.Belote;
       } else if (lastTurn.cardRounds
-          .where((cardRound) => beloteCards.contains(cardRound.playedCards[player.position]))
-          .isNotEmpty) {
+              .where((cardRound) => beloteCards.contains(cardRound.playedCards[player.position]))
+              .length ==
+          2) {
         return BeloteResult.Rebelote;
       }
     }

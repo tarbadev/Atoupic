@@ -478,24 +478,30 @@ void main() {
       });
 
       test('when card is a belote card and player has the other belote card', () {
-        var gameContext =
-            GameContext([], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
-        var card = Card(CardColor.Diamond, CardHead.Queen);
         var player = TestFactory.leftPlayer..cards = [Card(CardColor.Diamond, CardHead.King)];
+        var card = Card(CardColor.Diamond, CardHead.Queen);
+        var gameContext =
+            GameContext([], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond
+              ..cardRounds = [
+                CartRound(TestFactory.leftPlayer)
+                  ..playedCards[player.position] = card
+              ]]);
         expect(gameContext.isPlayedCardBelote(card, player), BeloteResult.Belote);
       });
 
       test('when card is a belote card and player played the other belote card', () {
         var player = TestFactory.leftPlayer..cards = [];
+        var card = Card(CardColor.Diamond, CardHead.Queen);
         var gameContext = GameContext([], [
           Turn(1, TestFactory.leftPlayer)
             ..trumpColor = CardColor.Diamond
             ..cardRounds = [
               CartRound(TestFactory.leftPlayer)
+                ..playedCards[player.position] = card,
+              CartRound(TestFactory.leftPlayer)
                 ..playedCards[player.position] = Card(CardColor.Diamond, CardHead.King)
             ]
         ]);
-        var card = Card(CardColor.Diamond, CardHead.Queen);
         expect(gameContext.isPlayedCardBelote(card, player), BeloteResult.Rebelote);
       });
     });
