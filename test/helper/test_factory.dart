@@ -51,7 +51,7 @@ abstract class TestFactory {
   static Player realPlayerWithCards(List<Card> cards) =>
       Player(Position.Bottom, '', isRealPlayer: true)..cards = cards;
 
-  static TurnResult get turnResult => TurnResult(Player(Position.Left, ''), 102, 50, Result.Success, 102, 50);
+  static TurnResult get turnResult => TurnResult(leftPlayer, 102, 50, Result.Success, 102, 50);
 
   static GameContext get gameContext => GameContext([
         leftPlayer,

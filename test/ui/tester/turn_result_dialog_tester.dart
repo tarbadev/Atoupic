@@ -16,8 +16,5 @@ class TurnResultTester extends BaseViewTester {
 
   Future<void> tapOnNext() async => await tapOnButtonByKey('TurnResultDialog__NextButton');
 
-  Position get taker {
-    var takerPosition = getTextByKey('TurnResultDialog__Taker');
-    return Position.values.firstWhere((position) => takerPosition.contains(position.toString()));
-  }
+  String get taker => getTextByKey('TurnResultDialog__Taker');
 }

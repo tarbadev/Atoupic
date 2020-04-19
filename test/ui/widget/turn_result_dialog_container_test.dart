@@ -26,7 +26,7 @@ void main() {
 
       var turnResultTester = TurnResultTester(tester);
       expect(turnResultTester.isVisible, isTrue);
-      expect(turnResultTester.taker, Position.Left);
+      expect(turnResultTester.taker, 'Taker: ${TestFactory.leftPlayer.name}');
       expect(turnResultTester.win, isTrue);
       expect(turnResultTester.takerScore, 102);
       expect(turnResultTester.opponentScore, 50);

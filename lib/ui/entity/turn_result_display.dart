@@ -10,7 +10,7 @@ class TurnResultDisplay {
   TurnResultDisplay(this.taker, this.takerScore, this.opponentScore, this.result);
 
   TurnResultDisplay.fromTurnResult(TurnResult turnResult)
-      : taker = turnResult.taker.position.toString(),
+      : taker = turnResult.taker.name,
         takerScore = turnResult.taker.position.isVertical
             ? turnResult.verticalScore
             : turnResult.horizontalScore,
