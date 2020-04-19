@@ -36,7 +36,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.Ace),
               ];
               turn.cardRounds = [
-                CartRound(firstPlayer)
+                CardRound(firstPlayer)
                   ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
                   ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
               ];
@@ -51,7 +51,7 @@ void main() {
                 Card(CardColor.Diamond, CardHead.Ace),
               ];
               turn.cardRounds = [
-                CartRound(firstPlayer)
+                CardRound(firstPlayer)
                   ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
                   ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
               ];
@@ -69,7 +69,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.Ace),
               ];
               turn.cardRounds = [
-                CartRound(firstPlayer)
+                CardRound(firstPlayer)
                   ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.Nine)
               ];
 
@@ -88,7 +88,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.King),
               ];
               turn.cardRounds = [
-                CartRound(firstPlayer)
+                CardRound(firstPlayer)
                   ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Seven)
                   ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Queen)
               ];
@@ -106,7 +106,7 @@ void main() {
                 Card(CardColor.Heart, CardHead.King),
               ];
               turn.cardRounds = [
-                CartRound(firstPlayer)
+                CardRound(firstPlayer)
                   ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.Ace)
                   ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ten)
               ];
@@ -122,7 +122,7 @@ void main() {
                   Card(CardColor.Heart, CardHead.King),
                 ];
                 turn.cardRounds = [
-                  CartRound(TestFactory.leftPlayer)
+                  CardRound(TestFactory.leftPlayer)
                     ..playedCards[Position.Left] = Card(CardColor.Heart, CardHead.Ace)
                     ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.Seven)
                 ];
@@ -137,7 +137,7 @@ void main() {
 
       group('when first card to play', () {
         setUp(() {
-          turn.cardRounds = [CartRound(firstPlayer)];
+          turn.cardRounds = [CardRound(firstPlayer)];
         });
 
         group('when has a card that can win the round', () {

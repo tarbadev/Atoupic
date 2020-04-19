@@ -139,7 +139,7 @@ void main() {
         var gameContext = GameContext([
           player
         ], [
-          Turn(1, TestFactory.realPlayer)..cardRounds = [CartRound(TestFactory.realPlayer)]
+          Turn(1, TestFactory.realPlayer)..cardRounds = [CardRound(TestFactory.realPlayer)]
         ]);
         var newGameContext = gameContext.setCardDecision(card, TestFactory.realPlayer);
         expect(
@@ -161,7 +161,7 @@ void main() {
         ], [
           Turn(1, TestFactory.realPlayer)
           ..trumpColor = CardColor.Diamond
-            ..cardRounds = [CartRound(TestFactory.realPlayer)]
+            ..cardRounds = [CardRound(TestFactory.realPlayer)]
         ]);
         var newGameContext = gameContext.setCardDecision(card, player);
         expect(newGameContext.turns[0].belote, TestFactory.realPlayer.position);
@@ -175,7 +175,7 @@ void main() {
         expect(newGameContext.turns[0].cardRounds.length, 1);
         expect(
           newGameContext.turns[0].cardRounds[0],
-          CartRound(TestFactory.realPlayer),
+          CardRound(TestFactory.realPlayer),
         );
       });
 
@@ -183,7 +183,7 @@ void main() {
         test('adds a new CardRound with the highest card player', () {
           var gameContext = TestFactory.gameContext
             ..lastTurn.cardRounds = [
-              CartRound(TestFactory.topPlayer)
+              CardRound(TestFactory.topPlayer)
                 ..playedCards[TestFactory.realPlayer.position] =
                     Card(CardColor.Heart, CardHead.Eight)
                 ..playedCards[Position.Right] = Card(CardColor.Heart, CardHead.King)
@@ -193,14 +193,14 @@ void main() {
           var newGameContext = gameContext.newCardRound();
           expect(
             newGameContext.turns[0].cardRounds[1],
-            CartRound(TestFactory.rightPlayer),
+            CardRound(TestFactory.rightPlayer),
           );
         });
 
         test('and only card of the requested color adds a new CardRound with the first player', () {
           var gameContext = TestFactory.gameContext
             ..lastTurn.cardRounds = [
-              CartRound(TestFactory.topPlayer)
+              CardRound(TestFactory.topPlayer)
                 ..playedCards[TestFactory.realPlayer.position] =
                     Card(CardColor.Heart, CardHead.Eight)
                 ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
@@ -210,7 +210,7 @@ void main() {
           var newGameContext = gameContext.newCardRound();
           expect(
             newGameContext.turns[0].cardRounds[1],
-            CartRound(TestFactory.topPlayer),
+            CardRound(TestFactory.topPlayer),
           );
         });
 
@@ -219,7 +219,7 @@ void main() {
           var gameContext = TestFactory.gameContext
             ..lastTurn.trumpColor = CardColor.Club
             ..lastTurn.cardRounds = [
-              CartRound(TestFactory.topPlayer)
+              CardRound(TestFactory.topPlayer)
                 ..playedCards[TestFactory.realPlayer.position] =
                     Card(CardColor.Heart, CardHead.Eight)
                 ..playedCards[Position.Right] = Card(CardColor.Heart, CardHead.King)
@@ -229,7 +229,7 @@ void main() {
           var newGameContext = gameContext.newCardRound();
           expect(
             newGameContext.turns[0].cardRounds[1],
-            CartRound(TestFactory.leftPlayer),
+            CardRound(TestFactory.leftPlayer),
           );
         });
       });
@@ -243,7 +243,7 @@ void main() {
           firstPlayer
         ], [
           Turn(1, firstPlayer)
-            ..cardRounds = [CartRound(firstPlayer), CartRound(TestFactory.realPlayer)]
+            ..cardRounds = [CardRound(firstPlayer), CardRound(TestFactory.realPlayer)]
         ]);
         var nextPlayer = gameContext.nextCardPlayer();
         expect(
@@ -263,7 +263,7 @@ void main() {
         ];
         var gameContext = GameContext(players, [
           Turn(1, firstPlayer)
-            ..cardRounds = [CartRound(firstPlayer)]
+            ..cardRounds = [CardRound(firstPlayer)]
             ..lastCardRound.playedCards[firstPlayer.position] = TestFactory.cards[0]
         ]);
         var nextPlayer = gameContext.nextCardPlayer();
@@ -285,7 +285,7 @@ void main() {
         ];
         var gameContext = GameContext(players, [
           Turn(1, firstPlayer)
-            ..cardRounds = [CartRound(firstPlayer)]
+            ..cardRounds = [CardRound(firstPlayer)]
             ..lastCardRound.playedCards[firstPlayer.position] = TestFactory.cards[0]
         ]);
         var nextPlayer = gameContext.nextCardPlayer();
@@ -306,7 +306,7 @@ void main() {
         ];
         var gameContext = GameContext(players, [
           Turn(1, firstPlayer)
-            ..cardRounds = [CartRound(firstPlayer)]
+            ..cardRounds = [CardRound(firstPlayer)]
             ..lastCardRound.playedCards[Position.Bottom] = TestFactory.cards[0]
             ..lastCardRound.playedCards[Position.Right] = TestFactory.cards[1]
             ..lastCardRound.playedCards[Position.Left] = TestFactory.cards[2]
@@ -326,7 +326,7 @@ void main() {
             Turn(1, firstPlayer)
               ..trumpColor = CardColor.Spade
               ..cardRounds = [
-                CartRound(firstPlayer)
+                CardRound(firstPlayer)
                   ..playedCards[firstPlayer.position] = Card(CardColor.Heart, CardHead.King)
               ]
           ]);
@@ -351,7 +351,7 @@ void main() {
             gameContext.lastTurn
               ..trumpColor = CardColor.Spade
               ..cardRounds = [
-                CartRound(firstPlayer)
+                CardRound(firstPlayer)
                   ..playedCards[firstPlayer.position] = Card(CardColor.Spade, CardHead.King)
               ];
             var card1 = Card(CardColor.Spade, CardHead.Ace);
@@ -448,7 +448,7 @@ void main() {
 
         setUp(() {
           gameContext = GameContext([], [
-            Turn(1, player)..cardRounds = [CartRound(player)]
+            Turn(1, player)..cardRounds = [CardRound(player)]
           ]);
         });
 
@@ -483,7 +483,7 @@ void main() {
         var gameContext =
             GameContext([], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond
               ..cardRounds = [
-                CartRound(TestFactory.leftPlayer)
+                CardRound(TestFactory.leftPlayer)
                   ..playedCards[player.position] = card
               ]]);
         expect(gameContext.isPlayedCardBelote(card, player), BeloteResult.Belote);
@@ -496,9 +496,9 @@ void main() {
           Turn(1, TestFactory.leftPlayer)
             ..trumpColor = CardColor.Diamond
             ..cardRounds = [
-              CartRound(TestFactory.leftPlayer)
+              CardRound(TestFactory.leftPlayer)
                 ..playedCards[player.position] = card,
-              CartRound(TestFactory.leftPlayer)
+              CardRound(TestFactory.leftPlayer)
                 ..playedCards[player.position] = Card(CardColor.Diamond, CardHead.King)
             ]
         ]);

@@ -10,13 +10,13 @@ class Turn extends Equatable {
   final Player firstPlayer;
   Card card;
   Map<Position, Decision> playerDecisions = Map();
-  List<CartRound> cardRounds = List();
+  List<CardRound> cardRounds = List();
   int round = 1;
   CardColor trumpColor;
   TurnResult turnResult;
   Position belote;
 
-  CartRound get lastCardRound =>
+  CardRound get lastCardRound =>
       cardRounds.length > 0
           ? cardRounds.last
           : null;
@@ -114,7 +114,7 @@ class Turn extends Equatable {
     this.turnResult = turnResult;
   }
 
-  int _calculateRoundPoints(bool isLastRound, CartRound cardRound) {
+  int _calculateRoundPoints(bool isLastRound, CardRound cardRound) {
     var points = 0;
 
     if (isLastRound) {
@@ -137,5 +137,5 @@ class Turn extends Equatable {
     return points;
   }
 
-  Position getCardRoundWinnerPosition(CartRound cartRound) => cartRound.getCardRoundWinner(trumpColor).key;
+  Position getCardRoundWinnerPosition(CardRound cartRound) => cartRound.getCardRoundWinner(trumpColor).key;
 }

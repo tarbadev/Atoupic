@@ -74,10 +74,10 @@ class GameContext extends Equatable {
   GameContext newCardRound() {
     var cartRound;
     if (lastTurn.cardRounds.isEmpty) {
-      cartRound = CartRound(lastTurn.firstPlayer);
+      cartRound = CardRound(lastTurn.firstPlayer);
     } else {
       var highestCardPosition = lastTurn.getCardRoundWinnerPosition(lastTurn.lastCardRound);
-      cartRound = CartRound(players.firstWhere((player) => player.position == highestCardPosition));
+      cartRound = CardRound(players.firstWhere((player) => player.position == highestCardPosition));
     }
 
     lastTurn.cardRounds.add(cartRound);
@@ -132,7 +132,7 @@ class GameContext extends Equatable {
     }
   }
 
-  List<Card> _getCardsOfRequestedColor(CartRound lastCardRound, Player player) {
+  List<Card> _getCardsOfRequestedColor(CardRound lastCardRound, Player player) {
     var requestedColor = lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
     var cardsForColor = player.cards.where((card) => card.color == requestedColor).toList();
     if (requestedColor == lastTurn.trumpColor) {

@@ -4,14 +4,15 @@ import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
-import 'package:atoupic/main.dart';
+import 'package:atoupic/ui/error_reporter.dart';
 import 'package:bloc/bloc.dart';
 
 class ApplicationBlocDelegate extends BlocDelegate {
-  GameBloc _gameBloc;
-  TakeOrPassDialogBloc _takeOrPassDialogBloc;
+  final GameBloc _gameBloc;
+  final TakeOrPassDialogBloc _takeOrPassDialogBloc;
+  final ErrorReporter _errorReporter;
 
-  ApplicationBlocDelegate(this._gameBloc, this._takeOrPassDialogBloc);
+  ApplicationBlocDelegate(this._gameBloc, this._takeOrPassDialogBloc, this._errorReporter);
 
   @override
   void onTransition(Bloc bloc, Transition transition) {
@@ -44,7 +45,7 @@ class ApplicationBlocDelegate extends BlocDelegate {
   @override
   void onError(Bloc bloc, Object error, StackTrace stacktrace) {
     super.onError(bloc, error, stacktrace);
-    reportError(error, stacktrace);
+    _errorReporter.report(error, stacktrace);
   }
 
   void _makePlayerPlayCard(GameContext gameContext) {

@@ -8,9 +8,11 @@ import 'package:atoupic/domain/service/card_service.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:atoupic/domain/service/player_service.dart';
 import 'package:atoupic/repository/game_context_repository.dart';
+import 'package:atoupic/ui/error_reporter.dart';
 import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:sentry/sentry.dart';
 
 class MockAtoupicGame extends Mock implements AtoupicGame {}
 
@@ -27,7 +29,8 @@ class MockAiService extends Mock implements AiService {}
 class MockGameContextRepository extends Mock implements GameContextRepository {}
 
 class MockGameContext extends Mock implements GameContext {}
-class MockCardRound extends Mock implements CartRound {}
+
+class MockCardRound extends Mock implements CardRound {}
 
 class MockPlayer extends Mock implements Player {}
 
@@ -35,10 +38,13 @@ class MockGameBloc extends MockBloc<GameEvent, GameState> implements GameBloc {}
 
 class MockAppBloc extends MockBloc<AppEvent, AppState> implements AppBloc {}
 
-class MockTakeOrPassDialogBloc extends MockBloc<TakeOrPassEvent, TakeOrPassState>
-    implements TakeOrPassDialogBloc {}
+class MockTakeOrPassDialogBloc extends MockBloc<TakeOrPassEvent, TakeOrPassState> implements TakeOrPassDialogBloc {}
 
 class MockCurrentTurnBloc extends MockBloc<CurrentTurnEvent, int> implements CurrentTurnBloc {}
+
+class MockSentryClient extends Mock implements SentryClient {}
+
+class MockErrorReporter extends Mock implements ErrorReporter {}
 
 abstract class MockFunction {
   next(dynamic action);
@@ -58,4 +64,7 @@ class Mocks {
   static final TakeOrPassDialogBloc takeOrPassDialogBloc = MockTakeOrPassDialogBloc();
   static final GameContextRepository gameContextRepository = MockGameContextRepository();
   static final MockNext mockNext = MockNext();
+
+  static final MockSentryClient sentryClient = MockSentryClient();
+  static final MockErrorReporter errorReporter = MockErrorReporter();
 }

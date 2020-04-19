@@ -7,7 +7,7 @@ part of 'application_injector.dart';
 // **************************************************************************
 
 class _$ApplicationInjector extends ApplicationInjector {
-  void configure() {
+  void configureAnnotations() {
     final Container container = Container();
     container.registerSingleton((c) => AtoupicGame());
     container.registerSingleton((c) => CardService());
@@ -22,7 +22,8 @@ class _$ApplicationInjector extends ApplicationInjector {
     container.registerSingleton((c) => CurrentTurnBloc(c<GameBloc>()));
     container.registerSingleton((c) => TakeOrPassDialogBloc(
         c<GameBloc>(), c<GameService>(), c<CardService>(), c<AiService>()));
-    container.registerSingleton((c) =>
-        ApplicationBlocDelegate(c<GameBloc>(), c<TakeOrPassDialogBloc>()));
+    container.registerSingleton((c) => ApplicationBlocDelegate(
+        c<GameBloc>(), c<TakeOrPassDialogBloc>(), c<ErrorReporter>()));
+    container.registerSingleton((c) => ErrorReporter(c<SentryClient>()));
   }
 }

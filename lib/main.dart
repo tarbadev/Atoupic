@@ -3,15 +3,11 @@ import 'dart:isolate';
 
 import 'package:atoupic/ui/application_injector.dart';
 import 'package:atoupic/ui/atoupic_app.dart';
-import 'package:atoupic/ui/entity/Secrets.dart';
+import 'package:atoupic/ui/error_reporter.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sentry/sentry.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'dart:convert' show json;
-
-SentryClient _sentry;
+import 'package:kiwi/kiwi.dart' as kiwi;
 
 bool get isInDebugMode {
   bool inDebugMode = false;
@@ -22,57 +18,29 @@ bool get isInDebugMode {
 dynamic main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  _initErrorReporting();
   await _initApplication();
+
+  ErrorReporter errorReporter = kiwi.Container().resolve();
+  FlutterError.onError =
+      (FlutterErrorDetails details) async => Zone.current.handleUncaughtError(details.exception, details.stack);
+
+  Isolate.current.addErrorListener(
+    new RawReceivePort(
+          (dynamic pair) async => errorReporter.report(
+          (pair as List<String>).first,
+          (pair as List<String>).last,
+        ),
+    ).sendPort,
+  );
 
   runZoned<Future<Null>>(
     () async => runApp(AtoupicApp()),
-    onError: (error, stackTrace) async => await reportError(error, stackTrace),
-  );
-}
-
-Future<Null> reportError(dynamic error, dynamic stackTrace) async {
-  print('Caught error: $error');
-  if (isInDebugMode) {
-    print(stackTrace);
-    print('In dev mode. Not sending report to Sentry.io.');
-    return;
-  }
-
-  print('Reporting to Sentry.io...');
-
-  final SentryResponse response = await _sentry.captureException(
-    exception: error,
-    stackTrace: stackTrace,
-  );
-
-  if (response.isSuccessful) {
-    print('Success! Event ID: ${response.eventId}');
-  } else {
-    print('Failed to report to Sentry.io: ${response.error}');
-  }
-}
-
-_initErrorReporting() {
-  FlutterError.onError =
-      (FlutterErrorDetails details) async => await reportError(details.exception, details.stack);
-  
-  Isolate.current.addErrorListener(
-    new RawReceivePort(
-      (dynamic pair) async => await reportError(
-        (pair as List<String>).first,
-        (pair as List<String>).last,
-      ),
-    ).sendPort,
+    onError: (error, stackTrace) async => errorReporter.report(error, stackTrace),
   );
 }
 
 Future<Null> _initApplication() async {
-  final secretsJson = json.decode(await rootBundle.loadString('assets/secrets.json'));
-  final secrets = Secrets.map(secretsJson);
-  _sentry = new SentryClient(dsn: secrets.sentryDsn);
-  
-  getApplicationInjector().configure();
+  await getApplicationInjector().configure();
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,

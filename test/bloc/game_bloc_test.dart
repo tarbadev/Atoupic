@@ -380,10 +380,10 @@ void main() {
         'emits TurnEnded when it is the last round',
         build: () async => gameBloc,
         act: (bloc) async {
-          List<CartRound> cardRounds = List();
+          List<CardRound> cardRounds = List();
 
           for (int i = 0; i <= 7; i++) {
-            cardRounds.add(CartRound(TestFactory.topPlayer)
+            cardRounds.add(CardRound(TestFactory.topPlayer)
               ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
               ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
               ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
@@ -426,10 +426,10 @@ void main() {
         'emits GameEnded when a "us" team won',
         build: () async => gameBloc,
         act: (bloc) async {
-          List<CartRound> cardRounds = List();
+          List<CardRound> cardRounds = List();
 
           for (int i = 0; i <= 7; i++) {
-            cardRounds.add(CartRound(TestFactory.topPlayer)
+            cardRounds.add(CardRound(TestFactory.topPlayer)
               ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
               ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
               ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
@@ -469,10 +469,10 @@ void main() {
         'emits GameEnded when a "them" team won',
         build: () async => gameBloc,
         act: (bloc) async {
-          List<CartRound> cardRounds = List();
+          List<CardRound> cardRounds = List();
 
           for (int i = 0; i <= 7; i++) {
-            cardRounds.add(CartRound(TestFactory.topPlayer)
+            cardRounds.add(CardRound(TestFactory.topPlayer)
               ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
               ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
               ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)

@@ -13,7 +13,7 @@ void main() {
   ApplicationBlocDelegate applicationBlocDelegate;
 
   setUp(() {
-    applicationBlocDelegate = ApplicationBlocDelegate(Mocks.gameBloc, Mocks.takeOrPassDialogBloc);
+    applicationBlocDelegate = ApplicationBlocDelegate(Mocks.gameBloc, Mocks.takeOrPassDialogBloc, Mocks.errorReporter);
   });
 
   group('On SoloGameInitialized', () {
@@ -209,6 +209,17 @@ void main() {
 
       verify(mockGameContext.nextCardPlayer());
       verify(Mocks.gameBloc.add(EndCardRound()));
+    });
+  });
+
+  group('On error', () {
+    test('sends error to errorReporter', () {
+      final stackTrace = StackTrace.fromString('some stack');
+      final error = 'An error happened!';
+
+      applicationBlocDelegate.onError(Mocks.gameBloc, error, stackTrace);
+
+      verify(Mocks.errorReporter.report(error, stackTrace));
     });
   });
 }
