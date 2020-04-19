@@ -9,9 +9,11 @@ class ErrorReporter {
     print('Caught error: $error');
     print('Reporting to Sentry.io...');
 
-    final SentryResponse response = await _sentryClient.captureException(
-      exception: error,
-      stackTrace: stackTrace,
+    final SentryResponse response = await _sentryClient.capture(
+      event: Event(
+        exception: error,
+        stackTrace: stackTrace,
+      ),
     );
 
     if (response.isSuccessful) {

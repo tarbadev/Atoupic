@@ -17,13 +17,33 @@ void main() {
 
     test('reports error to Sentry', () async {
       final eventId = 'event123';
+      final expectedEvent = Event(
+        exception: error,
+        stackTrace: stacktrace,
+      );
 
-      when(Mocks.sentryClient.captureException(exception: anyNamed('exception'), stackTrace: anyNamed('stackTrace')))
+      when(Mocks.sentryClient.capture(event: anyNamed('event')))
           .thenAnswer((_) async => SentryResponse.success(eventId: eventId));
 
       await errorReporter.report(error, stacktrace);
 
-      verify(Mocks.sentryClient.captureException(exception: error, stackTrace: stacktrace));
+      final actualEvent = verify(Mocks.sentryClient.capture(event: captureAnyNamed('event'))).captured.single;
+      expect(actualEvent.loggerName, expectedEvent.loggerName);
+      expect(actualEvent.serverName, expectedEvent.serverName);
+      expect(actualEvent.release, expectedEvent.release);
+      expect(actualEvent.environment, expectedEvent.environment);
+      expect(actualEvent.message, expectedEvent.message);
+      expect(actualEvent.transaction, expectedEvent.transaction);
+      expect(actualEvent.exception, expectedEvent.exception);
+      expect(actualEvent.stackTrace, expectedEvent.stackTrace);
+      expect(actualEvent.level, expectedEvent.level);
+      expect(actualEvent.culprit, expectedEvent.culprit);
+      expect(actualEvent.tags, expectedEvent.tags);
+      expect(actualEvent.extra, expectedEvent.extra);
+      expect(actualEvent.fingerprint, expectedEvent.fingerprint);
+      expect(actualEvent.userContext, expectedEvent.userContext);
+      expect(actualEvent.contexts, expectedEvent.contexts);
+      expect(actualEvent.breadcrumbs, expectedEvent.breadcrumbs);
     });
   });
 }
