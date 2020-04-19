@@ -37,7 +37,7 @@ void main() {
                     Card(CardColor.Spade, CardHead.Seven),
             ];
           var expectedTurnResult =
-              TurnResult(firstPlayer, 0, 27, Result.Failure, 162, 0);
+              TurnResult(firstPlayer, 0, 27, Result.Success, 0, 252);
           turn.calculatePoints(players);
 
           expect(turn.turnResult, expectedTurnResult);
@@ -60,17 +60,18 @@ void main() {
                     Card(CardColor.Spade, CardHead.Seven),
             ];
           var expectedTurnResult =
-              TurnResult(firstPlayer, 0, 45, Result.Failure, 162, 0);
+              TurnResult(firstPlayer, 0, 45, Result.Success, 0, 252);
           turn.calculatePoints(players);
 
           expect(turn.turnResult, expectedTurnResult);
         });
 
-        test('Success when points above 82', () {
+        test('Success when points above opponent', () {
           var turn = Turn(1, firstPlayer)
             ..playerDecisions[Position.Top] = Decision.Take
             ..card = Card(CardColor.Spade, CardHead.Ten)
             ..trumpColor = CardColor.Spade
+            ..belote = Position.Top
             ..cardRounds = [
               CartRound(TestFactory.topPlayer) // 35
                 ..playedCards[Position.Top] =
@@ -90,7 +91,43 @@ void main() {
                     Card(CardColor.Heart, CardHead.Queen)
                 ..playedCards[Position.Left] =
                     Card(CardColor.Diamond, CardHead.Seven),
-              CartRound(TestFactory.topPlayer) // 17
+              CartRound(TestFactory.topPlayer) // H17
+                ..playedCards[Position.Top] =
+                Card(CardColor.Heart, CardHead.Eight)
+                ..playedCards[Position.Right] =
+                Card(CardColor.Heart, CardHead.Ace)
+                ..playedCards[Position.Bottom] =
+                Card(CardColor.Heart, CardHead.King)
+                ..playedCards[Position.Left] =
+                Card(CardColor.Heart, CardHead.Jack),
+              CartRound(TestFactory.topPlayer) // H17
+                ..playedCards[Position.Top] =
+                Card(CardColor.Heart, CardHead.Eight)
+                ..playedCards[Position.Right] =
+                Card(CardColor.Heart, CardHead.Ace)
+                ..playedCards[Position.Bottom] =
+                Card(CardColor.Heart, CardHead.King)
+                ..playedCards[Position.Left] =
+                Card(CardColor.Heart, CardHead.Jack),
+              CartRound(TestFactory.topPlayer) // H17
+                ..playedCards[Position.Top] =
+                Card(CardColor.Heart, CardHead.Eight)
+                ..playedCards[Position.Right] =
+                Card(CardColor.Heart, CardHead.Ace)
+                ..playedCards[Position.Bottom] =
+                Card(CardColor.Heart, CardHead.King)
+                ..playedCards[Position.Left] =
+                Card(CardColor.Heart, CardHead.Jack),
+              CartRound(TestFactory.topPlayer) // H17
+                ..playedCards[Position.Top] =
+                Card(CardColor.Heart, CardHead.Eight)
+                ..playedCards[Position.Right] =
+                Card(CardColor.Heart, CardHead.Ace)
+                ..playedCards[Position.Bottom] =
+                Card(CardColor.Heart, CardHead.King)
+                ..playedCards[Position.Left] =
+                Card(CardColor.Heart, CardHead.Jack),
+              CartRound(TestFactory.topPlayer) // H17
                 ..playedCards[Position.Top] =
                 Card(CardColor.Heart, CardHead.Eight)
                 ..playedCards[Position.Right] =
@@ -105,12 +142,12 @@ void main() {
                 ..playedCards[Position.Right] =
                     Card(CardColor.Diamond, CardHead.Eight)
                 ..playedCards[Position.Bottom] =
-                    Card(CardColor.Diamond, CardHead.King)
+                    Card(CardColor.Diamond, CardHead.Seven)
                 ..playedCards[Position.Left] =
-                    Card(CardColor.Diamond, CardHead.Jack),
+                    Card(CardColor.Diamond, CardHead.Nine),
             ];
           var expectedTurnResult =
-              TurnResult(firstPlayer, 17, 89, Result.Success, 17, 89);
+              TurnResult(firstPlayer, 85, 103, Result.Success, 85, 103);
           turn.calculatePoints(players);
 
           expect(turn.turnResult, expectedTurnResult);
@@ -197,6 +234,48 @@ void main() {
 
           expect(turn.turnResult, expectedTurnResult);
         });
+
+        test('when Belote adds 20 points to team', () {
+          var turn = Turn(1, firstPlayer)
+            ..playerDecisions[Position.Top] = Decision.Take
+            ..card = Card(CardColor.Spade, CardHead.Ten)
+            ..trumpColor = CardColor.Spade
+            ..belote = Position.Left
+            ..cardRounds = [
+              CartRound(TestFactory.topPlayer) // 35
+                ..playedCards[Position.Top] =
+                Card(CardColor.Spade, CardHead.Jack)
+                ..playedCards[Position.Right] =
+                Card(CardColor.Spade, CardHead.King)
+                ..playedCards[Position.Bottom] =
+                Card(CardColor.Spade, CardHead.Ace)
+                ..playedCards[Position.Left] =
+                Card(CardColor.Spade, CardHead.Seven),
+              CartRound(TestFactory.topPlayer) // 27
+                ..playedCards[Position.Top] =
+                Card(CardColor.Spade, CardHead.Nine)
+                ..playedCards[Position.Right] =
+                Card(CardColor.Spade, CardHead.Queen)
+                ..playedCards[Position.Bottom] =
+                Card(CardColor.Heart, CardHead.Ten)
+                ..playedCards[Position.Left] =
+                Card(CardColor.Diamond, CardHead.Seven),
+              CartRound(TestFactory.topPlayer) // 27
+                ..playedCards[Position.Top] =
+                Card(CardColor.Diamond, CardHead.Ace)
+                ..playedCards[Position.Right] =
+                Card(CardColor.Diamond, CardHead.Eight)
+                ..playedCards[Position.Bottom] =
+                Card(CardColor.Diamond, CardHead.King)
+                ..playedCards[Position.Left] =
+                Card(CardColor.Diamond, CardHead.Jack),
+            ];
+          var expectedTurnResult =
+          TurnResult(firstPlayer, 20, 89, Result.Success, 20, 252);
+          turn.calculatePoints(players);
+
+          expect(turn.turnResult, expectedTurnResult);
+        });
       });
 
       group('when taker is horizontal', () {
@@ -244,7 +323,7 @@ void main() {
                     Card(CardColor.Spade, CardHead.Ace),
             ];
           var expectedTurnResult =
-              TurnResult(firstPlayer, 45, 0, Result.Failure, 0, 162);
+              TurnResult(firstPlayer, 45, 0, Result.Success, 252, 0);
           turn.calculatePoints(players);
 
           expect(turn.turnResult, expectedTurnResult);
@@ -377,6 +456,48 @@ void main() {
             ];
           var expectedTurnResult =
           TurnResult(firstPlayer, 0, 89, Result.Failure, 0, 252);
+          turn.calculatePoints(players);
+
+          expect(turn.turnResult, expectedTurnResult);
+        });
+
+        test('when Belote adds points', () {
+          var turn = Turn(1, firstPlayer)
+            ..playerDecisions[Position.Left] = Decision.Take
+            ..card = Card(CardColor.Spade, CardHead.Ten)
+            ..trumpColor = CardColor.Spade
+            ..belote = Position.Top
+            ..cardRounds = [
+              CartRound(TestFactory.topPlayer) // 35
+                ..playedCards[Position.Top] =
+                Card(CardColor.Spade, CardHead.Jack)
+                ..playedCards[Position.Right] =
+                Card(CardColor.Spade, CardHead.King)
+                ..playedCards[Position.Bottom] =
+                Card(CardColor.Spade, CardHead.Ace)
+                ..playedCards[Position.Left] =
+                Card(CardColor.Spade, CardHead.Seven),
+              CartRound(TestFactory.topPlayer) // 27
+                ..playedCards[Position.Top] =
+                Card(CardColor.Spade, CardHead.Nine)
+                ..playedCards[Position.Right] =
+                Card(CardColor.Spade, CardHead.Ten)
+                ..playedCards[Position.Bottom] =
+                Card(CardColor.Heart, CardHead.Queen)
+                ..playedCards[Position.Left] =
+                Card(CardColor.Diamond, CardHead.Seven),
+              CartRound(TestFactory.topPlayer) // 27
+                ..playedCards[Position.Top] =
+                Card(CardColor.Diamond, CardHead.Ace)
+                ..playedCards[Position.Right] =
+                Card(CardColor.Diamond, CardHead.Eight)
+                ..playedCards[Position.Bottom] =
+                Card(CardColor.Diamond, CardHead.King)
+                ..playedCards[Position.Left] =
+                Card(CardColor.Diamond, CardHead.Jack),
+            ];
+          var expectedTurnResult =
+          TurnResult(firstPlayer, 0, 109, Result.Failure, 0, 272);
           turn.calculatePoints(players);
 
           expect(turn.turnResult, expectedTurnResult);

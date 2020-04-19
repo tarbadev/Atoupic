@@ -14,6 +14,7 @@ class Turn extends Equatable {
   int round = 1;
   CardColor trumpColor;
   TurnResult turnResult;
+  Position belote;
 
   CartRound get lastCardRound =>
       cardRounds.length > 0
@@ -36,23 +37,36 @@ class Turn extends Equatable {
         .key;
     var taker = players.firstWhere((p) => p.position == takerPosition);
 
-    var horizontalPoints = 0;
-    var verticalPoints = 0;
+    var horizontalCardPoints = 0;
+    var verticalCardPoints = 0;
 
     cardRounds.asMap().forEach((index, cardRound) {
       Position winnerPosition = getCardRoundWinnerPosition(cardRound);
       var isLastRound = index == cardRounds.length - 1;
       if (winnerPosition.isVertical) {
-        verticalPoints += _calculateRoundPoints(isLastRound, cardRound);
+        verticalCardPoints += _calculateRoundPoints(isLastRound, cardRound);
       } else {
-        horizontalPoints += _calculateRoundPoints(isLastRound, cardRound);
+        horizontalCardPoints += _calculateRoundPoints(isLastRound, cardRound);
       }
     });
 
+    var verticalDeclarationPoints = 0;
+    var horizontalDeclarationPoints = 0;
+
+    if (belote != null) {
+      if (belote.isVertical) {
+        verticalDeclarationPoints += 20;
+      } else {
+        horizontalDeclarationPoints += 20;
+      }
+    }
+
+    var verticalPoints = verticalCardPoints + verticalDeclarationPoints;
+    var horizontalPoints = horizontalCardPoints + horizontalDeclarationPoints;
+
     var isTakerVertical = takerPosition.isVertical;
-    final minimumPoints = 82;
-    var isSuccessful = isTakerVertical && verticalPoints >= minimumPoints ||
-        !isTakerVertical && horizontalPoints >= minimumPoints;
+    var isSuccessful = isTakerVertical && verticalPoints >= horizontalPoints ||
+        !isTakerVertical && horizontalPoints >= verticalPoints;
     var result = isSuccessful
         ? Result.Success
         : Result.Failure;
@@ -61,29 +75,32 @@ class Turn extends Equatable {
 
     if (isTakerVertical) {
       if (isSuccessful) {
-        verticalScore = horizontalPoints == 0
+        verticalScore = horizontalCardPoints == 0
             ? 252
-            : verticalPoints;
-        horizontalScore = horizontalPoints;
+            : verticalCardPoints;
+        horizontalScore = horizontalCardPoints;
       } else {
         verticalScore = 0;
-        horizontalScore = verticalPoints == 0
+        horizontalScore = verticalCardPoints == 0
             ? 252
             : 162;
       }
     } else {
       if (isSuccessful) {
-        verticalScore = verticalPoints;
-        horizontalScore = verticalPoints == 0
+        verticalScore = verticalCardPoints;
+        horizontalScore = verticalCardPoints == 0
             ? 252
-            : horizontalPoints;
+            : horizontalCardPoints;
       } else {
-        verticalScore = horizontalPoints == 0
+        verticalScore = horizontalCardPoints == 0
             ? 252
             : 162;
         horizontalScore = 0;
       }
     }
+
+    verticalScore += verticalDeclarationPoints;
+    horizontalScore += horizontalDeclarationPoints;
 
     var turnResult = TurnResult(
       taker,

@@ -151,6 +151,21 @@ void main() {
           [otherCard],
         );
       });
+
+      test('stores players position in turn when it is a Belote card', () {
+        Card card = Card(CardColor.Diamond, CardHead.King);
+        var otherCard = Card(CardColor.Diamond, CardHead.Queen);
+        var player = TestFactory.realPlayer..cards = [card, otherCard];
+        var gameContext = GameContext([
+          player
+        ], [
+          Turn(1, TestFactory.realPlayer)
+          ..trumpColor = CardColor.Diamond
+            ..cardRounds = [CartRound(TestFactory.realPlayer)]
+        ]);
+        var newGameContext = gameContext.setCardDecision(card, player);
+        expect(newGameContext.turns[0].belote, TestFactory.realPlayer.position);
+      });
     });
 
     group('newCardRound', () {

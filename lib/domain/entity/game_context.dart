@@ -64,6 +64,10 @@ class GameContext extends Equatable {
     lastTurn.lastCardRound.playedCards[player.position] = card;
     players.firstWhere((p) => p.position == player.position).cards.remove(card);
 
+    if (isPlayedCardBelote(card, player) != BeloteResult.None) {
+      lastTurn.belote = player.position;
+    }
+
     return this;
   }
 
