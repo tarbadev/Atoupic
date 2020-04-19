@@ -1,8 +1,8 @@
-import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/cart_round.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -47,9 +47,7 @@ void main() {
           TestFactory.realPlayer,
         ];
         var gameContext = GameContext(
-            players, [Turn(1, firstPlayer)
-          ..playerDecisions[firstPlayer.position] = Decision.Pass
-        ]);
+            players, [Turn(1, firstPlayer)..playerDecisions[firstPlayer.position] = Decision.Pass]);
         expect(gameContext.nextPlayer(), TestFactory.realPlayer);
       });
 
@@ -62,9 +60,7 @@ void main() {
           firstPlayer,
         ];
         var gameContext = GameContext(
-            players, [Turn(1, firstPlayer)
-          ..playerDecisions[firstPlayer.position] = Decision.Pass
-        ]);
+            players, [Turn(1, firstPlayer)..playerDecisions[firstPlayer.position] = Decision.Pass]);
         expect(gameContext.nextPlayer(), TestFactory.realPlayer);
       });
 
@@ -143,8 +139,7 @@ void main() {
         var gameContext = GameContext([
           player
         ], [
-          Turn(1, TestFactory.realPlayer)
-            ..cardRounds = [CartRound(TestFactory.realPlayer)]
+          Turn(1, TestFactory.realPlayer)..cardRounds = [CartRound(TestFactory.realPlayer)]
         ]);
         var newGameContext = gameContext.setCardDecision(card, TestFactory.realPlayer);
         expect(
@@ -175,7 +170,7 @@ void main() {
             ..lastTurn.cardRounds = [
               CartRound(TestFactory.topPlayer)
                 ..playedCards[TestFactory.realPlayer.position] =
-                Card(CardColor.Heart, CardHead.Eight)
+                    Card(CardColor.Heart, CardHead.Eight)
                 ..playedCards[Position.Right] = Card(CardColor.Heart, CardHead.King)
                 ..playedCards[Position.Left] = Card(CardColor.Club, CardHead.Ace)
                 ..playedCards[Position.Top] = Card(CardColor.Heart, CardHead.Nine),
@@ -192,7 +187,7 @@ void main() {
             ..lastTurn.cardRounds = [
               CartRound(TestFactory.topPlayer)
                 ..playedCards[TestFactory.realPlayer.position] =
-                Card(CardColor.Heart, CardHead.Eight)
+                    Card(CardColor.Heart, CardHead.Eight)
                 ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
                 ..playedCards[Position.Left] = Card(CardColor.Club, CardHead.Ace)
                 ..playedCards[Position.Top] = Card(CardColor.Diamond, CardHead.Nine),
@@ -205,23 +200,23 @@ void main() {
         });
 
         test('and requested color is trump color adds a new CardRound with the highest card player',
-                () {
-              var gameContext = TestFactory.gameContext
-                ..lastTurn.trumpColor = CardColor.Club
-                ..lastTurn.cardRounds = [
-                  CartRound(TestFactory.topPlayer)
-                    ..playedCards[TestFactory.realPlayer.position] =
+            () {
+          var gameContext = TestFactory.gameContext
+            ..lastTurn.trumpColor = CardColor.Club
+            ..lastTurn.cardRounds = [
+              CartRound(TestFactory.topPlayer)
+                ..playedCards[TestFactory.realPlayer.position] =
                     Card(CardColor.Heart, CardHead.Eight)
-                    ..playedCards[Position.Right] = Card(CardColor.Heart, CardHead.King)
-                    ..playedCards[Position.Left] = Card(CardColor.Club, CardHead.Ace)
-                    ..playedCards[Position.Top] = Card(CardColor.Heart, CardHead.Nine),
-                ];
-              var newGameContext = gameContext.newCardRound();
-              expect(
-                newGameContext.turns[0].cardRounds[1],
-                CartRound(TestFactory.leftPlayer),
-              );
-            });
+                ..playedCards[Position.Right] = Card(CardColor.Heart, CardHead.King)
+                ..playedCards[Position.Left] = Card(CardColor.Club, CardHead.Ace)
+                ..playedCards[Position.Top] = Card(CardColor.Heart, CardHead.Nine),
+            ];
+          var newGameContext = gameContext.newCardRound();
+          expect(
+            newGameContext.turns[0].cardRounds[1],
+            CartRound(TestFactory.leftPlayer),
+          );
+        });
       });
     });
 
@@ -264,26 +259,26 @@ void main() {
       });
 
       test('returns next player when firstplayer already played and firstPlayer is last in list',
-              () {
-            var firstPlayer = TestFactory.topPlayer;
-            var player = TestFactory.rightPlayer;
-            List<Player> players = [
-              player,
-              TestFactory.leftPlayer,
-              TestFactory.realPlayer,
-              firstPlayer,
-            ];
-            var gameContext = GameContext(players, [
-              Turn(1, firstPlayer)
-                ..cardRounds = [CartRound(firstPlayer)]
-                ..lastCardRound.playedCards[firstPlayer.position] = TestFactory.cards[0]
-            ]);
-            var nextPlayer = gameContext.nextCardPlayer();
-            expect(
-              nextPlayer,
-              player,
-            );
-          });
+          () {
+        var firstPlayer = TestFactory.topPlayer;
+        var player = TestFactory.rightPlayer;
+        List<Player> players = [
+          player,
+          TestFactory.leftPlayer,
+          TestFactory.realPlayer,
+          firstPlayer,
+        ];
+        var gameContext = GameContext(players, [
+          Turn(1, firstPlayer)
+            ..cardRounds = [CartRound(firstPlayer)]
+            ..lastCardRound.playedCards[firstPlayer.position] = TestFactory.cards[0]
+        ]);
+        var nextPlayer = gameContext.nextCardPlayer();
+        expect(
+          nextPlayer,
+          player,
+        );
+      });
 
       test('returns null when all cards played', () {
         var firstPlayer = TestFactory.topPlayer;
@@ -372,8 +367,8 @@ void main() {
 
           group('and has trump color', () {
             test('returns all trump cards', () {
-              gameContext.lastTurn.lastCardRound.playedCards[Position.Left] = Card(CardColor.Heart,
-                  CardHead.Ace);
+              gameContext.lastTurn.lastCardRound.playedCards[Position.Left] =
+                  Card(CardColor.Heart, CardHead.Ace);
               var player = TestFactory.topPlayer
                 ..cards = [
                   Card(CardColor.Club, CardHead.Eight),
@@ -438,8 +433,7 @@ void main() {
 
         setUp(() {
           gameContext = GameContext([], [
-            Turn(1, player)
-              ..cardRounds = [CartRound(player)]
+            Turn(1, player)..cardRounds = [CartRound(player)]
           ]);
         });
 
@@ -449,6 +443,45 @@ void main() {
 
           expect(gameContext.getPossibleCardsToPlay(player), player.cards);
         });
+      });
+    });
+
+    group('isPlayedCardBelote', () {
+      test('when card is not a belote card', () {
+        var gameContext =
+            GameContext([], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
+        var card = Card(CardColor.Diamond, CardHead.Ace);
+        expect(gameContext.isPlayedCardBelote(card, TestFactory.leftPlayer), BeloteResult.None);
+      });
+
+      test('when card is a belote card and player does not have the other belote card', () {
+        var gameContext =
+            GameContext([], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
+        var card = Card(CardColor.Diamond, CardHead.Queen);
+        var player = TestFactory.leftPlayer..cards = [Card(CardColor.Spade, CardHead.King)];
+        expect(gameContext.isPlayedCardBelote(card, player), BeloteResult.None);
+      });
+
+      test('when card is a belote card and player has the other belote card', () {
+        var gameContext =
+            GameContext([], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
+        var card = Card(CardColor.Diamond, CardHead.Queen);
+        var player = TestFactory.leftPlayer..cards = [Card(CardColor.Diamond, CardHead.King)];
+        expect(gameContext.isPlayedCardBelote(card, player), BeloteResult.Belote);
+      });
+
+      test('when card is a belote card and player played the other belote card', () {
+        var player = TestFactory.leftPlayer..cards = [];
+        var gameContext = GameContext([], [
+          Turn(1, TestFactory.leftPlayer)
+            ..trumpColor = CardColor.Diamond
+            ..cardRounds = [
+              CartRound(TestFactory.leftPlayer)
+                ..playedCards[player.position] = Card(CardColor.Diamond, CardHead.King)
+            ]
+        ]);
+        var card = Card(CardColor.Diamond, CardHead.Queen);
+        expect(gameContext.isPlayedCardBelote(card, player), BeloteResult.Rebelote);
       });
     });
   });

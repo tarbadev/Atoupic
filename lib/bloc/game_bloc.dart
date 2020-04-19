@@ -89,6 +89,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Stream<GameState> _setCardAndAnimate(GameContext gameContext, Card card, Player player) async* {
     var newGameContext = gameContext.setCardDecision(card, player);
+    var beloteResult = newGameContext.isPlayedCardBelote(card, player);
+
+    if (beloteResult != BeloteResult.None) {
+      _atoupicGame.setPlayerDialogText(player.position, beloteResult == BeloteResult.Belote ? 'Belote!' : 'Rebelote!');
+    }
+
     _gameService.save(newGameContext);
 
     Completer completer = new Completer();
@@ -108,6 +114,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   Stream<GameState> _mapEndCardRoundEventToState(EndCardRound event) async* {
+    _atoupicGame.resetPlayersDialog();
+
     var gameContext = _gameService.read();
     
     var winner = gameContext.lastTurn.lastCardRound.getCardRoundWinner(gameContext.lastTurn.trumpColor).key;

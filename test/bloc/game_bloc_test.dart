@@ -176,6 +176,7 @@ void main() {
           when(Mocks.aiService.chooseCard(any, any, any)).thenReturn(card);
           when(mockGameContext.lastTurn).thenReturn(turn);
           when(mockGameContext.setCardDecision(any, any)).thenReturn(updatedGameContext);
+          when(updatedGameContext.isPlayedCardBelote(any, any)).thenReturn(BeloteResult.None);
 
           bloc.add(PlayCardForAi(TestFactory.topPlayer, cards));
 
@@ -193,12 +194,71 @@ void main() {
           verify(Mocks.gameService.save(updatedGameContext));
         },
       );
+
+      blocTest<GameBloc, GameEvent, GameState>(
+        'displays Belote! text when player plays a Belote card',
+        build: () async => gameBloc,
+        act: (bloc) async {
+          when(Mocks.gameService.read()).thenReturn(mockGameContext);
+          when(Mocks.aiService.chooseCard(any, any, any)).thenReturn(card);
+          when(mockGameContext.lastTurn).thenReturn(turn);
+          when(mockGameContext.setCardDecision(any, any)).thenReturn(updatedGameContext);
+          when(updatedGameContext.isPlayedCardBelote(any, any)).thenReturn(BeloteResult.Belote);
+
+          bloc.add(PlayCardForAi(TestFactory.topPlayer, cards));
+
+          await untilCalled(Mocks.atoupicGame.setLastCardPlayed(any, any, any));
+          var callback = verify(Mocks.atoupicGame.setLastCardPlayed(card, Position.Top, captureAny))
+              .captured
+              .single;
+          callback();
+        },
+        expect: [CardAnimationStarted(), CardAnimationEnded(), CardPlayed(updatedGameContext)],
+        verify: (_) async {
+          verify(Mocks.gameService.read());
+          verify(Mocks.aiService.chooseCard(cards, turn, true));
+          verify(Mocks.atoupicGame.setPlayerDialogText(TestFactory.topPlayer.position, 'Belote!'));
+          verify(mockGameContext.setCardDecision(card, TestFactory.topPlayer));
+          verify(updatedGameContext.isPlayedCardBelote(card, TestFactory.topPlayer));
+          verify(Mocks.gameService.save(updatedGameContext));
+        },
+      );
+
+      blocTest<GameBloc, GameEvent, GameState>(
+        'displays Rebelote! text when player plays another Belote card',
+        build: () async => gameBloc,
+        act: (bloc) async {
+          when(Mocks.gameService.read()).thenReturn(mockGameContext);
+          when(Mocks.aiService.chooseCard(any, any, any)).thenReturn(card);
+          when(mockGameContext.lastTurn).thenReturn(turn);
+          when(mockGameContext.setCardDecision(any, any)).thenReturn(updatedGameContext);
+          when(updatedGameContext.isPlayedCardBelote(any, any)).thenReturn(BeloteResult.Rebelote);
+
+          bloc.add(PlayCardForAi(TestFactory.topPlayer, cards));
+
+          await untilCalled(Mocks.atoupicGame.setLastCardPlayed(any, any, any));
+          var callback = verify(Mocks.atoupicGame.setLastCardPlayed(card, Position.Top, captureAny))
+              .captured
+              .single;
+          callback();
+        },
+        expect: [CardAnimationStarted(), CardAnimationEnded(), CardPlayed(updatedGameContext)],
+        verify: (_) async {
+          verify(Mocks.gameService.read());
+          verify(Mocks.aiService.chooseCard(cards, turn, true));
+          verify(Mocks.atoupicGame.setPlayerDialogText(TestFactory.topPlayer.position, 'Rebelote!'));
+          verify(mockGameContext.setCardDecision(card, TestFactory.topPlayer));
+          verify(updatedGameContext.isPlayedCardBelote(card, TestFactory.topPlayer));
+          verify(Mocks.gameService.save(updatedGameContext));
+        },
+      );
     });
 
     group('On PlayCard', () {
       final mockGameContext = MockGameContext();
       final updatedGameContext = MockGameContext();
       final card = TestFactory.cards.first;
+
       blocTest<GameBloc, GameEvent, GameState>(
         'emits CardPlayed',
         build: () async => gameBloc,
@@ -219,6 +279,62 @@ void main() {
         verify: (_) async {
           verify(Mocks.gameService.read());
           verify(mockGameContext.setCardDecision(card, TestFactory.realPlayer));
+          verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
+          verify(Mocks.gameService.save(updatedGameContext));
+        },
+      );
+
+      blocTest<GameBloc, GameEvent, GameState>(
+        'displays Belote! text when player plays a Belote card',
+        build: () async => gameBloc,
+        act: (bloc) async {
+          when(Mocks.gameService.read()).thenReturn(mockGameContext);
+          when(mockGameContext.setCardDecision(any, any)).thenReturn(updatedGameContext);
+          when(updatedGameContext.isPlayedCardBelote(any, any)).thenReturn(BeloteResult.Belote);
+
+          bloc.add(PlayCard(card, TestFactory.realPlayer));
+
+          await untilCalled(Mocks.atoupicGame.setLastCardPlayed(any, any, any));
+          var callback =
+              verify(Mocks.atoupicGame.setLastCardPlayed(card, Position.Bottom, captureAny))
+                  .captured
+                  .single;
+          callback();
+        },
+        expect: [CardAnimationStarted(), CardAnimationEnded(), CardPlayed(updatedGameContext)],
+        verify: (_) async {
+          verify(Mocks.gameService.read());
+          verify(mockGameContext.setCardDecision(card, TestFactory.realPlayer));
+          verify(updatedGameContext.isPlayedCardBelote(card, TestFactory.realPlayer));
+          verify(Mocks.atoupicGame.setPlayerDialogText(TestFactory.realPlayer.position, 'Belote!'));
+          verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
+          verify(Mocks.gameService.save(updatedGameContext));
+        },
+      );
+
+      blocTest<GameBloc, GameEvent, GameState>(
+        'displays Rebelote! text when player plays a Belote card',
+        build: () async => gameBloc,
+        act: (bloc) async {
+          when(Mocks.gameService.read()).thenReturn(mockGameContext);
+          when(mockGameContext.setCardDecision(any, any)).thenReturn(updatedGameContext);
+          when(updatedGameContext.isPlayedCardBelote(any, any)).thenReturn(BeloteResult.Rebelote);
+
+          bloc.add(PlayCard(card, TestFactory.realPlayer));
+
+          await untilCalled(Mocks.atoupicGame.setLastCardPlayed(any, any, any));
+          var callback =
+              verify(Mocks.atoupicGame.setLastCardPlayed(card, Position.Bottom, captureAny))
+                  .captured
+                  .single;
+          callback();
+        },
+        expect: [CardAnimationStarted(), CardAnimationEnded(), CardPlayed(updatedGameContext)],
+        verify: (_) async {
+          verify(Mocks.gameService.read());
+          verify(mockGameContext.setCardDecision(card, TestFactory.realPlayer));
+          verify(updatedGameContext.isPlayedCardBelote(card, TestFactory.realPlayer));
+          verify(Mocks.atoupicGame.setPlayerDialogText(TestFactory.realPlayer.position, 'Rebelote!'));
           verify(Mocks.atoupicGame.realPlayerCanChooseCard(false));
           verify(Mocks.gameService.save(updatedGameContext));
         },
@@ -253,6 +369,7 @@ void main() {
         expect: [CardRoundCreated(updatedGameContext)],
         verify: (_) async {
           verify(Mocks.gameService.read());
+          verify(Mocks.atoupicGame.resetPlayersDialog());
           verify(mockGameContext.newCardRound());
           verify(mockCardRound.getCardRoundWinner(null));
           verify(Mocks.gameService.save(updatedGameContext));

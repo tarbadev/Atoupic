@@ -7,6 +7,8 @@ import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/game_service.dart';
 import 'package:equatable/equatable.dart';
 
+enum BeloteResult { Belote, Rebelote, None }
+
 class GameContext extends Equatable {
   final UnmodifiableListView<Player> players;
   final UnmodifiableListView<Turn> turns;
@@ -139,5 +141,24 @@ class GameContext extends Equatable {
           cardsForColor.where((card) => card.head.trumpOrder > highestTrumpPlayedValue).toList();
     }
     return cardsForColor;
+  }
+
+  BeloteResult isPlayedCardBelote(Card card, Player player) {
+    var beloteCards = [
+      Card(lastTurn.trumpColor, CardHead.King),
+      Card(lastTurn.trumpColor, CardHead.Queen)
+    ];
+    if (beloteCards.contains(card)) {
+      var allPlayerCards = player.cards.toList()..add(card);
+      if (allPlayerCards.where((playerCard) => beloteCards.contains(playerCard)).length == 2) {
+        return BeloteResult.Belote;
+      } else if (lastTurn.cardRounds
+          .where((cardRound) => beloteCards.contains(cardRound.playedCards[player.position]))
+          .isNotEmpty) {
+        return BeloteResult.Rebelote;
+      }
+    }
+
+    return BeloteResult.None;
   }
 }
