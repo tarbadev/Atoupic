@@ -40,5 +40,6 @@ lib/generated_plugin_registrant.dart
 **/*/key.properties
 **/*/*.jks
 **/*/api-key.json
+assets/secrets.json
 
 **/report.xml

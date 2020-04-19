@@ -11,6 +11,8 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: '1.12.13+hotfix.9'
+      - name: "Create secrets.json"
+        run: echo ${{ secrets.ApplicationSecrets }} | base64 -d > assets/secrets.json
       - run: flutter test
 
   build-ios-release:
@@ -22,6 +24,8 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: '1.12.13+hotfix.9'
+      - name: "Create secrets.json"
+        run: echo ${{ secrets.ApplicationSecrets }} | base64 -d > assets/secrets.json
       - name: "Build - iOS - Release"
         run: flutter build ios --release --no-codesign --build-number=$GITHUB_RUN_ID
 
@@ -40,6 +44,8 @@ jobs:
         run: echo ${{ secrets.AndroidReleaseKey }} | base64 -d > android/android_key.jks
       - name: "Create key.properties"
         run: printf 'keyAlias=%s\nkeyPassword=%s\nstoreFile=./../android_key.jks\nstorePassword=%s' ${{ secrets.keyAlias }} ${{ secrets.keyPassword }} ${{ secrets.storePassword }} > android/key.properties
+      - name: "Create secrets.json"
+        run: echo ${{ secrets.ApplicationSecrets }} | base64 -d > assets/secrets.json
       - name: "Build Android Bundle"
         run: flutter build appbundle --release --build-number=$GITHUB_RUN_ID
       - name: "Create api-key.json"
