@@ -12,6 +12,7 @@ import 'package:atoupic/ui/error_reporter.dart';
 import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:package_info/package_info.dart';
 import 'package:sentry/sentry.dart';
 
 class MockAtoupicGame extends Mock implements AtoupicGame {}
@@ -45,6 +46,7 @@ class MockCurrentTurnBloc extends MockBloc<CurrentTurnEvent, int> implements Cur
 class MockSentryClient extends Mock implements SentryClient {}
 
 class MockErrorReporter extends Mock implements ErrorReporter {}
+class MockPackageInfo extends Mock implements PackageInfo {}
 
 abstract class MockFunction {
   next(dynamic action);

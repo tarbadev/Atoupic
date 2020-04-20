@@ -5,7 +5,6 @@ platform :android do
   lane :deploy_internal_test do
     upload_to_play_store(
         track: 'internal',
-        aab: '../build/app/outputs/bundle/release/app-release.aab',
     )
   end
 end

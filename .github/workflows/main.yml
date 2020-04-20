@@ -1,7 +1,7 @@
 name: Release
 on:
   push:
-    branches: [ master ]
+    branches: [ 'wip/release-reporting' ]
 jobs:
   test:
     name: Unit Tests
@@ -29,13 +29,11 @@ jobs:
       - name: "Build - iOS - Release"
         run: flutter build ios --release --no-codesign --build-number=$GITHUB_RUN_ID
 
-  build-deploy-android-release:
-    name: Build and Deploy - Android - Release
+  build-android-release:
+    name: Build - Android - Release
     needs: test
     runs-on: macOS-latest
     steps:
-      - name: "Install Fastlane"
-        run: brew install fastlane
       - uses: actions/checkout@v1
       - uses: subosito/flutter-action@v1
         with:
@@ -48,9 +46,41 @@ jobs:
         run: echo ${{ secrets.ApplicationSecrets }} | base64 -d > assets/secrets.json
       - name: "Build Android Bundle"
         run: flutter build appbundle --release --build-number=$GITHUB_RUN_ID
+      - name: "Upload application bundle"
+        uses: actions/upload-artifact@v1
+        with:
+          name: appbundle
+          path: build/app/outputs/bundle/release/app-release.aab
+
+  deploy-android-release:
+    name: Deploy - Android - Release
+    needs: build-android-release
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: "Download application bundle"
+        uses: actions/download-artifact@v1
+        with:
+          name: appbundle
+      - name: "Setup Sentry CLI"
+        uses: mathrix-education/setup-sentry-cli@0.1.0
+        with:
+          token: ${{ secrets.SentryAuthToken }}
+          organization: ${{ secrets.SentryOrg }}
+          project: ${{ secrets.SentryProject }}
+      - name: "Install Fastlane"
+        run: brew install fastlane
       - name: "Create api-key.json"
         run: echo ${{ secrets.PlayConsoleApiKey }} | base64 -d > api-key.json
       - name: "Deploy for Internal Testing"
+        run: SUPPLY_VERSION_CODE=$GITHUB_RUN_ID fastlane deploy_internal_test
+        working-directory: android
+        env:
+          SUPPLY_AAB: ../appbundle/app-release.aab
+      - name: "Create new Sentry release"
         run: |
-          cd android
-          SUPPLY_VERSION_CODE=$GITHUB_RUN_ID fastlane deploy_internal_test
+          export VERSION_NAME="com.tarbadev.atoupic.Atoupic@$(awk -F': ' '/^version/{print$2}' pubspec.yaml | awk -F'+' '{print $1}')+$GITHUB_RUN_ID"
+          sentry-cli releases new $VERSION_NAME
+          sentry-cli releases set-commits --auto $VERSION_NAME
+          sentry-cli releases finalize $VERSION_NAME
+          sentry-cli releases deploys $VERSION_NAME new -e internaltest

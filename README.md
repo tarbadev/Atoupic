@@ -11,3 +11,9 @@ https://flutter.dev/docs/get-started/install
 
 ## Update application icon
 `flutter pub run flutter_launcher_icons:main`
+
+## Deploy
+`fastlane deploy_internal_test`  
+Specify environment variables to override parameters:
+- `SUPPLY_VERSION_CODE=<Build Number>`
+- `SUPPLY_AAB=<Path to aab file>`
