@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/ui/component/player_component.dart';
 import 'package:flame/anchor.dart';
+import 'package:flutter/gestures.dart';
 
 class BottomPlayerComponent extends PlayerComponent {
   BottomPlayerComponent(Player player) : super(player, true, player.name);
@@ -52,5 +53,21 @@ class BottomPlayerComponent extends PlayerComponent {
     });
 
     return initialX;
+  }
+
+  @override
+  void handleTapUp(TapUpDetails details) {
+    if (isDown) {
+      isDown = false;
+      super.handleTapUp(details);
+    }
+  }
+
+  @override
+  void handleTapDown(TapDownDetails details) {
+    if (!isDown) {
+      isDown = true;
+      super.handleTapDown(details);
+    }
   }
 }

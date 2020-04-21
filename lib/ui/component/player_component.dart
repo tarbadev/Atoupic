@@ -15,7 +15,6 @@ import 'package:flame/components/composed_component.dart';
 import 'package:flame/components/mixins/has_game_ref.dart';
 import 'package:flame/components/mixins/resizable.dart';
 import 'package:flame/components/mixins/tapable.dart';
-import 'package:flutter/gestures.dart';
 
 import 'bottom_player_component.dart';
 
@@ -78,22 +77,6 @@ abstract class PlayerComponent extends PositionComponent
         return RightPlayerComponent(player);
       default:
         return null;
-    }
-  }
-
-  @override
-  void handleTapUp(TapUpDetails details) {
-    if (isRealPlayer && isDown) {
-      isDown = false;
-      super.handleTapUp(details);
-    }
-  }
-
-  @override
-  void handleTapDown(TapDownDetails details) {
-    if (isRealPlayer && !isDown) {
-      isDown = true;
-      super.handleTapDown(details);
     }
   }
 
