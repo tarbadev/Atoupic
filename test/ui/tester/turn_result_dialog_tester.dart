@@ -1,4 +1,3 @@
-import 'package:atoupic/domain/entity/player.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'base_view_tester.dart';

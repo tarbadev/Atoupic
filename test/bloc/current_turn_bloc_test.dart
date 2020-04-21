@@ -1,9 +1,6 @@
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/turn.dart';
-import 'package:atoupic/domain/service/game_service.dart';
-import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 import '../helper/mock_definition.dart';

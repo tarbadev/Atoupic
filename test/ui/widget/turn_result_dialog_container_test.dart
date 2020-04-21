@@ -1,5 +1,4 @@
 import 'package:atoupic/bloc/bloc.dart';
-import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/ui/widget/turn_result_dialog_container.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

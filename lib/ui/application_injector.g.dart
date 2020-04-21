@@ -24,6 +24,5 @@ class _$ApplicationInjector extends ApplicationInjector {
         c<GameBloc>(), c<GameService>(), c<CardService>(), c<AiService>()));
     container.registerSingleton((c) => ApplicationBlocDelegate(
         c<GameBloc>(), c<TakeOrPassDialogBloc>(), c<ErrorReporter>()));
-    container.registerSingleton((c) => ErrorReporter(c<SentryClient>()));
   }
 }

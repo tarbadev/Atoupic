@@ -92,7 +92,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     var beloteResult = newGameContext.isPlayedCardBelote(card, player);
 
     if (beloteResult != BeloteResult.None) {
-      _atoupicGame.setPlayerDialogText(player.position, beloteResult == BeloteResult.Belote ? 'Belote!' : 'Rebelote!');
+      _atoupicGame.setPlayerDialogText(
+          player.position, beloteResult == BeloteResult.Belote ? 'Belote!' : 'Rebelote!');
     }
 
     _gameService.save(newGameContext);
@@ -117,8 +118,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _atoupicGame.resetPlayersDialog();
 
     var gameContext = _gameService.read();
-    
-    var winner = gameContext.lastTurn.lastCardRound.getCardRoundWinner(gameContext.lastTurn.trumpColor).key;
+
+    var winner =
+        gameContext.lastTurn.lastCardRound.getCardRoundWinner(gameContext.lastTurn.trumpColor).key;
     Completer completer = new Completer();
     _atoupicGame.removePlayedCardsToWinnerPile(winner, () => completer.complete());
     await completer.future;

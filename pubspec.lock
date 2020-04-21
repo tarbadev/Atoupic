@@ -507,7 +507,7 @@ packages:
     source: hosted
     version: "2.4.0"
   platform:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: platform
       url: "https://pub.dartlang.org"

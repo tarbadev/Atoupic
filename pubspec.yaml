@@ -19,6 +19,7 @@ dependencies:
   sentry: ^3.0.1
   package_info: '>=0.4.0+16 <2.0.0'
   device_info: ^0.4.2+1
+  platform: ^2.2.1
 
 dev_dependencies:
   flutter_test:

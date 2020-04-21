@@ -1,5 +1,4 @@
 import 'package:atoupic/domain/entity/card.dart';
-import 'package:atoupic/domain/entity/player.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helper/test_factory.dart';
