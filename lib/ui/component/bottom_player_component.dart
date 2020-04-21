@@ -6,7 +6,7 @@ import 'package:flame/anchor.dart';
 import 'package:flutter/gestures.dart';
 
 class BottomPlayerComponent extends PlayerComponent {
-  BottomPlayerComponent(Player player) : super(player, true, player.name);
+  BottomPlayerComponent(Player player) : super(player);
 
   @override
   void resizePlayerName(Size size) {}

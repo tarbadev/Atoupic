@@ -31,7 +31,7 @@ class AtoupicGame extends BaseGame {
       _players.clear();
     }
     players.map((player) => PlayerComponent.fromPlayer(player)).forEach((player) {
-      if (player.isRealPlayer) {
+      if (player.player.isRealPlayer) {
         _realPlayer = player;
       }
       _players.add(player);
@@ -49,7 +49,7 @@ class AtoupicGame extends BaseGame {
 
   void _addPlayerCards(PlayerComponent playerComponent, List<Card> cards) {
     playerComponent.addCards(cards
-        .map((card) => CardComponent.fromCard(card, showBackFace: !playerComponent.isRealPlayer))
+        .map((card) => CardComponent.fromCard(card, showBackFace: !playerComponent.player.isRealPlayer))
         .toList());
     playerComponent.resize(size);
   }

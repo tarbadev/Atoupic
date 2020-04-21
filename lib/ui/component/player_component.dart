@@ -29,7 +29,6 @@ abstract class PlayerComponent extends PositionComponent
 
   final Player player;
   final List<CardComponent> cards = List();
-  final bool isRealPlayer;
 
   CardComponent lastPlayedCard;
   bool isDown = false;
@@ -37,8 +36,8 @@ abstract class PlayerComponent extends PositionComponent
   TrumpColor trumpColor;
   PlayerName playerName;
 
-  PlayerComponent(this.player, this.isRealPlayer, String name) {
-    playerName = PlayerName(name);
+  PlayerComponent(this.player) {
+    playerName = PlayerName(this.player.name);
     add(playerName);
   }
 
