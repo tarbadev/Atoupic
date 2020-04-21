@@ -377,7 +377,7 @@ void main() {
       );
 
       blocTest<GameBloc, GameEvent, GameState>(
-        'emits TurnEnded when it is the last round',
+        'emits TurnEnded when it is the last round and counts points for turns with result',
         build: () async => gameBloc,
         act: (bloc) async {
           List<CardRound> cardRounds = List();
@@ -393,7 +393,8 @@ void main() {
           when(Mocks.gameService.read()).thenReturn(mockGameContext);
           when(mockGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayer]));
           when(mockGameContext.turns).thenReturn(UnmodifiableListView([
-            Turn(1, null)
+            Turn(1, null),
+            Turn(2, null)
               ..turnResult = TurnResult(TestFactory.topPlayer, 102, 50, Result.Failure, 162, 0),
             mockTurn,
           ]));
@@ -423,7 +424,7 @@ void main() {
       );
 
       blocTest<GameBloc, GameEvent, GameState>(
-        'emits GameEnded when a "us" team won',
+        'emits TurnEnded with gameOver true when a "us" team won',
         build: () async => gameBloc,
         act: (bloc) async {
           List<CardRound> cardRounds = List();

@@ -132,7 +132,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       var usScore = 0;
       var themScore = 0;
 
-      gameContext.turns.forEach((turn) {
+      gameContext.turns.where((turn) => turn.turnResult != null).forEach((turn) {
         usScore += turn.turnResult.verticalScore;
         themScore += turn.turnResult.horizontalScore;
       });
