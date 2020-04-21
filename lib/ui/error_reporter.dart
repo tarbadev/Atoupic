@@ -72,7 +72,7 @@ class ErrorReporter {
         name: deviceInfo.host,
         modelId: deviceInfo.androidId,
         family: deviceInfo.product,
-        model: deviceInfo.device,
+        model: deviceInfo.model,
         manufacturer: deviceInfo.manufacturer,
         brand: deviceInfo.brand,
         simulator: !deviceInfo.isPhysicalDevice,

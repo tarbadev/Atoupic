@@ -144,7 +144,7 @@ void main() {
         final supportedAbis = ['supportedAbis'];
         final tags = 'tags';
         final type = 'type';
-        final isPhysicalDevice = false;
+        final isPhysicalDevice = true;
         final androidId = 'androidId';
         final systemFeatures = ['systemFeatures'];
 
@@ -237,7 +237,7 @@ void main() {
                 name: host,
                 modelId: androidId,
                 family: product,
-                model: device,
+                model: model,
                 manufacturer: manufacturer,
                 brand: brand,
                 simulator: !isPhysicalDevice,
