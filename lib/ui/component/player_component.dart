@@ -79,12 +79,17 @@ abstract class PlayerComponent extends PositionComponent
     }
   }
 
-  void addCards(List<CardComponent> newCards) {
-    cards.addAll(newCards);
-    newCards.forEach((newCard) => add(newCard));
+  void addCards(List<Card> newCards) {
+    var newCardComponents = newCards
+        .map((card) => CardComponent.fromCard(card, showBackFace: !(this is BottomPlayerComponent)))
+        .toList();
+    cards.addAll(newCardComponents);
+    newCardComponents.forEach((newCard) => add(newCard));
 
     components.remove(playerName);
     add(playerName);
+
+    resize(size);
   }
 
   void setCardsOnTapCallback(Function(Card card) callback) {
