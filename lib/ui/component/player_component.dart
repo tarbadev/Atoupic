@@ -26,7 +26,7 @@ abstract class PlayerComponent extends PositionComponent
     Position.Bottom: BottomPlayerComponent,
     Position.Left: LeftPlayerComponent,
   };
-  
+
   final Player player;
   final List<CardComponent> cards = List();
   final bool isRealPlayer;
@@ -123,15 +123,14 @@ abstract class PlayerComponent extends PositionComponent
     playerDialog = PlayerDialog(text);
     components.add(playerDialog);
 
-    resize(size);
+    resizePlayerDialog(size);
   }
 
   void hideDialog() {
     if (playerDialog != null) {
       components.remove(playerDialog);
+      playerDialog.setToDestroy();
       playerDialog = null;
-
-      resize(size);
     }
   }
 }

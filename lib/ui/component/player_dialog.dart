@@ -1,10 +1,11 @@
 import 'dart:ui';
 
+import 'package:atoupic/ui/component/destroyable.dart';
 import 'package:flame/anchor.dart';
 import 'package:flame/components/text_box_component.dart';
 import 'package:flame/text_config.dart';
 
-class PlayerDialog extends TextBoxComponent {
+class PlayerDialog extends TextBoxComponent with Destroyable {
   PlayerDialog(String text) : super(text, config: TextConfig(fontSize: 18)) {
     anchor = Anchor.bottomRight;
   }
