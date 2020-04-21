@@ -2,11 +2,13 @@ import 'dart:ui';
 
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
-import 'package:atoupic/ui/component/player_dialog.dart';
 import 'package:atoupic/ui/component/card_component.dart';
+import 'package:atoupic/ui/component/left_player_component.dart';
+import 'package:atoupic/ui/component/player_dialog.dart';
 import 'package:atoupic/ui/component/player_name.dart';
+import 'package:atoupic/ui/component/right_player_component.dart';
+import 'package:atoupic/ui/component/top_player_component.dart';
 import 'package:atoupic/ui/component/trump_color.dart';
-import 'package:flame/anchor.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/components/composed_component.dart';
 import 'package:flame/components/mixins/has_game_ref.dart';
@@ -14,7 +16,9 @@ import 'package:flame/components/mixins/resizable.dart';
 import 'package:flame/components/mixins/tapable.dart';
 import 'package:flutter/gestures.dart';
 
-class PlayerComponent extends PositionComponent
+import 'bottom_player_component.dart';
+
+abstract class PlayerComponent extends PositionComponent
     with HasGameRef, Tapable, Resizable, ComposedComponent {
   final Player player;
   final List<CardComponent> cards = List();
@@ -22,197 +26,57 @@ class PlayerComponent extends PositionComponent
   final bool isRealPlayer;
   CardComponent lastPlayedCard;
   bool isDown = false;
-  PlayerDialog _playerDialog;
+  PlayerDialog playerDialog;
   bool _shouldDestroy = false;
-  TrumpColor _trumpColor;
-  PlayerName _playerName;
+  TrumpColor trumpColor;
+  PlayerName playerName;
 
   PlayerComponent(this.player, this.position, this.isRealPlayer, String name) {
-    _playerName = PlayerName(name);
-    add(_playerName);
+    playerName = PlayerName(name);
+    add(playerName);
   }
 
-  void setToDestroy() {
-    _shouldDestroy = true;
-  }
+  void setToDestroy() => _shouldDestroy = true;
 
   @override
-  bool destroy() {
-    return _shouldDestroy;
-  }
+  bool destroy() => _shouldDestroy;
 
   @override
   void resize(Size size) {
-    var tileSize = size.width / 9;
+    final tileSize = size.width / 9;
+    final cardWidth = tileSize * 1.25;
     cards.forEach((card) => card.setWidthAndHeightFromTileSize(tileSize));
 
-    double cardWidth = tileSize * 1.25;
-    double cardHeight = tileSize * 1.25 * 1.39444;
-    double fullDeckWidth = cardWidth * .25 * (cards.length - 1) + cardWidth;
-    double initialX = 0;
-    double initialY = 0;
-    double cardX = 0;
-    double cardY = 0;
-    double cardAngle = 0;
+    double initialX = resizeCardDeck(size);
 
-    double rotation = 1.5708;
-
-    double playedCardWidth = tileSize * .75 * 1.25;
-    double playedCardHeight = tileSize * .75 * 1.25 * 1.39444;
-    Rect playedCardTarget;
-
-    switch (position) {
-      case Position.Top:
-        initialX = (size.width / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
-        cardY = -(cardHeight * .25);
-        cardAngle = rotation * 2;
-        playedCardTarget = Rect.fromLTWH(
-          (size.width / 2),
-          (size.height / 2) - (playedCardHeight) - 10,
-          playedCardWidth,
-          playedCardHeight,
-        );
-        break;
-      case Position.Bottom:
-        initialX = (size.width / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
-        cardY = size.height - (cardHeight * .25);
-        playedCardTarget = Rect.fromLTWH(
-          (size.width / 2),
-          (size.height / 2) + 10,
-          playedCardWidth,
-          playedCardHeight,
-        );
-        break;
-      case Position.Left:
-        cardX = -(cardHeight * .25);
-        initialY = (size.height / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
-        cardAngle = rotation;
-        playedCardTarget = Rect.fromLTWH(
-          (size.width / 2) - (playedCardWidth * 1.5),
-          (size.height / 2) - (playedCardHeight / 2),
-          playedCardWidth,
-          playedCardHeight,
-        );
-        break;
-      case Position.Right:
-        cardX = size.width + cardHeight * .25;
-        initialY = (size.height / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
-        cardAngle = -rotation;
-        playedCardTarget = Rect.fromLTWH(
-          (size.width / 2) + (playedCardWidth * 1.5),
-          (size.height / 2) - (playedCardHeight / 2),
-          playedCardWidth,
-          playedCardHeight,
-        );
-        break;
-    }
-
-    cards.asMap().forEach((index, card) {
-      if (position == Position.Top || position == Position.Bottom) {
-        cardX = initialX + (cardWidth * .25 * index);
-      } else {
-        cardY = initialY + (cardWidth * .25 * index);
-      }
-
-      card.x = cardX;
-      card.y = cardY;
-      card.angle = cardAngle;
-      card.fullyDisplayed = index == cards.length - 1;
-      card.playedCardTarget = playedCardTarget;
-    });
-
-    _resizePlayerName(size);
-    _resizeTrumpColor(cardX, initialX, size, fullDeckWidth, cardWidth, cardHeight);
-    _resizePlayerDialog(size);
+    resizePlayerName(size);
+    resizeTrumpColor(size, initialX, cardWidth);
+    resizePlayerDialog(size);
 
     super.resize(size);
   }
 
-  void _resizePlayerName(Size size) {
-    if (position == Position.Top) {
-      _playerName
-        ..anchor = Anchor.topCenter
-        ..x = size.width / 2
-        ..y = 10;
-    } else if (position == Position.Left) {
-      _playerName
-        ..anchor = Anchor.bottomLeft
-        ..x = 10
-        ..y = size.height / 2 - 5;
-    } else if (position == Position.Right) {
-      _playerName
-        ..anchor = Anchor.bottomRight
-        ..x = size.width - 10
-        ..y = size.height / 2 - 5;
-    }
-  }
+  double resizeCardDeck(Size size);
 
-  void _resizePlayerDialog(Size size) {
-    if (_playerDialog != null) {
-      if (position == Position.Top) {
-        _playerDialog
-          ..anchor = Anchor.topCenter
-          ..x = size.width / 2
-          ..y = 10;
-      } else if (position == Position.Left) {
-        _playerDialog
-          ..anchor = Anchor.topLeft
-          ..x = 10
-          ..y = size.height / 2;
-      } else if (position == Position.Right) {
-        _playerDialog
-          ..anchor = Anchor.topRight
-          ..x = size.width - 10
-          ..y = size.height / 2;
-      }
-    }
-  }
+  void resizePlayerName(Size size);
 
-  void _resizeTrumpColor(
-    double cardX,
-    double initialX,
-    Size size,
-    double fullDeckWidth,
-    double cardWidth,
-    double cardHeight,
-  ) {
-    if (_trumpColor != null) {
-      switch (position) {
-        case Position.Top:
-          _trumpColor
-            ..anchor = Anchor.topLeft
-            ..x = _playerName.x + (_playerName.width / 2)
-            ..y = _playerName.y;
-          break;
-        case Position.Bottom:
-          _trumpColor
-            ..anchor = Anchor.bottomRight
-            ..x = initialX - (cardWidth / 2) - 10
-            ..y = size.height;
-          break;
-        case Position.Left:
-          _trumpColor
-            ..anchor = _playerName.anchor
-            ..x = _playerName.x + _playerName.width
-            ..y = _playerName.y;
-          break;
-        case Position.Right:
-          _trumpColor
-            ..anchor = _playerName.anchor
-            ..x = _playerName.x - _playerName.width
-            ..y = _playerName.y;
-          break;
-      }
-    }
-  }
+  void resizePlayerDialog(Size size);
+
+  void resizeTrumpColor(Size size, double firstCardX, double cardWidth);
 
   static PlayerComponent fromPlayer(Player player) {
-    return PlayerComponent(
-      player,
-      player.position,
-      player.isRealPlayer,
-      player.name,
-    );
+    switch (player.position) {
+      case Position.Top:
+        return TopPlayerComponent(player);
+      case Position.Bottom:
+        return BottomPlayerComponent(player);
+      case Position.Left:
+        return LeftPlayerComponent(player);
+      case Position.Right:
+        return RightPlayerComponent(player);
+      default:
+        return null;
+    }
   }
 
   @override
@@ -235,8 +99,8 @@ class PlayerComponent extends PositionComponent
     cards.addAll(newCards);
     newCards.forEach((newCard) => add(newCard));
 
-    components.remove(_playerName);
-    add(_playerName);
+    components.remove(playerName);
+    add(playerName);
   }
 
   void setCardsOnTapCallback(Function(Card card) callback) {
@@ -244,8 +108,8 @@ class PlayerComponent extends PositionComponent
   }
 
   void displayTrumpColor(CardColor color) {
-    _trumpColor = TrumpColor(color);
-    add(_trumpColor);
+    trumpColor = TrumpColor(color);
+    add(trumpColor);
   }
 
   void playCard(CardComponent cardToPlay, Function onAnimationDoneCallback) {
@@ -264,23 +128,23 @@ class PlayerComponent extends PositionComponent
   }
 
   void resetTrumpColor() {
-    if (_trumpColor != null) {
-      _trumpColor.shouldDestroy = true;
-      _trumpColor = null;
+    if (trumpColor != null) {
+      trumpColor.shouldDestroy = true;
+      trumpColor = null;
     }
   }
 
   void displayDialog(String text) {
-    _playerDialog = PlayerDialog(text);
-    components.add(_playerDialog);
+    playerDialog = PlayerDialog(text);
+    components.add(playerDialog);
 
     resize(size);
   }
 
   void hideDialog() {
-    if (_playerDialog != null) {
-      components.remove(_playerDialog);
-      _playerDialog = null;
+    if (playerDialog != null) {
+      components.remove(playerDialog);
+      playerDialog = null;
 
       resize(size);
     }
