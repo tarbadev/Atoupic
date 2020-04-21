@@ -16,7 +16,7 @@ class BottomPlayerComponent extends PlayerComponent {
 
   @override
   void resizeTrumpColor(Size size) {
-    if (trumpColor != null) {
+    if (trumpColor != null && cards.isNotEmpty) {
       trumpColor
         ..anchor = Anchor.bottomRight
         ..x = cards.first.x - (cards.first.width / 2) - 10
