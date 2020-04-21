@@ -15,24 +15,19 @@ class BottomPlayerComponent extends PlayerComponent {
   void resizePlayerDialog(Size size) {}
 
   @override
-  void resizeTrumpColor(
-    Size size,
-    double firstCardX,
-    double cardWidth,
-  ) {
+  void resizeTrumpColor(Size size) {
     if (trumpColor != null) {
       trumpColor
         ..anchor = Anchor.bottomRight
-        ..x = firstCardX - (cardWidth / 2) - 10
+        ..x = cards.first.x - (cards.first.width / 2) - 10
         ..y = size.height;
     }
   }
 
   @override
-  double resizeCardDeck(Size size) {
+  void resizeCardDeck(Size size) {
     final tileSize = size.width / 9;
     final cardWidth = tileSize * 1.25;
-    final cardHeight = tileSize * 1.25 * 1.39444;
     final fullDeckWidth = cardWidth * .25 * (cards.length - 1) + cardWidth;
     final initialX = (size.width / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
 
@@ -46,13 +41,12 @@ class BottomPlayerComponent extends PlayerComponent {
     );
 
     cards.asMap().forEach((index, card) {
-      card.x = initialX + (cardWidth * .25 * index);
-      card.y = size.height - (cardHeight * .25);
+      card.setWidthAndHeightFromTileSize(tileSize);
+      card.x = initialX + (card.width * .25 * index);
+      card.y = size.height - (card.height * .25);
       card.fullyDisplayed = index == cards.length - 1;
       card.playedCardTarget = playedCardTarget;
     });
-
-    return initialX;
   }
 
   @override

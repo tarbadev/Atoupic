@@ -26,11 +26,7 @@ class LeftPlayerComponent extends PlayerComponent {
   }
 
   @override
-  void resizeTrumpColor(
-    Size size,
-    double firstCardX,
-    double cardWidth,
-  ) {
+  void resizeTrumpColor(Size size) {
     if (trumpColor != null) {
       trumpColor
         ..anchor = playerName.anchor
@@ -40,11 +36,10 @@ class LeftPlayerComponent extends PlayerComponent {
   }
 
   @override
-  double resizeCardDeck(Size size) {
+  void resizeCardDeck(Size size) {
     final tileSize = size.width / 9;
     final rotation = 1.5708;
     final cardWidth = tileSize * 1.25;
-    final cardHeight = tileSize * 1.25 * 1.39444;
     final fullDeckWidth = cardWidth * .25 * (cards.length - 1) + cardWidth;
     final initialY = (size.height / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
 
@@ -58,13 +53,12 @@ class LeftPlayerComponent extends PlayerComponent {
     );
 
     cards.asMap().forEach((index, card) {
-      card.x = -(cardHeight * .25);
-      card.y = initialY + (cardWidth * .25 * index);
+      card.setWidthAndHeightFromTileSize(tileSize);
+      card.x = -(card.height * .25);
+      card.y = initialY + (card.width * .25 * index);
       card.angle = rotation;
       card.fullyDisplayed = index == cards.length - 1;
       card.playedCardTarget = playedCardTarget;
     });
-
-    return 0;
   }
 }

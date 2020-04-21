@@ -43,26 +43,21 @@ abstract class PlayerComponent extends PositionComponent
 
   @override
   void resize(Size size) {
-    final tileSize = size.width / 9;
-    final cardWidth = tileSize * 1.25;
-    cards.forEach((card) => card.setWidthAndHeightFromTileSize(tileSize));
-
-    double initialX = resizeCardDeck(size);
-
+    resizeCardDeck(size);
     resizePlayerName(size);
-    resizeTrumpColor(size, initialX, cardWidth);
+    resizeTrumpColor(size);
     resizePlayerDialog(size);
 
     super.resize(size);
   }
 
-  double resizeCardDeck(Size size);
+  void resizeCardDeck(Size size);
 
   void resizePlayerName(Size size);
 
   void resizePlayerDialog(Size size);
 
-  void resizeTrumpColor(Size size, double firstCardX, double cardWidth);
+  void resizeTrumpColor(Size size);
 
   static PlayerComponent fromPlayer(Player player) {
     switch (player.position) {
