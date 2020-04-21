@@ -124,7 +124,6 @@ class AtoupicGame extends BaseGame {
   void setTrumpColor(CardColor color, Position position) {
     var playerComponent = _getPlayerFromPosition(position);
     playerComponent.displayTrumpColor(color);
-    resize(size);
   }
 
   void resetPlayersCards() {
@@ -139,7 +138,7 @@ class AtoupicGame extends BaseGame {
   }
 
   void resetTrumpColor() {
-    _players.forEach((player) => player.resetTrumpColor());
+    _players.forEach((player) => player.hideTrumpColor());
   }
   
   PlayerComponent _getPlayerFromPosition(Position position) {

@@ -92,11 +92,6 @@ abstract class PlayerComponent extends PositionComponent
     cards.forEach((card) => card.onCardPlayed = () => callback(card.card));
   }
 
-  void displayTrumpColor(CardColor color) {
-    trumpColor = TrumpColor(color);
-    add(trumpColor);
-  }
-
   void playCard(CardComponent cardToPlay, Function onAnimationDoneCallback) {
     lastPlayedCard = cardToPlay;
     cards.remove(cardToPlay);
@@ -112,8 +107,16 @@ abstract class PlayerComponent extends PositionComponent
     cardToPlay.revealCard();
   }
 
-  void resetTrumpColor() {
+  void displayTrumpColor(CardColor color) {
+    trumpColor = TrumpColor(color);
+    add(trumpColor);
+
+    resize(size);
+  }
+
+  void hideTrumpColor() {
     if (trumpColor != null) {
+      components.remove(trumpColor);
       trumpColor.setToDestroy();
       trumpColor = null;
     }
