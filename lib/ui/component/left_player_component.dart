@@ -5,7 +5,7 @@ import 'package:atoupic/ui/component/player_component.dart';
 import 'package:flame/anchor.dart';
 
 class LeftPlayerComponent extends PlayerComponent {
-  LeftPlayerComponent(Player player) : super(player, Position.Left, false, player.name);
+  LeftPlayerComponent(Player player) : super(player, false, player.name);
 
   @override
   void resizePlayerName(Size size) {

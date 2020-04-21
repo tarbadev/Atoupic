@@ -21,17 +21,24 @@ import 'bottom_player_component.dart';
 
 abstract class PlayerComponent extends PositionComponent
     with HasGameRef, Tapable, Resizable, ComposedComponent, Destroyable {
+  static final Map<Position, Type> positionToPlayerType = {
+    Position.Top: TopPlayerComponent,
+    Position.Right: RightPlayerComponent,
+    Position.Bottom: BottomPlayerComponent,
+    Position.Left: LeftPlayerComponent,
+  };
+  
   final Player player;
   final List<CardComponent> cards = List();
-  final Position position;
   final bool isRealPlayer;
+
   CardComponent lastPlayedCard;
   bool isDown = false;
   PlayerDialog playerDialog;
   TrumpColor trumpColor;
   PlayerName playerName;
 
-  PlayerComponent(this.player, this.position, this.isRealPlayer, String name) {
+  PlayerComponent(this.player, this.isRealPlayer, String name) {
     playerName = PlayerName(name);
     add(playerName);
   }

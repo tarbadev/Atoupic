@@ -5,7 +5,7 @@ import 'package:atoupic/ui/component/player_component.dart';
 import 'package:flame/anchor.dart';
 
 class BottomPlayerComponent extends PlayerComponent {
-  BottomPlayerComponent(Player player) : super(player, Position.Bottom, true, player.name);
+  BottomPlayerComponent(Player player) : super(player, true, player.name);
 
   @override
   void resizePlayerName(Size size) {}

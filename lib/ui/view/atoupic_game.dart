@@ -10,6 +10,7 @@ import 'package:flame/game.dart';
 import 'package:kiwi/kiwi.dart';
 
 class AtoupicGame extends BaseGame {
+
   bool visible = false;
   List<PlayerComponent> _players = List();
   PlayerComponent _realPlayer;
@@ -39,12 +40,11 @@ class AtoupicGame extends BaseGame {
   }
 
   void setPlayerDialogText(Position position, String text) {
-    _players.firstWhere((player) => player.position == position).displayDialog(text);
+    _getPlayerFromPosition(position).displayDialog(text);
   }
 
   void addPlayerCards(List<Card> cards, Position position) {
-    var playerComponent = _players.firstWhere((player) => player.position == position);
-    _addPlayerCards(playerComponent, cards);
+    _addPlayerCards(_getPlayerFromPosition(position), cards);
   }
 
   void _addPlayerCards(PlayerComponent playerComponent, List<Card> cards) {
@@ -84,7 +84,7 @@ class AtoupicGame extends BaseGame {
   }
 
   void setLastCardPlayed(Card card, Position position, Function onAnimationDoneCallback) {
-    var playerComponent = _players.firstWhere((player) => player.position == position);
+    var playerComponent = _getPlayerFromPosition(position);
     var playedCard =
         playerComponent.cards.firstWhere((cardComponent) => cardComponent.card == card);
     playerComponent.playCard(playedCard, onAnimationDoneCallback);
@@ -122,7 +122,7 @@ class AtoupicGame extends BaseGame {
   }
 
   void setTrumpColor(CardColor color, Position position) {
-    var playerComponent = _players.firstWhere((player) => player.position == position);
+    var playerComponent = _getPlayerFromPosition(position);
     playerComponent.displayTrumpColor(color);
     resize(size);
   }
@@ -140,5 +140,9 @@ class AtoupicGame extends BaseGame {
 
   void resetTrumpColor() {
     _players.forEach((player) => player.resetTrumpColor());
+  }
+  
+  PlayerComponent _getPlayerFromPosition(Position position) {
+    return _players.firstWhere((player) => player.runtimeType == PlayerComponent.positionToPlayerType[position]);
   }
 }
