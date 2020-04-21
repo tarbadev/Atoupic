@@ -1,13 +1,13 @@
 import 'dart:ui';
 
 import 'package:atoupic/domain/entity/card.dart';
+import 'package:atoupic/ui/component/destroyable.dart';
 import 'package:flame/anchor.dart';
 import 'package:flame/components/text_box_component.dart';
 import 'package:flame/text_config.dart';
 
-class TrumpColor extends TextBoxComponent {
+class TrumpColor extends TextBoxComponent with Destroyable {
   final CardColor color;
-  bool shouldDestroy = false;
 
   TrumpColor(this.color)
       : super(
@@ -26,10 +26,5 @@ class TrumpColor extends TextBoxComponent {
       ..style = PaintingStyle.stroke;
     c.drawRect(rect, borderPaint);
     c.drawRect(rect.deflate(1), borderPaint);
-  }
-
-  @override
-  bool destroy() {
-    return shouldDestroy;
   }
 }

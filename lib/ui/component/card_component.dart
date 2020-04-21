@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/ui/component/destroyable.dart';
 import 'package:flame/anchor.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/components/mixins/resizable.dart';
@@ -9,7 +10,7 @@ import 'package:flame/components/mixins/tapable.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/gestures.dart';
 
-class CardComponent extends SpriteComponent with Resizable, Tapable {
+class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable {
   final int animationDuration = 500;
   String _spriteFileName;
   final Card card;
@@ -17,7 +18,6 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
   final Paint maskPaint = Paint()..color = Color(0x88000000);
   bool fullyDisplayed = false;
   bool canBePlayed = false;
-  bool _shouldDestroy = false;
   bool animatePlayedCard = false;
   DateTime animateStart;
   Rect playedCardTarget;
@@ -26,18 +26,9 @@ class CardComponent extends SpriteComponent with Resizable, Tapable {
 
   Function onAnimationDoneCallback;
 
-  set shouldDestroy(newValue) {
-    return _shouldDestroy = newValue;
-  }
-
   CardComponent(this._spriteFileName, this.onCardPlayed, this.card) {
     sprite = Sprite(_spriteFileName);
     anchor = Anchor.center;
-  }
-
-  @override
-  bool destroy() {
-    return _shouldDestroy;
   }
 
   @override

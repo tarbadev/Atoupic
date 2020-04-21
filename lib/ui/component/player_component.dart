@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/ui/component/card_component.dart';
+import 'package:atoupic/ui/component/destroyable.dart';
 import 'package:atoupic/ui/component/left_player_component.dart';
 import 'package:atoupic/ui/component/player_dialog.dart';
 import 'package:atoupic/ui/component/player_name.dart';
@@ -19,7 +20,7 @@ import 'package:flutter/gestures.dart';
 import 'bottom_player_component.dart';
 
 abstract class PlayerComponent extends PositionComponent
-    with HasGameRef, Tapable, Resizable, ComposedComponent {
+    with HasGameRef, Tapable, Resizable, ComposedComponent, Destroyable {
   final Player player;
   final List<CardComponent> cards = List();
   final Position position;
@@ -27,7 +28,6 @@ abstract class PlayerComponent extends PositionComponent
   CardComponent lastPlayedCard;
   bool isDown = false;
   PlayerDialog playerDialog;
-  bool _shouldDestroy = false;
   TrumpColor trumpColor;
   PlayerName playerName;
 
@@ -35,11 +35,6 @@ abstract class PlayerComponent extends PositionComponent
     playerName = PlayerName(name);
     add(playerName);
   }
-
-  void setToDestroy() => _shouldDestroy = true;
-
-  @override
-  bool destroy() => _shouldDestroy;
 
   @override
   void resize(Size size) {
@@ -129,7 +124,7 @@ abstract class PlayerComponent extends PositionComponent
 
   void resetTrumpColor() {
     if (trumpColor != null) {
-      trumpColor.shouldDestroy = true;
+      trumpColor.setToDestroy();
       trumpColor = null;
     }
   }

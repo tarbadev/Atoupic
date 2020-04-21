@@ -107,7 +107,7 @@ class AtoupicGame extends BaseGame {
     playedCards.forEach((card) {
       var completer = Completer();
       card.animateToWinnerPile(winner, () {
-        card.shouldDestroy = true;
+        card.setToDestroy();
         completer.complete();
       });
       completerList.add(completer);
@@ -133,7 +133,7 @@ class AtoupicGame extends BaseGame {
 
   void _resetPlayerCards(PlayerComponent player) {
     player.cards.forEach((card) {
-      card.shouldDestroy = true;
+      card.setToDestroy();
     });
     player.cards.clear();
   }
