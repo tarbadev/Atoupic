@@ -30,12 +30,13 @@ class AtoupicGame extends BaseGame {
       _players.forEach((playerComponent) => playerComponent.setToDestroy());
       _players.clear();
     }
-    players.map((player) => PlayerComponent.fromPlayer(player)).forEach((player) {
-      if (player.player.isRealPlayer) {
-        _realPlayer = player;
+    players.forEach((player) {
+      final playerComponent = PlayerComponent.fromPlayer(player);
+      if (player.isRealPlayer) {
+        _realPlayer = playerComponent;
       }
-      _players.add(player);
-      add(player);
+      _players.add(playerComponent);
+      add(playerComponent);
     });
   }
 
