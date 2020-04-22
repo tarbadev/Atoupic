@@ -10,14 +10,24 @@ class AiService {
 
   AiService(this._cardService);
 
-  Card chooseCard(List<Card> cards, Turn turn, bool isVertical) {
+  Card chooseCard(List<Card> cards, Turn turn, Position playerPosition) {
     var lastCardRound = turn.lastCardRound;
     var winningCards = _getWinningCards(turn, cards);
-    var didCurrentTeamTake = _didCurrentTeamTake(turn, isVertical);
+    var didCurrentTeamTake = _didCurrentTeamTake(turn, playerPosition.isVertical);
+    var takerPosition =
+        turn.playerDecisions.entries.firstWhere((entry) => entry.value == Decision.Take).key;
 
     if (lastCardRound.playedCards.isEmpty) {
       if (didCurrentTeamTake && winningCards.isEmpty) {
         var trumpCards = _filterCardsByTrump(cards, turn.trumpColor, true);
+        if (takerPosition == playerPosition) {
+          final bestTrumpCards = [
+            Card(turn.trumpColor, CardHead.Jack),
+            Card(turn.trumpColor, CardHead.Nine),
+            Card(turn.trumpColor, CardHead.Ace)
+          ];
+          trumpCards = trumpCards.toList()..removeWhere((card) => bestTrumpCards.contains(card));
+        }
         return _getBestCard(trumpCards.isEmpty ? cards : trumpCards, true);
       } else if (didCurrentTeamTake) {
         winningCards = _filterCardsByTrump(winningCards, turn.trumpColor, true);
@@ -29,9 +39,17 @@ class AiService {
     } else {
       var requestedColor = lastCardRound.playedCards[lastCardRound.firstPlayer.position].color;
       var cardRoundWinner = lastCardRound.getCardRoundWinner(turn.trumpColor);
-      var isPartnerWinning = cardRoundWinner.key.isVertical == isVertical;
+      var isPartnerWinning = cardRoundWinner.key.isVertical == playerPosition.isVertical;
       if (isPartnerWinning) {
-        return _getBestCard(cards, requestedColor == turn.trumpColor);
+        var partnerPlayedWinningCard = _getHighestCardByColor(turn)
+            .values
+            .where((card) => card == cardRoundWinner.value)
+            .isNotEmpty;
+        if (partnerPlayedWinningCard || cardRoundWinner.value.color == turn.trumpColor) {
+          return _getBestCard(cards, requestedColor == turn.trumpColor);
+        } else {
+          return _getLowestCard(cards);
+        }
       } else {
         if (cardRoundWinner.value.color == turn.trumpColor) {
           return _getLowestCard(cards);
@@ -78,9 +96,12 @@ class AiService {
 
   Map<CardColor, Card> _getHighestCardByColor(Turn turn) {
     Map<CardColor, Card> resultMap = Map();
-    var allPlayedCards = turn.cardRounds
-        .map((cardRound) => cardRound.playedCards.values)
-        .reduce((cards1, cards2) => cards1.toList()..addAll(cards2));
+    final previousCardRounds = turn.cardRounds.toList()..removeLast();
+    var allPlayedCards = previousCardRounds.isEmpty
+        ? <Card>[]
+        : previousCardRounds
+            .map((cardRound) => cardRound.playedCards.values)
+            .reduce((cards1, cards2) => cards1.toList()..addAll(cards2));
 
     var remainingCards = _cardService.getAllCards()
       ..removeWhere((card) => allPlayedCards.contains(card));
@@ -109,7 +130,7 @@ class AiService {
     } else {
       final otherColors = CardColor.values.where((color) => color != turn.card.color);
       var selectedColor;
-      for(final color in otherColors){
+      for (final color in otherColors) {
         if (_canTakeForTrumpColor(turn, potentialCards, color)) {
           selectedColor = color;
           break;
@@ -138,7 +159,7 @@ class AiService {
         }
       }
     }
-    
+
     return false;
   }
 }

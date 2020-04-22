@@ -189,7 +189,7 @@ void main() {
         expect: [CardAnimationStarted(), CardAnimationEnded(), CardPlayed(updatedGameContext)],
         verify: (_) async {
           verify(Mocks.gameService.read());
-          verify(Mocks.aiService.chooseCard(cards, turn, true));
+          verify(Mocks.aiService.chooseCard(cards, turn, TestFactory.topPlayer.position));
           verify(mockGameContext.setCardDecision(card, TestFactory.topPlayer));
           verify(Mocks.gameService.save(updatedGameContext));
         },
@@ -216,7 +216,7 @@ void main() {
         expect: [CardAnimationStarted(), CardAnimationEnded(), CardPlayed(updatedGameContext)],
         verify: (_) async {
           verify(Mocks.gameService.read());
-          verify(Mocks.aiService.chooseCard(cards, turn, true));
+          verify(Mocks.aiService.chooseCard(cards, turn, TestFactory.topPlayer.position));
           verify(Mocks.atoupicGame.setPlayerDialogText(TestFactory.topPlayer.position, 'Belote!'));
           verify(mockGameContext.setCardDecision(card, TestFactory.topPlayer));
           verify(updatedGameContext.isPlayedCardBelote(card, TestFactory.topPlayer));
@@ -245,7 +245,7 @@ void main() {
         expect: [CardAnimationStarted(), CardAnimationEnded(), CardPlayed(updatedGameContext)],
         verify: (_) async {
           verify(Mocks.gameService.read());
-          verify(Mocks.aiService.chooseCard(cards, turn, true));
+          verify(Mocks.aiService.chooseCard(cards, turn, TestFactory.topPlayer.position));
           verify(Mocks.atoupicGame.setPlayerDialogText(TestFactory.topPlayer.position, 'Rebelote!'));
           verify(mockGameContext.setCardDecision(card, TestFactory.topPlayer));
           verify(updatedGameContext.isPlayedCardBelote(card, TestFactory.topPlayer));

@@ -82,7 +82,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     var card = _aiService.chooseCard(
       event.possibleCardsToPlay,
       gameContext.lastTurn,
-      event.player.position.isVertical,
+      event.player.position,
     );
 
     yield* _setCardAndAnimate(gameContext, card, event.player);
