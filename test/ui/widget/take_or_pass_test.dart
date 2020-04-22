@@ -1,6 +1,5 @@
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
-import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/widget/take_or_pass.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -21,10 +20,8 @@ void main() {
   group('TakeOrPass', () {
     group('on TurnCreated state from GameBloc', () {
       testWidgets('displays card', (WidgetTester tester) async {
-        when(Mocks.gameBloc.state).thenAnswer((_) => TurnCreated(
-            Turn(1, TestFactory.realPlayer)..card = Card(CardColor.Heart, CardHead.Ace)));
-
-        await tester.pumpWidget(buildTestableWidget(TakeOrPass()));
+        await tester
+            .pumpWidget(buildTestableWidget(TakeOrPass(Card(CardColor.Heart, CardHead.Ace))));
         await tester.pump();
 
         var takeOrPassTester = TakeOrPassTester(tester);
@@ -32,12 +29,11 @@ void main() {
       });
 
       testWidgets('adds a Take event on take tap', (WidgetTester tester) async {
-        when(Mocks.gameBloc.state).thenAnswer((_) => TurnCreated(
-            Turn(1, TestFactory.realPlayer)..card = Card(CardColor.Heart, CardHead.Ace)));
         when(Mocks.takeOrPassBloc.state)
             .thenAnswer((_) => ShowTakeOrPassRound1(TestFactory.realPlayer));
 
-        await tester.pumpWidget(buildTestableWidget(TakeOrPass()));
+        await tester
+            .pumpWidget(buildTestableWidget(TakeOrPass(Card(CardColor.Heart, CardHead.Ace))));
         await tester.pump();
 
         var takeOrPassTester = TakeOrPassTester(tester);
@@ -46,12 +42,11 @@ void main() {
       });
 
       testWidgets('adds a Pass event on pass tap', (WidgetTester tester) async {
-        when(Mocks.gameBloc.state).thenAnswer((_) => TurnCreated(
-            Turn(1, TestFactory.realPlayer)..card = Card(CardColor.Heart, CardHead.Ace)));
         when(Mocks.takeOrPassBloc.state)
             .thenAnswer((_) => ShowTakeOrPassRound1(TestFactory.realPlayer));
 
-        await tester.pumpWidget(buildTestableWidget(TakeOrPass()));
+        await tester
+            .pumpWidget(buildTestableWidget(TakeOrPass(Card(CardColor.Heart, CardHead.Ace))));
         await tester.pump();
 
         var takeOrPassTester = TakeOrPassTester(tester);
@@ -60,12 +55,11 @@ void main() {
       });
 
       testWidgets('displays take or pass round 2 dialog', (WidgetTester tester) async {
-        when(Mocks.gameBloc.state).thenAnswer((_) => TurnCreated(
-            Turn(1, TestFactory.realPlayer)..card = Card(CardColor.Heart, CardHead.Ace)));
         when(Mocks.takeOrPassBloc.state)
             .thenAnswer((_) => ShowTakeOrPassRound2(TestFactory.realPlayer));
 
-        await tester.pumpWidget(buildTestableWidget(TakeOrPass()));
+        await tester
+            .pumpWidget(buildTestableWidget(TakeOrPass(Card(CardColor.Heart, CardHead.Ace))));
         await tester.pump();
 
         var takeOrPassTester = TakeOrPassTester(tester);

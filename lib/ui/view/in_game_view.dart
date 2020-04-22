@@ -1,3 +1,4 @@
+import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:atoupic/ui/widget/current_turn.dart';
 import 'package:atoupic/ui/widget/end_game_dialog.dart';
@@ -5,6 +6,7 @@ import 'package:atoupic/ui/widget/score.dart';
 import 'package:atoupic/ui/widget/take_or_pass.dart';
 import 'package:atoupic/ui/widget/turn_result_dialog_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 
 class InGameView extends StatelessWidget {
@@ -35,7 +37,14 @@ class InGameView extends StatelessWidget {
               top: centerSpace.top,
               width: centerSpace.right - centerSpace.left,
               height: centerSpace.bottom - centerSpace.top,
-              child: TakeOrPass(),
+              child: BlocBuilder<GameBloc, GameState>(
+                  builder: (BuildContext context, GameState state) {
+                var child;
+                if (state is TurnCreated) {
+                  child = TakeOrPass(state.turn.card);
+                }
+                return Container(child: child);
+              }),
             ),
           ],
         ),
