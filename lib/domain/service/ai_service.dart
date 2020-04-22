@@ -18,6 +18,18 @@ class AiService {
         turn.playerDecisions.entries.firstWhere((entry) => entry.value == Decision.Take).key;
 
     if (lastCardRound.playedCards.isEmpty) {
+      final lastTrumpCardRound = turn.cardRounds.lastWhere(
+        (cardRound) =>
+            cardRound.playedCards.isNotEmpty &&
+            cardRound.playedCards[cardRound.firstPlayer.position].color == turn.trumpColor,
+        orElse: () => null,
+      );
+      final opponentsHaveTrumpCards = lastTrumpCardRound == null ||
+          lastTrumpCardRound.playedCards.entries
+              .where((entry) =>
+                  entry.key.isVertical != playerPosition.isVertical &&
+                  entry.value.color == turn.trumpColor)
+              .isNotEmpty;
       if (didCurrentTeamTake && winningCards.isEmpty) {
         var trumpCards = _filterCardsByTrump(cards, turn.trumpColor, true);
         if (takerPosition == playerPosition) {
@@ -29,7 +41,7 @@ class AiService {
           trumpCards = trumpCards.toList()..removeWhere((card) => bestTrumpCards.contains(card));
         }
         return _getBestCard(trumpCards.isEmpty ? cards : trumpCards, true);
-      } else if (didCurrentTeamTake) {
+      } else if (didCurrentTeamTake && opponentsHaveTrumpCards) {
         winningCards = _filterCardsByTrump(winningCards, turn.trumpColor, true);
       } else {
         winningCards = _filterCardsByTrump(winningCards, turn.trumpColor, false);

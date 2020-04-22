@@ -193,16 +193,39 @@ void main() {
             });
 
             group('when is in the team taker', () {
-              test('returns winning trump card', () {
-                var cards = [
-                  Card(CardColor.Heart, CardHead.Eight),
-                  Card(CardColor.Heart, CardHead.Queen),
-                  Card(CardColor.Heart, CardHead.Ace),
-                  Card(CardColor.Spade, CardHead.Jack),
-                ];
+              group('when opponents still have trump cards', () {
+                test('returns winning trump card', () {
+                  var cards = [
+                    Card(CardColor.Heart, CardHead.Eight),
+                    Card(CardColor.Heart, CardHead.Queen),
+                    Card(CardColor.Heart, CardHead.Ace),
+                    Card(CardColor.Spade, CardHead.Jack),
+                  ];
 
-                expect(aiService.chooseCard(cards, turn, Position.Right),
-                    Card(CardColor.Spade, CardHead.Jack));
+                  expect(aiService.chooseCard(cards, turn, Position.Right),
+                      Card(CardColor.Spade, CardHead.Jack));
+                });
+              });
+              group('when opponents do not have trump cards left', () {
+                test('returns winning trump card', () {
+                  turn.cardRounds = [
+                    CardRound(TestFactory.leftPlayer)
+                      ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Jack)
+                      ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.Nine)
+                      ..playedCards[Position.Top] = Card(CardColor.Heart, CardHead.Jack)
+                      ..playedCards[Position.Bottom] = Card(CardColor.Heart, CardHead.Nine),
+                    CardRound(TestFactory.leftPlayer),
+                  ];
+                  var cards = [
+                    Card(CardColor.Heart, CardHead.Eight),
+                    Card(CardColor.Heart, CardHead.Queen),
+                    Card(CardColor.Heart, CardHead.Ace),
+                    Card(CardColor.Spade, CardHead.Ace),
+                  ];
+
+                  expect(aiService.chooseCard(cards, turn, Position.Left),
+                      Card(CardColor.Heart, CardHead.Ace));
+                });
               });
             });
           });
