@@ -63,6 +63,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       yield CreatingCardRound();
 
       final gameContext = _gameService.save(_gameService.read().newCardRound());
+      await Future.delayed(Duration(seconds: 1));
 
       yield CardRoundCreated(gameContext);
     } else if (event is PlayCardForAi) {

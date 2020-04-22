@@ -9,16 +9,16 @@ import 'package:bloc/bloc.dart';
 
 import './bloc.dart';
 
-class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
+class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
   final GameBloc _gameBloc;
   final GameService _gameService;
   final CardService _cardService;
   final AiService _aiService;
 
-  TakeOrPassDialogBloc(this._gameBloc, this._gameService, this._cardService, this._aiService);
+  TakeOrPassBloc(this._gameBloc, this._gameService, this._cardService, this._aiService);
 
   @override
-  TakeOrPassState get initialState => HideTakeOrPassDialog();
+  TakeOrPassState get initialState => HideTakeOrPass();
 
   @override
   Stream<TakeOrPassState> mapEventToState(
@@ -29,7 +29,10 @@ class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
     } else if (event is Pass) {
       yield* _mapPassEventToState(event);
     } else if (event is RealPlayerTurn) {
-      yield ShowTakeOrPassDialog(event.player, event.turn.card, event.turn.round == 2);
+      await Future.delayed(Duration(milliseconds: 500));
+      yield event.turn.round == 1
+          ? ShowTakeOrPassRound1(event.player)
+          : ShowTakeOrPassRound2(event.player);
     } else if (event is ComputerPlayerTurn) {
       yield* _mapComputerPlayerTurnEventToState(event);
     }
@@ -70,12 +73,13 @@ class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
   }
 
   Stream<TakeOrPassState> _passAndMapToState(Player player) async* {
-    yield HideTakeOrPassDialog();
+    yield HideTakeOrPass();
     var gameContext = _gameService.read().setDecision(player, Decision.Pass);
 
     _gameBloc.add(DisplayPlayerPassedCaption(player.position));
 
     if (gameContext.nextPlayer() == null && gameContext.lastTurn.round == 1) {
+      await Future.delayed(Duration(milliseconds: 1000));
       gameContext = gameContext.nextRound();
       _gameBloc.add(ResetPlayersPassedCaption());
     }
@@ -83,6 +87,7 @@ class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
     _gameService.save(gameContext);
 
     if (gameContext.nextPlayer() == null && gameContext.lastTurn.round == 2) {
+      await Future.delayed(Duration(milliseconds: 1000));
       yield NoOneTook();
 
       _gameBloc.add(NewTurn());
@@ -92,6 +97,7 @@ class TakeOrPassDialogBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
   }
 
   Stream<TakeOrPassState> _mapComputerPlayerTurnEventToState(ComputerPlayerTurn event) async* {
+    await Future.delayed(Duration(milliseconds: 1000));
     var result = _aiService.takeOrPass(event.player.cards, event.turn);
     if (result == null) {
       yield* _passAndMapToState(event.player);

@@ -14,7 +14,7 @@ import '../helper/test_factory.dart';
 
 void main() {
   group('TakeOrPassDialogBloc', () {
-    TakeOrPassDialogBloc currentTurnBloc;
+    TakeOrPassBloc currentTurnBloc;
 
     setUp(() {
       reset(Mocks.gameBloc);
@@ -22,7 +22,8 @@ void main() {
       reset(Mocks.cardService);
       reset(Mocks.aiService);
 
-      currentTurnBloc = TakeOrPassDialogBloc(Mocks.gameBloc, Mocks.gameService, Mocks.cardService, Mocks.aiService);
+      currentTurnBloc = TakeOrPassBloc(
+          Mocks.gameBloc, Mocks.gameService, Mocks.cardService, Mocks.aiService);
     });
 
     tearDown(() {
@@ -30,7 +31,7 @@ void main() {
     });
 
     test('initial state is InitialTakeOrPassState', () {
-      expect(currentTurnBloc.initialState, HideTakeOrPassDialog());
+      expect(currentTurnBloc.initialState, HideTakeOrPass());
     });
 
     group('on Take event', () {
@@ -44,7 +45,8 @@ void main() {
         realPlayer,
         TestFactory.rightPlayer..cards = [],
       ];
-      var updatedRealPlayer = TestFactory.realPlayer..cards = [distributedCard, Card(CardColor.Spade, CardHead.Jack), card];
+      var updatedRealPlayer = TestFactory.realPlayer
+        ..cards = [distributedCard, Card(CardColor.Spade, CardHead.Jack), card];
       List<Player> updatedPlayers = [
         TestFactory.leftPlayer..cards = [distributedCard],
         TestFactory.topPlayer..cards = [distributedCard],
@@ -59,8 +61,7 @@ void main() {
           ..playerDecisions[realPlayer.position] = Decision.Take
       ]);
 
-      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
-          'emits PlayerTook',
+      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>('emits PlayerTook',
           build: () async => currentTurnBloc,
           act: (bloc) async {
             when(Mocks.gameService.read()).thenReturn(gameContext);
@@ -72,7 +73,8 @@ void main() {
           verify: (_) async {
             verify(Mocks.gameService.read());
             expect(verify(Mocks.cardService.distributeCards(2)).callCount, 1);
-            verify(Mocks.gameBloc.add(AddPlayerCards([distributedCard, card], realPlayer.position)));
+            verify(
+                Mocks.gameBloc.add(AddPlayerCards([distributedCard, card], realPlayer.position)));
             expect(verify(Mocks.cardService.distributeCards(3)).callCount, 3);
             verify(Mocks.gameBloc.add(AddPlayerCards([distributedCard], Position.Left)));
             verify(Mocks.gameBloc.add(AddPlayerCards([distributedCard], firstPlayer.position)));
@@ -81,8 +83,7 @@ void main() {
             verify(Mocks.gameBloc.add(DisplayTrumpColor(card.color, Position.Bottom)));
             verify(Mocks.gameBloc.add(ReplaceRealPlayersCards(updatedRealPlayer.cards)));
             verify(Mocks.gameService.save(updatedGameContext));
-          }
-      );
+          });
     });
 
     group('on Pass event', () {
@@ -108,7 +109,7 @@ void main() {
       ]);
       var mockedContext = MockGameContext();
 
-      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
+      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
           'saves the pass decision and emit PlayerPassed',
           build: () async => currentTurnBloc,
           act: (bloc) async {
@@ -121,10 +122,9 @@ void main() {
             verify(Mocks.gameBloc.add(DisplayPlayerPassedCaption(firstPlayer.position)));
             verify(Mocks.gameService.read());
             verify(Mocks.gameService.save(updatedGameContext));
-          }
-      );
+          });
 
-      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
+      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
           'saves the pass decision and emit PlayerPassed '
           'and saves new round if the next player is null',
           build: () async => currentTurnBloc,
@@ -145,10 +145,9 @@ void main() {
             verify(mockedContext.nextRound());
             verify(Mocks.gameBloc.add(ResetPlayersPassedCaption()));
             verify(Mocks.gameService.save(updatedGameContext2));
-          }
-      );
+          });
 
-      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
+      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
           'saves the pass decision and emit PlayerPassed '
           'and adds NewTurn event if the next player is null is round 2',
           build: () async => currentTurnBloc,
@@ -167,20 +166,29 @@ void main() {
             verify(Mocks.gameService.read());
             verify(Mocks.gameService.save(mockedContext));
             verify(Mocks.gameBloc.add(NewTurn()));
-          }
-      );
+          });
     });
 
     group('on RealPlayerTurn event', () {
       var player = TestFactory.realPlayer;
       var card = Card(CardColor.Club, CardHead.King);
-      var turn = Turn(1, TestFactory.realPlayer)..card = card;
+      var turnRound1 = Turn(1, TestFactory.realPlayer)..card = card;
+      var turnRound2 = Turn(1, TestFactory.realPlayer)
+        ..card = card
+        ..round = 2;
 
-      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
-        'emits ShowTakeOrPassDialog',
+      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
+        'emits ShowTakeOrPassRound1 when round 1',
         build: () async => currentTurnBloc,
-        act: (bloc) async => bloc.add(RealPlayerTurn(player, turn)),
-        expect: [ShowTakeOrPassDialog(player, card, false)],
+        act: (bloc) async => bloc.add(RealPlayerTurn(player, turnRound1)),
+        expect: [ShowTakeOrPassRound1(player)],
+      );
+
+      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
+        'emits ShowTakeOrPassRound2 when round 2',
+        build: () async => currentTurnBloc,
+        act: (bloc) async => bloc.add(RealPlayerTurn(player, turnRound2)),
+        expect: [ShowTakeOrPassRound2(player)],
       );
     });
 
@@ -191,25 +199,24 @@ void main() {
       var turn = Turn(1, TestFactory.topPlayer)..card = card;
       var mockGameContext = MockGameContext();
 
-      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
-        'emits PlayerPassed when aiService returns null',
-        build: () async => currentTurnBloc,
-        act: (bloc) async {
-          when(Mocks.aiService.takeOrPass(any, any)).thenReturn(null);
-          when(Mocks.gameService.read()).thenReturn(mockGameContext);
-          when(mockGameContext.setDecision(any, any)).thenReturn(mockGameContext);
-          when(mockGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
+      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
+          'emits PlayerPassed when aiService returns null',
+          build: () async => currentTurnBloc,
+          act: (bloc) async {
+            when(Mocks.aiService.takeOrPass(any, any)).thenReturn(null);
+            when(Mocks.gameService.read()).thenReturn(mockGameContext);
+            when(mockGameContext.setDecision(any, any)).thenReturn(mockGameContext);
+            when(mockGameContext.nextPlayer()).thenReturn(TestFactory.realPlayer);
 
-          bloc.add(ComputerPlayerTurn(player, turn));
-        },
-        expect: [PlayerPassed(mockGameContext)],
-        verify: (_) async {
-          verify(mockGameContext.setDecision(player, Decision.Pass));
-          verify(Mocks.aiService.takeOrPass(cards, turn));
-        }
-      );
+            bloc.add(ComputerPlayerTurn(player, turn));
+          },
+          expect: [PlayerPassed(mockGameContext)],
+          verify: (_) async {
+            verify(mockGameContext.setDecision(player, Decision.Pass));
+            verify(Mocks.aiService.takeOrPass(cards, turn));
+          });
 
-      blocTest<TakeOrPassDialogBloc, TakeOrPassEvent, TakeOrPassState>(
+      blocTest<TakeOrPassBloc, TakeOrPassEvent, TakeOrPassState>(
           'emits PlayerTook when aiService returns CardColor',
           build: () async => currentTurnBloc,
           act: (bloc) async {
@@ -217,7 +224,8 @@ void main() {
             when(Mocks.gameService.read()).thenReturn(mockGameContext);
             when(mockGameContext.setDecision(any, any)).thenReturn(mockGameContext);
             when(mockGameContext.lastTurn).thenReturn(turn);
-            when(mockGameContext.players).thenReturn(UnmodifiableListView([TestFactory.realPlayerWithCards([])]));
+            when(mockGameContext.players)
+                .thenReturn(UnmodifiableListView([TestFactory.realPlayerWithCards([])]));
             when(Mocks.cardService.distributeCards(any)).thenReturn([]);
 
             bloc.add(ComputerPlayerTurn(player, turn));
@@ -226,8 +234,7 @@ void main() {
           verify: (_) async {
             expect(turn.trumpColor, CardColor.Heart);
             verify(Mocks.aiService.takeOrPass(cards, turn));
-          }
-      );
+          });
     });
   });
 }

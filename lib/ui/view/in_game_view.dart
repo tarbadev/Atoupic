@@ -1,46 +1,42 @@
-import 'package:atoupic/ui/widget/score.dart';
+import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:atoupic/ui/widget/current_turn.dart';
 import 'package:atoupic/ui/widget/end_game_dialog.dart';
-import 'package:atoupic/ui/widget/take_or_pass_container.dart';
+import 'package:atoupic/ui/widget/score.dart';
+import 'package:atoupic/ui/widget/take_or_pass.dart';
 import 'package:atoupic/ui/widget/turn_result_dialog_container.dart';
 import 'package:flutter/material.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
 
 class InGameView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Scaffold(
-        key: Key('InGame__Container'),
-        backgroundColor: Colors.transparent,
-        body: Column(
+    final AtoupicGame atoupicGame = kiwi.Container().resolve();
+    final Rect centerSpace = atoupicGame.getCenterRect();
+
+    return Scaffold(
+      key: Key('InGame__Container'),
+      backgroundColor: Colors.transparent,
+      body: Container(
+        padding: EdgeInsets.all(5),
+        child: Stack(
           children: <Widget>[
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Flexible(
-                    fit: FlexFit.loose,
-                    flex: 1,
-                    child: CurrentTurn(),
-                  ),
-                  Flexible(
-                    fit: FlexFit.tight,
-                    flex: 6,
-                    child: Divider(color: Colors.transparent),
-                  ),
-                  Flexible(
-                    fit: FlexFit.loose,
-                    flex: 2,
-                    child: Score(),
-                  ),
-                ],
-              ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: CurrentTurn(),
             ),
-            TakeOrPassDialogContainer(),
+            Align(
+              alignment: Alignment.topRight,
+              child: Score(),
+            ),
             TurnResultDialogContainer(),
             EndGameDialog(),
+            Positioned(
+              left: centerSpace.left,
+              top: centerSpace.top,
+              width: centerSpace.right - centerSpace.left,
+              height: centerSpace.bottom - centerSpace.top,
+              child: TakeOrPass(),
+            ),
           ],
         ),
       ),

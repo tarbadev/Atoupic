@@ -26,6 +26,7 @@ abstract class PlayerComponent extends PositionComponent
     Position.Bottom: BottomPlayerComponent,
     Position.Left: LeftPlayerComponent,
   };
+  static final double margin = 5;
 
   final Player player;
   final List<CardComponent> cards = List();

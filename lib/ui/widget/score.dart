@@ -39,6 +39,7 @@ class ScoreDisplay extends StatelessWidget {
       key: Key('Score'),
       color: Colors.black87,
       padding: EdgeInsets.symmetric(vertical: 5, horizontal: horizontalPadding),
+      width: 150,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,

@@ -12,7 +12,7 @@ void main() {
   setupDependencyInjectorForTest();
 
   setUp(() {
-    reset(Mocks.takeOrPassDialogBloc);
+    reset(Mocks.takeOrPassBloc);
   });
 
   group('on GameEnded state from GameBloc', () {

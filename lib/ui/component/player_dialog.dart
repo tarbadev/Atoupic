@@ -6,7 +6,7 @@ import 'package:flame/components/text_box_component.dart';
 import 'package:flame/text_config.dart';
 
 class PlayerDialog extends TextBoxComponent with Destroyable {
-  PlayerDialog(String text) : super(text, config: TextConfig(fontSize: 18)) {
+  PlayerDialog(String text) : super(text, config: TextConfig(fontSize: 16)) {
     anchor = Anchor.bottomRight;
   }
 

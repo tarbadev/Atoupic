@@ -13,7 +13,7 @@ void main() {
   ApplicationBlocDelegate applicationBlocDelegate;
 
   setUp(() {
-    applicationBlocDelegate = ApplicationBlocDelegate(Mocks.gameBloc, Mocks.takeOrPassDialogBloc, Mocks.errorReporter);
+    applicationBlocDelegate = ApplicationBlocDelegate(Mocks.gameBloc, Mocks.takeOrPassBloc, Mocks.errorReporter);
   });
 
   group('On SoloGameInitialized', () {
@@ -40,7 +40,7 @@ void main() {
             nextState: TurnCreated(Turn(1, TestFactory.topPlayer)),
           ));
 
-      verify(Mocks.takeOrPassDialogBloc.add(ComputerPlayerTurn(TestFactory.topPlayer, Turn(1, TestFactory.topPlayer))));
+      verify(Mocks.takeOrPassBloc.add(ComputerPlayerTurn(TestFactory.topPlayer, Turn(1, TestFactory.topPlayer))));
     });
 
     test('adds RealPlayerTurn event when player is real player', () {
@@ -55,7 +55,7 @@ void main() {
             nextState: TurnCreated(turn),
           ));
 
-      verify(Mocks.takeOrPassDialogBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
+      verify(Mocks.takeOrPassBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
     });
   });
 
@@ -70,12 +70,12 @@ void main() {
       applicationBlocDelegate.onTransition(
           Mocks.gameBloc,
           Transition(
-            currentState: HideTakeOrPassDialog(),
+            currentState: HideTakeOrPass(),
             event: Pass(null),
             nextState: PlayerPassed(mockedGameContext),
           ));
 
-      verify(Mocks.takeOrPassDialogBloc.add(ComputerPlayerTurn(TestFactory.topPlayer, turn)));
+      verify(Mocks.takeOrPassBloc.add(ComputerPlayerTurn(TestFactory.topPlayer, turn)));
     });
 
     test('displays take of pass dialog when player is real player', () {
@@ -88,12 +88,12 @@ void main() {
       applicationBlocDelegate.onTransition(
           Mocks.gameBloc,
           Transition(
-            currentState: HideTakeOrPassDialog(),
+            currentState: HideTakeOrPass(),
             event: Pass(null),
             nextState: PlayerPassed(mockedGameContext),
           ));
 
-      verify(Mocks.takeOrPassDialogBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
+      verify(Mocks.takeOrPassBloc.add(RealPlayerTurn(TestFactory.realPlayer, turn)));
     });
   });
 
@@ -102,7 +102,7 @@ void main() {
       applicationBlocDelegate.onTransition(
           Mocks.gameBloc,
           Transition(
-            currentState: HideTakeOrPassDialog(),
+            currentState: HideTakeOrPass(),
             event: Take(null, null),
             nextState: PlayerTook(),
           ));

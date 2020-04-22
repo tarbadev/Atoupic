@@ -11,7 +11,7 @@ class LeftPlayerComponent extends PlayerComponent {
   void resizePlayerName(Size size) {
     playerName
       ..anchor = Anchor.bottomLeft
-      ..x = 10
+      ..x = PlayerComponent.margin
       ..y = size.height / 2 - 5;
   }
 
@@ -20,7 +20,7 @@ class LeftPlayerComponent extends PlayerComponent {
     if (playerDialog != null) {
       playerDialog
         ..anchor = Anchor.topLeft
-        ..x = 10
+        ..x = PlayerComponent.margin
         ..y = size.height / 2;
     }
   }

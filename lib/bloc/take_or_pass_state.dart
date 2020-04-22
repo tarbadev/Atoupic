@@ -1,4 +1,3 @@
-import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:equatable/equatable.dart';
@@ -13,8 +12,10 @@ abstract class TakeOrPassState extends Equatable {
   bool get stringify => true;
 }
 
-class HideTakeOrPassDialog extends TakeOrPassState {}
+class HideTakeOrPass extends TakeOrPassState {}
+
 class PlayerTook extends TakeOrPassState {}
+
 class PlayerPassed extends TakeOrPassState {
   final GameContext gameContext;
 
@@ -24,15 +25,22 @@ class PlayerPassed extends TakeOrPassState {
   List<Object> get props => [gameContext];
 }
 
-class ShowTakeOrPassDialog extends TakeOrPassState {
+class ShowTakeOrPassRound1 extends TakeOrPassState {
   final Player player;
-  final Card card;
-  final bool isRound2;
 
-  ShowTakeOrPassDialog(this.player, this.card, this.isRound2);
+  ShowTakeOrPassRound1(this.player);
 
   @override
-  List<Object> get props => [player, card, isRound2];
+  List<Object> get props => [player];
+}
+
+class ShowTakeOrPassRound2 extends TakeOrPassState {
+  final Player player;
+
+  ShowTakeOrPassRound2(this.player);
+
+  @override
+  List<Object> get props => [player];
 }
 
 class NoOneTook extends TakeOrPassState {}

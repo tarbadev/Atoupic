@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
-import 'package:atoupic/ui/component/card_component.dart';
 import 'package:atoupic/ui/component/player_component.dart';
 import 'package:flame/game.dart';
 import 'package:kiwi/kiwi.dart';
@@ -141,5 +140,19 @@ class AtoupicGame extends BaseGame {
   
   PlayerComponent _getPlayerFromPosition(Position position) {
     return _players.firstWhere((player) => player.runtimeType == PlayerComponent.positionToPlayerType[position]);
+  }
+
+  Rect getCenterRect() {
+    var leftPlayer = _getPlayerFromPosition(Position.Left);
+    var topPlayer = _getPlayerFromPosition(Position.Top);
+    var rightPlayer = _getPlayerFromPosition(Position.Right);
+    var bottomPlayer = _realPlayer;
+
+    final left = leftPlayer.playerName.x + leftPlayer.playerName.width - 10;
+    final top = topPlayer.playerName.y + (topPlayer.playerName.height * 2) - 5;
+    final right = rightPlayer.playerName.x - rightPlayer.playerName.width;
+    final bottom = bottomPlayer.cards.isEmpty ? 0 : (bottomPlayer.cards.first.y - (bottomPlayer.cards.first.height / 2));
+
+    return Rect.fromLTRB(left, top, right, bottom);
   }
 }

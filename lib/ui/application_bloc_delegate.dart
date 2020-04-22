@@ -9,7 +9,7 @@ import 'package:bloc/bloc.dart';
 
 class ApplicationBlocDelegate extends BlocDelegate {
   final GameBloc _gameBloc;
-  final TakeOrPassDialogBloc _takeOrPassDialogBloc;
+  final TakeOrPassBloc _takeOrPassDialogBloc;
   final ErrorReporter _errorReporter;
 
   ApplicationBlocDelegate(this._gameBloc, this._takeOrPassDialogBloc, this._errorReporter);

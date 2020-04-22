@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:atoupic/bloc/app_state.dart';
 import 'package:atoupic/ui/atoupic_app.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +37,7 @@ void main() {
       var homeViewTester = HomeViewTester(tester);
       var inGameViewTester = InGameViewTester(tester);
 
+      when(Mocks.atoupicGame.getCenterRect()).thenReturn(Rect.zero);
       when(Mocks.appBloc.state).thenAnswer((_) => InGameAppState());
 
       await tester.pumpWidget(buildTestableWidget(AtoupicApp()));

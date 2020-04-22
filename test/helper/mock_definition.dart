@@ -39,7 +39,7 @@ class MockGameBloc extends MockBloc<GameEvent, GameState> implements GameBloc {}
 
 class MockAppBloc extends MockBloc<AppEvent, AppState> implements AppBloc {}
 
-class MockTakeOrPassDialogBloc extends MockBloc<TakeOrPassEvent, TakeOrPassState> implements TakeOrPassDialogBloc {}
+class MockTakeOrPassBloc extends MockBloc<TakeOrPassEvent, TakeOrPassState> implements TakeOrPassBloc {}
 
 class MockCurrentTurnBloc extends MockBloc<CurrentTurnEvent, int> implements CurrentTurnBloc {}
 
@@ -63,7 +63,7 @@ class Mocks {
   static final GameBloc gameBloc = MockGameBloc();
   static final AppBloc appBloc = MockAppBloc();
   static final CurrentTurnBloc currentTurnBloc = MockCurrentTurnBloc();
-  static final TakeOrPassDialogBloc takeOrPassDialogBloc = MockTakeOrPassDialogBloc();
+  static final TakeOrPassBloc takeOrPassBloc = MockTakeOrPassBloc();
   static final GameContextRepository gameContextRepository = MockGameContextRepository();
   static final MockNext mockNext = MockNext();
 

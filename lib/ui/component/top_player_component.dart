@@ -12,7 +12,7 @@ class TopPlayerComponent extends PlayerComponent {
     playerName
       ..anchor = Anchor.topCenter
       ..x = size.width / 2
-      ..y = 10;
+      ..y = PlayerComponent.margin;
   }
 
   @override
@@ -21,7 +21,7 @@ class TopPlayerComponent extends PlayerComponent {
       playerDialog
         ..anchor = Anchor.topCenter
         ..x = size.width / 2
-        ..y = 10;
+        ..y = (playerName.height + playerName.y) + 5;
     }
   }
 

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/ui/view/in_game_view.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +16,8 @@ void main() {
 
   setUp(() {
     reset(Mocks.gameBloc);
+
+    when(Mocks.atoupicGame.getCenterRect()).thenReturn(Rect.zero);
   });
 
   group('InGameView', () {
