@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/ui/component/card_component.dart';
 import 'package:atoupic/ui/component/player_component.dart';
 import 'package:flame/anchor.dart';
 
@@ -43,22 +44,24 @@ class TopPlayerComponent extends PlayerComponent {
     final fullDeckWidth = cardWidth * .25 * (cards.length - 1) + cardWidth;
     final initialX = (size.width / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
 
-    final playedCardWidth = tileSize * .75 * 1.25;
-    final playedCardHeight = tileSize * .75 * 1.25 * 1.39444;
-    Rect playedCardTarget = Rect.fromLTWH(
-      (size.width / 2),
-      (size.height / 2) - (playedCardHeight) - 10,
-      playedCardWidth,
-      playedCardHeight,
-    );
-
     cards.asMap().forEach((index, card) {
       card.setWidthAndHeightFromTileSize(tileSize);
       card.x = initialX + (card.width * .25 * index);
       card.y = -(card.height * .25);
       card.angle = rotation * 2;
       card.fullyDisplayed = index == cards.length - 1;
-      card.playedCardTarget = playedCardTarget;
     });
+  }
+
+  @override
+  Rect getPlayedCardRect(Size size) {
+    final tileSize = size.width / 9;
+
+    return Rect.fromLTWH(
+      (size.width / 2),
+      (size.height / 2) - (tileSize * .75 * 1.25 * CardComponent.heightFactor) - 10,
+      tileSize * .75 * 1.25,
+      tileSize * .75 * 1.25 * CardComponent.heightFactor,
+    );
   }
 }

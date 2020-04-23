@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/ui/component/card_component.dart';
 import 'package:atoupic/ui/component/player_component.dart';
 import 'package:flame/anchor.dart';
 import 'package:flutter/gestures.dart';
@@ -50,22 +51,26 @@ class BottomPlayerComponent extends PlayerComponent {
     final fullDeckWidth = cardWidth * .25 * (cards.length - 1) + cardWidth;
     final initialX = (size.width / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
 
+    cards.asMap().forEach((index, card) {
+      card.setWidthAndHeightFromTileSize(tileSize);
+      card.x = initialX + (card.width * .25 * index);
+      card.y = size.height - (card.height * .25);
+      card.fullyDisplayed = index == cards.length - 1;
+    });
+  }
+
+  @override
+  Rect getPlayedCardRect(Size size) {
+    final tileSize = size.width / 9;
     final playedCardWidth = tileSize * .75 * 1.25;
-    final playedCardHeight = tileSize * .75 * 1.25 * 1.39444;
+    final playedCardHeight = tileSize * .75 * 1.25 * CardComponent.heightFactor;
     Rect playedCardTarget = Rect.fromLTWH(
       (size.width / 2),
       (size.height / 2) + 10,
       playedCardWidth,
       playedCardHeight,
     );
-
-    cards.asMap().forEach((index, card) {
-      card.setWidthAndHeightFromTileSize(tileSize);
-      card.x = initialX + (card.width * .25 * index);
-      card.y = size.height - (card.height * .25);
-      card.fullyDisplayed = index == cards.length - 1;
-      card.playedCardTarget = playedCardTarget;
-    });
+    return playedCardTarget;
   }
 
   @override

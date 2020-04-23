@@ -60,6 +60,8 @@ abstract class PlayerComponent extends PositionComponent
 
   void resizeTrumpColor(Size size);
 
+  Rect getPlayedCardRect(Size size);
+
   static PlayerComponent fromPlayer(Player player) {
     switch (player.position) {
       case Position.Top:
@@ -104,6 +106,7 @@ abstract class PlayerComponent extends PositionComponent
     components.remove(cardToPlay);
     add(cardToPlay);
 
+    cardToPlay.playedCardTarget = getPlayedCardRect(size);
     cardToPlay.angle = 0;
     cardToPlay.fullyDisplayed = true;
     cardToPlay.animateStart = DateTime.now();

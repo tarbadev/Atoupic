@@ -11,6 +11,8 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/gestures.dart';
 
 class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable {
+  static final double heightFactor = 1.39444;
+
   final int animationDuration = 500;
   String _spriteFileName;
   final Card card;
@@ -115,7 +117,7 @@ class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable
   void setWidthAndHeightFromTileSize(double tileSize) {
     this.tileSize = tileSize;
     width = tileSize * 1.25;
-    height = tileSize * 1.25 * 1.39444;
+    height = tileSize * 1.25 * heightFactor;
   }
 
   void revealCard() {
