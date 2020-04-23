@@ -40,6 +40,12 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
 
   Stream<TakeOrPassState> _takeAndMapToState(Player player, CardColor color) async* {
     var gameContext = _gameService.read().setDecision(player, Decision.Take);
+
+    _gameBloc.add(DisplayPlayerTookCaption(player.position));
+    _gameBloc.add(DisplayTrumpColor(color, player.position));
+
+    await Future.delayed(Duration(milliseconds: 1000));
+
     var takerCards = _cardService.distributeCards(2).toList()..add(gameContext.lastTurn.card);
 
     gameContext.players.forEach((gamePlayer) {
@@ -61,9 +67,8 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
 
     _gameService.save(gameContext);
 
-    _gameBloc.add(DisplayTrumpColor(color, player.position));
-    _gameBloc.add(ResetPlayersPassedCaption());
     _gameBloc.add(ReplaceRealPlayersCards(realPlayer.cards));
+    _gameBloc.add(ResetPlayersCaption());
 
     yield PlayerTook();
   }
@@ -81,7 +86,7 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
     if (gameContext.nextPlayer() == null && gameContext.lastTurn.round == 1) {
       await Future.delayed(Duration(milliseconds: 1000));
       gameContext = gameContext.nextRound();
-      _gameBloc.add(ResetPlayersPassedCaption());
+      _gameBloc.add(ResetPlayersCaption());
     }
 
     _gameService.save(gameContext);

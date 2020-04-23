@@ -75,11 +75,12 @@ void main() {
             expect(verify(Mocks.cardService.distributeCards(2)).callCount, 1);
             verify(
                 Mocks.gameBloc.add(AddPlayerCards([distributedCard, card], realPlayer.position)));
+            verify(Mocks.gameBloc.add(DisplayPlayerTookCaption(realPlayer.position)));
             expect(verify(Mocks.cardService.distributeCards(3)).callCount, 3);
             verify(Mocks.gameBloc.add(AddPlayerCards([distributedCard], Position.Left)));
             verify(Mocks.gameBloc.add(AddPlayerCards([distributedCard], firstPlayer.position)));
             verify(Mocks.gameBloc.add(AddPlayerCards([distributedCard], Position.Right)));
-            verify(Mocks.gameBloc.add(ResetPlayersPassedCaption()));
+            verify(Mocks.gameBloc.add(ResetPlayersCaption()));
             verify(Mocks.gameBloc.add(DisplayTrumpColor(card.color, Position.Bottom)));
             verify(Mocks.gameBloc.add(ReplaceRealPlayersCards(updatedRealPlayer.cards)));
             verify(Mocks.gameService.save(updatedGameContext));
@@ -143,7 +144,7 @@ void main() {
             verify(mockedContext.setDecision(firstPlayer, Decision.Pass));
             verify(Mocks.gameService.read());
             verify(mockedContext.nextRound());
-            verify(Mocks.gameBloc.add(ResetPlayersPassedCaption()));
+            verify(Mocks.gameBloc.add(ResetPlayersCaption()));
             verify(Mocks.gameService.save(updatedGameContext2));
           });
 

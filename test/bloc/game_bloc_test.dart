@@ -95,9 +95,19 @@ void main() {
     );
 
     blocTest<GameBloc, GameEvent, GameState>(
+      'calls the game to display player took',
+      build: () async => gameBloc,
+      act: (bloc) async => bloc.add(DisplayPlayerTookCaption(Position.Left)),
+      expect: [],
+      verify: (_) async {
+        verify(Mocks.atoupicGame.setPlayerDialogText(Position.Left, 'I Take!'));
+      },
+    );
+
+    blocTest<GameBloc, GameEvent, GameState>(
       'calls the game to reset the passed caption for all players',
       build: () async => gameBloc,
-      act: (bloc) async => bloc.add(ResetPlayersPassedCaption()),
+      act: (bloc) async => bloc.add(ResetPlayersCaption()),
       expect: [],
       verify: (_) async {
         verify(Mocks.atoupicGame.resetPlayersDialog());

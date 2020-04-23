@@ -85,6 +85,11 @@ abstract class PlayerComponent extends PositionComponent
     components.remove(playerName);
     add(playerName);
 
+    if (trumpColor != null) {
+      components.remove(trumpColor);
+      add(trumpColor);
+    }
+
     resize(size);
   }
 

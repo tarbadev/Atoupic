@@ -30,7 +30,16 @@ class DisplayPlayerPassedCaption extends GameEvent {
   List<Object> get props => [position];
 }
 
-class ResetPlayersPassedCaption extends GameEvent {}
+class DisplayPlayerTookCaption extends GameEvent {
+  final Position position;
+
+  DisplayPlayerTookCaption(this.position);
+
+  @override
+  List<Object> get props => [position];
+}
+
+class ResetPlayersCaption extends GameEvent {}
 
 class DisplayTrumpColor extends GameEvent {
   final CardColor color;
