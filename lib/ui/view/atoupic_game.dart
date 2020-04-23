@@ -84,7 +84,7 @@ class AtoupicGame extends BaseGame {
     var playerComponent = _getPlayerFromPosition(position);
     var playedCard =
         playerComponent.cards.firstWhere((cardComponent) => cardComponent.card == card);
-    playerComponent.playCard(playedCard, onAnimationDoneCallback);
+    playerComponent.playCard(playedCard, onAnimationDoneCallback, getCenterRect());
   }
 
   void removePlayedCardsToWinnerPile(Position winner, Function onAnimationEnd) async {

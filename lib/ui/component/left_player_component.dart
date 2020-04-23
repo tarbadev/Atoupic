@@ -54,15 +54,18 @@ class LeftPlayerComponent extends PlayerComponent {
   }
 
   @override
-  Rect getPlayedCardRect(Size size) {
+  Rect getPlayedCardRect(Size size, Rect contentRect) {
     final tileSize = size.width / 9;
-    final playedCardWidth = tileSize * .75 * 1.25;
-    final playedCardHeight = tileSize * .75 * 1.25 * CardComponent.heightFactor;
+    final width = tileSize * .75 * 1.25;
+    final height = width * CardComponent.heightFactor;
+    final midHeight = contentRect.top + ((contentRect.bottom - contentRect.top) / 2);
+    final midWidth = size.width / 2;
+
     return Rect.fromLTWH(
-      (size.width / 2) - (playedCardWidth * 1.5),
-      (size.height / 2) - (playedCardHeight / 2),
-      playedCardWidth,
-      playedCardHeight,
+      midWidth - PlayerComponent.playedCardDistance,
+      midHeight,
+      width,
+      height,
     );
   }
 }

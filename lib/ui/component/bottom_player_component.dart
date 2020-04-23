@@ -60,17 +60,19 @@ class BottomPlayerComponent extends PlayerComponent {
   }
 
   @override
-  Rect getPlayedCardRect(Size size) {
+  Rect getPlayedCardRect(Size size, Rect contentRect) {
     final tileSize = size.width / 9;
-    final playedCardWidth = tileSize * .75 * 1.25;
-    final playedCardHeight = tileSize * .75 * 1.25 * CardComponent.heightFactor;
-    Rect playedCardTarget = Rect.fromLTWH(
-      (size.width / 2),
-      (size.height / 2) + 10,
-      playedCardWidth,
-      playedCardHeight,
+    final width = tileSize * .75 * 1.25;
+    final height = width * CardComponent.heightFactor;
+    final midHeight = contentRect.top + ((contentRect.bottom - contentRect.top) / 2);
+    final midWidth = size.width / 2;
+
+    return Rect.fromLTWH(
+      midWidth,
+      midHeight + PlayerComponent.playedCardDistance,
+      width,
+      height,
     );
-    return playedCardTarget;
   }
 
   @override

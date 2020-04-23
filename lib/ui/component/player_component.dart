@@ -27,6 +27,7 @@ abstract class PlayerComponent extends PositionComponent
     Position.Left: LeftPlayerComponent,
   };
   static final double margin = 5;
+  static final double playedCardDistance = 20;
 
   final Player player;
   final List<CardComponent> cards = List();
@@ -60,7 +61,7 @@ abstract class PlayerComponent extends PositionComponent
 
   void resizeTrumpColor(Size size);
 
-  Rect getPlayedCardRect(Size size);
+  Rect getPlayedCardRect(Size size, Rect contentRect);
 
   static PlayerComponent fromPlayer(Player player) {
     switch (player.position) {
@@ -99,7 +100,7 @@ abstract class PlayerComponent extends PositionComponent
     cards.forEach((card) => card.onCardPlayed = () => callback(card.card));
   }
 
-  void playCard(CardComponent cardToPlay, Function onAnimationDoneCallback) {
+  void playCard(CardComponent cardToPlay, Function onAnimationDoneCallback, Rect centerRect) {
     lastPlayedCard = cardToPlay;
     cards.remove(cardToPlay);
 
@@ -109,7 +110,7 @@ abstract class PlayerComponent extends PositionComponent
     cardToPlay.angle = 0;
     cardToPlay.fullyDisplayed = true;
     cardToPlay.animateStart = DateTime.now();
-    cardToPlay.destinationRect = getPlayedCardRect(size);
+    cardToPlay.destinationRect = getPlayedCardRect(size, centerRect);
     cardToPlay.onAnimationDoneCallback = onAnimationDoneCallback;
     cardToPlay.revealCard();
   }
