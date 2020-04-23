@@ -9,18 +9,37 @@ class BottomPlayerComponent extends PlayerComponent {
   BottomPlayerComponent(Player player) : super(player);
 
   @override
-  void resizePlayerName(Size size) {}
+  void resizePlayerName(Size size) {
+    if (cards.isNotEmpty) {
+      playerName
+        ..anchor = Anchor.bottomLeft
+        ..x = cards.last.x + (cards.last.width / 2) + PlayerComponent.margin
+        ..y = size.height - ((size.height - (cards.last.y - (cards.last.height / 2))) / 2);
+    } else {
+      playerName
+        ..anchor = Anchor.bottomCenter
+        ..x = size.width / 2
+        ..y = size.height - PlayerComponent.margin - playerName.height;
+    }
+  }
 
   @override
-  void resizePlayerDialog(Size size) {}
+  void resizePlayerDialog(Size size) {
+    if (playerDialog != null) {
+      playerDialog
+        ..anchor = Anchor.topLeft
+        ..x = playerName.x
+        ..y = playerName.y + 5;
+    }
+  }
 
   @override
   void resizeTrumpColor(Size size) {
-    if (trumpColor != null && cards.isNotEmpty) {
+    if (trumpColor != null) {
       trumpColor
-        ..anchor = Anchor.bottomRight
-        ..x = cards.first.x - (cards.first.width / 2) - 10
-        ..y = size.height;
+        ..anchor = Anchor.bottomLeft
+        ..x = (playerName.x + playerName.width)
+        ..y = playerName.y;
     }
   }
 

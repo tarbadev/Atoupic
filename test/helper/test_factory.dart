@@ -40,7 +40,7 @@ abstract class TestFactory {
         Card(CardColor.Diamond, CardHead.Ace),
       ];
 
-  static Player get realPlayer => Player(Position.Bottom, '', isRealPlayer: true);
+  static Player get realPlayer => Player(Position.Bottom, 'Player', isRealPlayer: true);
 
   static Player get leftPlayer => Player(Position.Left, 'Lillian');
   static Player get topPlayer => Player(Position.Top, 'Samuel');
