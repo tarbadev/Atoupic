@@ -43,11 +43,12 @@ abstract class TestFactory {
   static Player get realPlayer => Player(Position.Bottom, 'Player', isRealPlayer: true);
 
   static Player get leftPlayer => Player(Position.Left, 'Lillian');
+
   static Player get topPlayer => Player(Position.Top, 'Samuel');
+
   static Player get rightPlayer => Player(Position.Right, 'Olivia');
 
-  static Player realPlayerWithCards(List<Card> cards) =>
-      Player(Position.Bottom, '', isRealPlayer: true)..cards = cards;
+  static Player realPlayerWithCards(List<Card> cards) => realPlayer..cards = cards;
 
   static TurnResult get turnResult => TurnResult(leftPlayer, 102, 50, Result.Success, 102, 50);
 

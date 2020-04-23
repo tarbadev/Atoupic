@@ -6,23 +6,22 @@ import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/card_service.dart';
 import 'package:atoupic/domain/service/player_service.dart';
 import 'package:atoupic/repository/game_context_repository.dart';
-import 'package:kiwi/kiwi.dart';
 
 enum Decision { Pass, Take }
 
 class GameService {
   final GameContextRepository _gameContextRepository;
   final CardService _cardService;
+  final PlayerService _playerService;
 
-  GameService(this._gameContextRepository, this._cardService);
+  GameService(this._gameContextRepository, this._cardService, this._playerService);
 
   GameContext startSoloGame() {
-    PlayerService playerService = Container().resolve();
-    Player realPlayer = playerService.buildRealPlayer();
+    Player realPlayer = _playerService.buildRealPlayer();
     List<Player> players = [
-      playerService.buildComputerPlayer(Position.Left, 'Lillian'),
-      playerService.buildComputerPlayer(Position.Top, 'Samuel'),
-      playerService.buildComputerPlayer(Position.Right, 'Olivia'),
+      _playerService.buildComputerPlayer(Position.Left, 'Lillian'),
+      _playerService.buildComputerPlayer(Position.Top, 'Samuel'),
+      _playerService.buildComputerPlayer(Position.Right, 'Olivia'),
       realPlayer
     ];
 

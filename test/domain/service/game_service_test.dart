@@ -21,7 +21,7 @@ void main() {
       reset(Mocks.cardService);
       reset(Mocks.gameContextRepository);
 
-      gameService = GameService(Mocks.gameContextRepository, Mocks.cardService);
+      gameService = GameService(Mocks.gameContextRepository, Mocks.cardService, Mocks.playerService);
     });
 
     group('startSoloGame', () {
