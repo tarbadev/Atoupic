@@ -114,8 +114,9 @@ void main() {
   group('On CardRoundCreated', () {
     test('triggers a RealPlayerCanChooseCard when next card player is real player', () {
       var mockGameContext = MockGameContext();
+      final player = TestFactory.realPlayerWithCards(TestFactory.cards.sublist(0, 2));
 
-      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.realPlayer);
+      when(mockGameContext.nextCardPlayer()).thenReturn(player);
       when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([TestFactory.cards[0]]);
 
       applicationBlocDelegate.onTransition(
@@ -127,7 +128,7 @@ void main() {
           ));
 
       verify(mockGameContext.nextCardPlayer());
-      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.realPlayer));
+      verify(mockGameContext.getPossibleCardsToPlay(player));
       verify(Mocks.gameBloc.add(RealPlayerCanChooseCard([TestFactory.cards[0]])));
     });
 
@@ -135,7 +136,8 @@ void main() {
       var card = TestFactory.cards[0];
       var mockGameContext = MockGameContext();
 
-      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.topPlayer);
+      final player = TestFactory.topPlayer..cards = TestFactory.cards.sublist(0, 2);
+      when(mockGameContext.nextCardPlayer()).thenReturn(player);
       when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([card]);
 
       applicationBlocDelegate.onTransition(
@@ -147,16 +149,17 @@ void main() {
           ));
 
       verify(mockGameContext.nextCardPlayer());
-      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.topPlayer));
-      verify(Mocks.gameBloc.add(PlayCardForAi(TestFactory.topPlayer, [card])));
+      verify(mockGameContext.getPossibleCardsToPlay(player));
+      verify(Mocks.gameBloc.add(PlayCardForAi(player, [card])));
     });
   });
 
   group('On CardPlayed', () {
     test('triggers a RealPlayerCanChooseCard when next card player is real player', () {
       var mockGameContext = MockGameContext();
+      final player = TestFactory.realPlayerWithCards(TestFactory.cards.sublist(0, 2));
 
-      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.realPlayer);
+      when(mockGameContext.nextCardPlayer()).thenReturn(player);
       when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([TestFactory.cards[0]]);
 
       applicationBlocDelegate.onTransition(
@@ -168,15 +171,16 @@ void main() {
           ));
 
       verify(mockGameContext.nextCardPlayer());
-      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.realPlayer));
+      verify(mockGameContext.getPossibleCardsToPlay(player));
       verify(Mocks.gameBloc.add(RealPlayerCanChooseCard([TestFactory.cards[0]])));
     });
 
     test('triggers a PlayCardForAi when next card player is computer player', () {
-      var card = TestFactory.cards[0];
-      var mockGameContext = MockGameContext();
+      final card = TestFactory.cards[0];
+      final player = TestFactory.topPlayer..cards = TestFactory.cards.sublist(0, 2);
+      final mockGameContext = MockGameContext();
 
-      when(mockGameContext.nextCardPlayer()).thenReturn(TestFactory.topPlayer);
+      when(mockGameContext.nextCardPlayer()).thenReturn(player);
       when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([card]);
 
       applicationBlocDelegate.onTransition(
@@ -188,8 +192,8 @@ void main() {
           ));
 
       verify(mockGameContext.nextCardPlayer());
-      verify(mockGameContext.getPossibleCardsToPlay(TestFactory.topPlayer));
-      verify(Mocks.gameBloc.add(PlayCardForAi(TestFactory.topPlayer, [card])));
+      verify(mockGameContext.getPossibleCardsToPlay(player));
+      verify(Mocks.gameBloc.add(PlayCardForAi(player, [card])));
     });
 
     test('triggers a EndCardRound when next card player null', () async {
@@ -209,6 +213,25 @@ void main() {
 
       verify(mockGameContext.nextCardPlayer());
       verify(Mocks.gameBloc.add(EndCardRound()));
+    });
+
+    test('triggers a PlayCard when next player has only 1 card', () async {
+      final card = TestFactory.cards.first;
+      final player = TestFactory.realPlayerWithCards([card]);
+      final mockGameContext = MockGameContext();
+
+      when(mockGameContext.nextCardPlayer()).thenReturn(player);
+
+      applicationBlocDelegate.onTransition(
+          Mocks.gameBloc,
+          Transition(
+            currentState: NotStarted(),
+            event: NewCardRound(),
+            nextState: CardPlayed(mockGameContext),
+          ));
+
+      verify(mockGameContext.nextCardPlayer());
+      verify(Mocks.gameBloc.add(PlayCard(card, player)));
     });
   });
 

@@ -57,11 +57,15 @@ class ApplicationBlocDelegate extends BlocDelegate {
       });
     } else {
       var event;
-      var possibleCardsToPlay = gameContext.getPossibleCardsToPlay(nextPlayer);
-      if (nextPlayer.isRealPlayer) {
-        event = RealPlayerCanChooseCard(possibleCardsToPlay);
+      if (nextPlayer.cards.length > 1) {
+        var possibleCardsToPlay = gameContext.getPossibleCardsToPlay(nextPlayer);
+        if (nextPlayer.isRealPlayer) {
+          event = RealPlayerCanChooseCard(possibleCardsToPlay);
+        } else {
+          event = PlayCardForAi(nextPlayer, possibleCardsToPlay);
+        }
       } else {
-        event = PlayCardForAi(nextPlayer, possibleCardsToPlay);
+        event = PlayCard(nextPlayer.cards.first, nextPlayer);
       }
       _gameBloc.add(event);
     }
