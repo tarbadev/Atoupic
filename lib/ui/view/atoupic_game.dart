@@ -131,10 +131,10 @@ class AtoupicGame extends BaseGame {
     var rightPlayer = _getPlayerFromPosition(Position.Right);
     var bottomPlayer = _realPlayer;
 
-    final left = leftPlayer.playerName.x + leftPlayer.playerName.width - 10;
-    final top = topPlayer.playerName.y + (topPlayer.playerName.height * 2) - 5;
-    final right = rightPlayer.playerName.x - rightPlayer.playerName.width;
-    final bottom = bottomPlayer.cards.isEmpty
+    final double left = leftPlayer.playerName.x + leftPlayer.playerName.width - 10;
+    final double top = topPlayer.playerName.y + (topPlayer.playerName.height * 2) - 5;
+    final double right = rightPlayer.playerName.x - rightPlayer.playerName.width;
+    final double bottom = bottomPlayer.cards.isEmpty
         ? 0
         : (bottomPlayer.cards.first.y - (bottomPlayer.cards.first.height / 2));
 
