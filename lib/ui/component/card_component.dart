@@ -24,6 +24,8 @@ class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable
   Rect destinationRect;
   double tileSize;
   Offset destinationOffset;
+  static final defaultSpeedFactor = 6;
+  int speedFactor = defaultSpeedFactor;
 
   Function onAnimationDoneCallback;
 
@@ -73,10 +75,10 @@ class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable
   }
 
   void _animateToDestinationOffset(double t) {
-    var speed = tileSize * 6;
+    var speed = tileSize * speedFactor;
     double stepDistance = speed * t;
     Rect currentRect = super.toRect();
-    Offset toTarget = destinationOffset - Offset(currentRect.left, currentRect.top);
+    Offset toTarget = destinationOffset - Offset(x, y);
     if (stepDistance < toTarget.distance) {
       Offset stepToTarget = Offset.fromDirection(toTarget.direction, stepDistance);
       currentRect = currentRect.shift(stepToTarget);
@@ -85,7 +87,7 @@ class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable
       destinationOffset = null;
       onAnimationDoneCallback();
     }
-    
+
     x = currentRect.left + (width / 2);
     y = currentRect.top + (height / 2);
   }
@@ -96,19 +98,19 @@ class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable
     if (differencePercent > 1) {
       differencePercent = 1;
     }
-    
+
     var currentRect = toRect();
     Offset toTarget = Offset(
       (destinationRect.left - currentRect.left - (width / 2)) * differencePercent,
       (destinationRect.top - currentRect.top - (height / 2)) * differencePercent,
     );
     Rect newRect = currentRect.shift(toTarget);
-    
+
     x = newRect.left + (width / 2);
     y = newRect.top + (height / 2);
     width -= (width - destinationRect.width) * differencePercent;
     height -= (height - destinationRect.height) * differencePercent;
-    
+
     if ((x == destinationRect.left &&
             y == destinationRect.top &&
             width == destinationRect.width &&
@@ -144,28 +146,29 @@ class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable
     );
   }
 
-  void animateToCenter(Function onAnimationEnd) {
-    onAnimationDoneCallback = onAnimationEnd;
-    destinationOffset = Offset(
-      size.width / 2 - (width / 2),
-      size.height / 2 - (height),
-    );
+  void animateToOffset(Offset centerOffset, Function onAnimationEnd) {
+    speedFactor = 3;
+    onAnimationDoneCallback = () {
+      speedFactor = defaultSpeedFactor;
+      onAnimationEnd();
+    };
+    destinationOffset = centerOffset;
   }
 
   void animateToWinnerPile(Position winner, Function onAnimationEnd) {
     onAnimationDoneCallback = onAnimationEnd;
     switch (winner) {
       case Position.Top:
-        destinationOffset = Offset(size.width / 2 - (width / 2), -height);
+        destinationOffset = Offset(size.width / 2, -height);
         break;
       case Position.Bottom:
-        destinationOffset = Offset(size.width / 2 - (width / 2), size.height + height);
+        destinationOffset = Offset(size.width / 2, size.height + height);
         break;
       case Position.Left:
-        destinationOffset = Offset(-width, size.height / 2 - (height / 2));
+        destinationOffset = Offset(-width, size.height / 2);
         break;
       case Position.Right:
-        destinationOffset = Offset(size.width + width, size.height / 2 - (height / 2));
+        destinationOffset = Offset(size.width + width, size.height / 2);
         break;
     }
   }

@@ -32,7 +32,6 @@ abstract class PlayerComponent extends PositionComponent
   final Player player;
   final List<CardComponent> cards = List();
 
-  CardComponent lastPlayedCard;
   bool isDown = false;
   PlayerDialog playerDialog;
   TrumpColor trumpColor;
@@ -100,19 +99,9 @@ abstract class PlayerComponent extends PositionComponent
     cards.forEach((card) => card.onCardPlayed = () => callback(card.card));
   }
 
-  void playCard(CardComponent cardToPlay, Function onAnimationDoneCallback, Rect centerRect) {
-    lastPlayedCard = cardToPlay;
+  void playCard(CardComponent cardToPlay) {
     cards.remove(cardToPlay);
-
     components.remove(cardToPlay);
-    add(cardToPlay);
-
-    cardToPlay.angle = 0;
-    cardToPlay.fullyDisplayed = true;
-    cardToPlay.animateStart = DateTime.now();
-    cardToPlay.destinationRect = getPlayedCardRect(size, centerRect);
-    cardToPlay.onAnimationDoneCallback = onAnimationDoneCallback;
-    cardToPlay.revealCard();
   }
 
   void displayTrumpColor(CardColor color) {

@@ -1,18 +1,22 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/ui/component/carpet_component.dart';
 import 'package:atoupic/ui/component/player_component.dart';
 import 'package:flame/game.dart';
 import 'package:kiwi/kiwi.dart';
 
 class AtoupicGame extends BaseGame {
-
+  final CarpetComponent _carpetComponent = CarpetComponent();
   bool visible = false;
   List<PlayerComponent> _players = List();
   PlayerComponent _realPlayer;
+
+  AtoupicGame() {
+    add(_carpetComponent);
+  }
 
   @override
   Color backgroundColor() => Color(0xFF079992);
@@ -51,11 +55,6 @@ class AtoupicGame extends BaseGame {
     playerComponent.addCards(cards);
   }
 
-  @override
-  void resize(Size size) {
-    super.resize(size);
-  }
-
   void resetPlayersDialog() {
     _players.forEach((player) => player.hideDialog());
   }
@@ -84,38 +83,21 @@ class AtoupicGame extends BaseGame {
     var playerComponent = _getPlayerFromPosition(position);
     var playedCard =
         playerComponent.cards.firstWhere((cardComponent) => cardComponent.card == card);
-    playerComponent.playCard(playedCard, onAnimationDoneCallback, getCenterRect());
+
+    playerComponent.playCard(playedCard);
+    _carpetComponent.add(playedCard);
+
+    playedCard.angle = 0;
+    playedCard.fullyDisplayed = true;
+    playedCard.animateStart = DateTime.now();
+    playedCard.destinationRect = playerComponent.getPlayedCardRect(size, getCenterRect());
+    playedCard.onAnimationDoneCallback = onAnimationDoneCallback;
+    playedCard.revealCard();
   }
 
   void removePlayedCardsToWinnerPile(Position winner, Function onAnimationEnd) async {
     resize(size);
-    var playedCards = _players.map((player) => player.lastPlayedCard);
-    List<Completer> completerList = List();
-    playedCards.forEach((card) {
-      var completer = Completer();
-      card.animateToCenter(() => completer.complete());
-      completerList.add(completer);
-    });
-    for(var completer in completerList) {
-      await completer.future;
-    }
-
-    completerList.clear();
-    playedCards.forEach((card) {
-      var completer = Completer();
-      card.animateToWinnerPile(winner, () {
-        card.setToDestroy();
-        completer.complete();
-      });
-      completerList.add(completer);
-    });
-    for(var completer in completerList) {
-      await completer.future;
-    }
-    _players.forEach((player) {
-      player.lastPlayedCard = null;
-    });
-    Timer(Duration(milliseconds: 500), onAnimationEnd);
+    _carpetComponent.cleanUpCarpetToWinner(winner, onAnimationEnd, getCenterContentOffset());
   }
 
   void setTrumpColor(CardColor color, Position position) {
@@ -137,9 +119,10 @@ class AtoupicGame extends BaseGame {
   void resetTrumpColor() {
     _players.forEach((player) => player.hideTrumpColor());
   }
-  
+
   PlayerComponent _getPlayerFromPosition(Position position) {
-    return _players.firstWhere((player) => player.runtimeType == PlayerComponent.positionToPlayerType[position]);
+    return _players.firstWhere(
+        (player) => player.runtimeType == PlayerComponent.positionToPlayerType[position]);
   }
 
   Rect getCenterRect() {
@@ -151,8 +134,18 @@ class AtoupicGame extends BaseGame {
     final left = leftPlayer.playerName.x + leftPlayer.playerName.width - 10;
     final top = topPlayer.playerName.y + (topPlayer.playerName.height * 2) - 5;
     final right = rightPlayer.playerName.x - rightPlayer.playerName.width;
-    final bottom = bottomPlayer.cards.isEmpty ? 0 : (bottomPlayer.cards.first.y - (bottomPlayer.cards.first.height / 2));
+    final bottom = bottomPlayer.cards.isEmpty
+        ? 0
+        : (bottomPlayer.cards.first.y - (bottomPlayer.cards.first.height / 2));
 
     return Rect.fromLTRB(left, top, right, bottom);
+  }
+
+  Offset getCenterContentOffset() {
+    final centerRect = getCenterRect();
+    return Offset(
+      centerRect.left + ((centerRect.right - centerRect.left) / 2),
+      centerRect.top + ((centerRect.bottom - centerRect.top) / 2),
+    );
   }
 }
