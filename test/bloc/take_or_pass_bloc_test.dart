@@ -69,7 +69,8 @@ void main() {
 
             currentTurnBloc.add(Take(realPlayer, card.color));
           },
-          expect: [PlayerTook()],
+          expect: [HideTakeOrPass(), PlayerTook()],
+          skip: 0,
           verify: (_) async {
             verify(Mocks.gameService.read());
             expect(verify(Mocks.cardService.distributeCards(2)).callCount, 1);

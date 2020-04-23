@@ -39,6 +39,7 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
   }
 
   Stream<TakeOrPassState> _takeAndMapToState(Player player, CardColor color) async* {
+    yield HideTakeOrPass();
     var gameContext = _gameService.read().setDecision(player, Decision.Take);
 
     _gameBloc.add(DisplayPlayerTookCaption(player.position));
