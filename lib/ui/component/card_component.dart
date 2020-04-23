@@ -20,9 +20,8 @@ class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable
   final Paint maskPaint = Paint()..color = Color(0x88000000);
   bool fullyDisplayed = false;
   bool canBePlayed = false;
-  bool animatePlayedCard = false;
   DateTime animateStart;
-  Rect playedCardTarget;
+  Rect destinationRect;
   double tileSize;
   Offset destinationOffset;
 
@@ -66,51 +65,57 @@ class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable
   @override
   void update(double t) {
     super.update(t);
-    if (animatePlayedCard && playedCardTarget != null) {
-      int difference = DateTime.now().difference(animateStart).inMilliseconds;
-      var differencePercent = difference / animationDuration;
-      if (differencePercent > 1) {
-        differencePercent = 1;
-      }
-
-      var currentRect = toRect();
-      Offset toTarget = Offset(
-        (playedCardTarget.left - currentRect.left - (width / 2)) * differencePercent,
-        (playedCardTarget.top - currentRect.top - (height / 2)) * differencePercent,
-      );
-      Rect newRect = currentRect.shift(toTarget);
-
-      x = newRect.left + (width / 2);
-      y = newRect.top + (height / 2);
-      width -= (width - playedCardTarget.width) * differencePercent;
-      height -= (height - playedCardTarget.height) * differencePercent;
-
-      if ((x == playedCardTarget.left &&
-              y == playedCardTarget.top &&
-              width == playedCardTarget.width &&
-              height == playedCardTarget.height) ||
-          differencePercent == 1) {
-        animatePlayedCard = false;
-        onAnimationDoneCallback();
-      }
+    if (destinationRect != null) {
+      _animateToDestinationRect();
+    } else if (destinationOffset != null) {
+      _animateToDestinationOffset(t);
     }
+  }
 
-    if (destinationOffset != null) {
-      var speed = tileSize * 6;
-      double stepDistance = speed * t;
-      Rect currentRect = super.toRect();
-      Offset toTarget = destinationOffset - Offset(currentRect.left, currentRect.top);
-      if (stepDistance < toTarget.distance) {
-        Offset stepToTarget = Offset.fromDirection(toTarget.direction, stepDistance);
-        currentRect = currentRect.shift(stepToTarget);
-      } else {
-        currentRect = currentRect.shift(toTarget);
-        destinationOffset = null;
-        onAnimationDoneCallback();
-      }
+  void _animateToDestinationOffset(double t) {
+    var speed = tileSize * 6;
+    double stepDistance = speed * t;
+    Rect currentRect = super.toRect();
+    Offset toTarget = destinationOffset - Offset(currentRect.left, currentRect.top);
+    if (stepDistance < toTarget.distance) {
+      Offset stepToTarget = Offset.fromDirection(toTarget.direction, stepDistance);
+      currentRect = currentRect.shift(stepToTarget);
+    } else {
+      currentRect = currentRect.shift(toTarget);
+      destinationOffset = null;
+      onAnimationDoneCallback();
+    }
+    
+    x = currentRect.left + (width / 2);
+    y = currentRect.top + (height / 2);
+  }
 
-      x = currentRect.left + (width / 2);
-      y = currentRect.top + (height / 2);
+  void _animateToDestinationRect() {
+    int difference = DateTime.now().difference(animateStart).inMilliseconds;
+    var differencePercent = difference / animationDuration;
+    if (differencePercent > 1) {
+      differencePercent = 1;
+    }
+    
+    var currentRect = toRect();
+    Offset toTarget = Offset(
+      (destinationRect.left - currentRect.left - (width / 2)) * differencePercent,
+      (destinationRect.top - currentRect.top - (height / 2)) * differencePercent,
+    );
+    Rect newRect = currentRect.shift(toTarget);
+    
+    x = newRect.left + (width / 2);
+    y = newRect.top + (height / 2);
+    width -= (width - destinationRect.width) * differencePercent;
+    height -= (height - destinationRect.height) * differencePercent;
+    
+    if ((x == destinationRect.left &&
+            y == destinationRect.top &&
+            width == destinationRect.width &&
+            height == destinationRect.height) ||
+        differencePercent == 1) {
+      destinationRect = null;
+      onAnimationDoneCallback();
     }
   }
 

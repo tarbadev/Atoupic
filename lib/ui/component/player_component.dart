@@ -106,11 +106,10 @@ abstract class PlayerComponent extends PositionComponent
     components.remove(cardToPlay);
     add(cardToPlay);
 
-    cardToPlay.playedCardTarget = getPlayedCardRect(size);
     cardToPlay.angle = 0;
     cardToPlay.fullyDisplayed = true;
     cardToPlay.animateStart = DateTime.now();
-    cardToPlay.animatePlayedCard = true;
+    cardToPlay.destinationRect = getPlayedCardRect(size);
     cardToPlay.onAnimationDoneCallback = onAnimationDoneCallback;
     cardToPlay.revealCard();
   }
