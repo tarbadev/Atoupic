@@ -21,7 +21,8 @@ void main() {
       reset(Mocks.cardService);
       reset(Mocks.gameContextRepository);
 
-      gameService = GameService(Mocks.gameContextRepository, Mocks.cardService, Mocks.playerService);
+      gameService =
+          GameService(Mocks.gameContextRepository, Mocks.cardService, Mocks.playerService);
     });
 
     group('startSoloGame', () {
@@ -161,6 +162,21 @@ void main() {
         expect(gameService.startTurn(true), newGameContext);
 
         verify(Mocks.cardService.distributeCards(1));
+        verify(Mocks.gameContextRepository.save(newGameContext));
+      });
+    });
+
+    group('lookForDeclarations', () {
+      test('calls the gameContext to analyse the declarations', () {
+        final mockGameContext = MockGameContext();
+        final newGameContext = MockGameContext();
+
+        when(Mocks.gameContextRepository.read()).thenReturn(mockGameContext);
+        when(mockGameContext.analyseDeclarations()).thenReturn(newGameContext);
+
+        expect(gameService.lookForDeclarations(), newGameContext);
+
+        verify(mockGameContext.analyseDeclarations());
         verify(Mocks.gameContextRepository.save(newGameContext));
       });
     });

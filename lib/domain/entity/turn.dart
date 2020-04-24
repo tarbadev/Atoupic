@@ -1,5 +1,6 @@
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/cart_round.dart';
+import 'package:atoupic/domain/entity/declaration.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn_result.dart';
 import 'package:atoupic/domain/service/game_service.dart';
@@ -10,6 +11,7 @@ class Turn extends Equatable {
   final Player firstPlayer;
   Card card;
   Map<Position, Decision> playerDecisions = Map();
+  Map<Position, List<Declaration>> playerDeclarations = Map();
   List<CardRound> cardRounds = List();
   int round = 1;
   CardColor trumpColor;

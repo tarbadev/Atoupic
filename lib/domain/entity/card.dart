@@ -104,6 +104,29 @@ extension CardHeadExtension on CardHead {
     }
   }
 
+  int get sequenceOrder {
+    switch (this) {
+      case CardHead.Seven:
+        return 0;
+      case CardHead.Eight:
+        return 1;
+      case CardHead.Nine:
+        return 2;
+      case CardHead.Ten:
+        return 3;
+      case CardHead.Jack:
+        return 4;
+      case CardHead.Queen:
+        return 5;
+      case CardHead.King:
+        return 6;
+      case CardHead.Ace:
+        return 7;
+      default:
+        return 0;
+    }
+  }
+
   int get points {
     switch (this) {
       case CardHead.Seven:

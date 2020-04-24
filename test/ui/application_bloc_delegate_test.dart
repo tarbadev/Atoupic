@@ -1,5 +1,6 @@
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
+import 'package:atoupic/domain/entity/cart_round.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/ui/application_bloc_delegate.dart';
 import 'package:bloc/bloc.dart';
@@ -13,7 +14,12 @@ void main() {
   ApplicationBlocDelegate applicationBlocDelegate;
 
   setUp(() {
-    applicationBlocDelegate = ApplicationBlocDelegate(Mocks.gameBloc, Mocks.takeOrPassBloc, Mocks.errorReporter);
+    applicationBlocDelegate = ApplicationBlocDelegate(
+      Mocks.gameBloc,
+      Mocks.takeOrPassBloc,
+      Mocks.errorReporter,
+      Mocks.declarationsBloc,
+    );
   });
 
   group('On SoloGameInitialized', () {
@@ -40,7 +46,8 @@ void main() {
             nextState: TurnCreated(Turn(1, TestFactory.topPlayer)),
           ));
 
-      verify(Mocks.takeOrPassBloc.add(ComputerPlayerTurn(TestFactory.topPlayer, Turn(1, TestFactory.topPlayer))));
+      verify(Mocks.takeOrPassBloc
+          .add(ComputerPlayerTurn(TestFactory.topPlayer, Turn(1, TestFactory.topPlayer))));
     });
 
     test('adds RealPlayerTurn event when player is real player', () {
@@ -112,6 +119,72 @@ void main() {
   });
 
   group('On CardRoundCreated', () {
+    test('triggers a AnalyzeDeclarations event on first cardRound', () {
+      var mockGameContext = MockGameContext();
+
+      when(mockGameContext.lastTurn).thenReturn(
+          Turn(1, TestFactory.leftPlayer)..cardRounds = [CardRound(TestFactory.leftPlayer)]);
+
+      applicationBlocDelegate.onTransition(
+          Mocks.gameBloc,
+          Transition(
+            currentState: NotStarted(),
+            event: NewCardRound(),
+            nextState: CardRoundCreated(mockGameContext),
+          ));
+
+      verify(Mocks.declarationsBloc.add(AnalyseDeclarations(mockGameContext)));
+    });
+
+    group('after second card round', () {
+      test('triggers a RealPlayerCanChooseCard when next card player is real player', () {
+        var mockGameContext = MockGameContext();
+        final player = TestFactory.realPlayerWithCards(TestFactory.cards.sublist(0, 2));
+
+        when(mockGameContext.nextCardPlayer()).thenReturn(player);
+        when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([TestFactory.cards[0]]);
+        when(mockGameContext.lastTurn).thenReturn(
+            Turn(1, TestFactory.leftPlayer)..cardRounds = [CardRound(TestFactory.leftPlayer), CardRound(TestFactory.leftPlayer)]);
+
+        applicationBlocDelegate.onTransition(
+            Mocks.gameBloc,
+            Transition(
+              currentState: NotStarted(),
+              event: NewCardRound(),
+              nextState: CardRoundCreated(mockGameContext),
+            ));
+
+        verify(mockGameContext.nextCardPlayer());
+        verify(mockGameContext.getPossibleCardsToPlay(player));
+        verify(Mocks.gameBloc.add(RealPlayerCanChooseCard([TestFactory.cards[0]])));
+      });
+
+      test('triggers a PlayCardForAi when next card player is computer player', () {
+        var card = TestFactory.cards[0];
+        var mockGameContext = MockGameContext();
+
+        final player = TestFactory.topPlayer..cards = TestFactory.cards.sublist(0, 2);
+        when(mockGameContext.nextCardPlayer()).thenReturn(player);
+        when(mockGameContext.getPossibleCardsToPlay(any)).thenReturn([card]);
+        when(mockGameContext.lastTurn).thenReturn(
+            Turn(1, TestFactory.leftPlayer)..cardRounds = [CardRound(TestFactory.leftPlayer), CardRound(TestFactory.leftPlayer)]);
+
+        applicationBlocDelegate.onTransition(
+            Mocks.gameBloc,
+            Transition(
+              currentState: NotStarted(),
+              event: NewCardRound(),
+              nextState: CardRoundCreated(mockGameContext),
+            ));
+
+        verify(mockGameContext.nextCardPlayer());
+        verify(mockGameContext.getPossibleCardsToPlay(player));
+        verify(Mocks.gameBloc.add(PlayCardForAi(player, [card])));
+      });
+    });
+  });
+
+  group('On FinishedAnalyzingDeclarations', () {
     test('triggers a RealPlayerCanChooseCard when next card player is real player', () {
       var mockGameContext = MockGameContext();
       final player = TestFactory.realPlayerWithCards(TestFactory.cards.sublist(0, 2));
@@ -124,7 +197,7 @@ void main() {
           Transition(
             currentState: NotStarted(),
             event: NewCardRound(),
-            nextState: CardRoundCreated(mockGameContext),
+            nextState: FinishedAnalyzingDeclarations(mockGameContext),
           ));
 
       verify(mockGameContext.nextCardPlayer());
@@ -145,7 +218,7 @@ void main() {
           Transition(
             currentState: NotStarted(),
             event: NewCardRound(),
-            nextState: CardRoundCreated(mockGameContext),
+            nextState: FinishedAnalyzingDeclarations(mockGameContext),
           ));
 
       verify(mockGameContext.nextCardPlayer());

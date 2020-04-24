@@ -1,5 +1,6 @@
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/cart_round.dart';
+import 'package:atoupic/domain/entity/declaration.dart';
 import 'package:atoupic/domain/entity/game_context.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
@@ -160,7 +161,7 @@ void main() {
           player
         ], [
           Turn(1, TestFactory.realPlayer)
-          ..trumpColor = CardColor.Diamond
+            ..trumpColor = CardColor.Diamond
             ..cardRounds = [CardRound(TestFactory.realPlayer)]
         ]);
         var newGameContext = gameContext.setCardDecision(card, player);
@@ -480,12 +481,11 @@ void main() {
       test('when card is a belote card and player has the other belote card', () {
         var player = TestFactory.leftPlayer..cards = [Card(CardColor.Diamond, CardHead.King)];
         var card = Card(CardColor.Diamond, CardHead.Queen);
-        var gameContext =
-            GameContext([], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond
-              ..cardRounds = [
-                CardRound(TestFactory.leftPlayer)
-                  ..playedCards[player.position] = card
-              ]]);
+        var gameContext = GameContext([], [
+          Turn(1, TestFactory.leftPlayer)
+            ..trumpColor = CardColor.Diamond
+            ..cardRounds = [CardRound(TestFactory.leftPlayer)..playedCards[player.position] = card]
+        ]);
         expect(gameContext.isPlayedCardBelote(card, player), BeloteResult.Belote);
       });
 
@@ -496,13 +496,166 @@ void main() {
           Turn(1, TestFactory.leftPlayer)
             ..trumpColor = CardColor.Diamond
             ..cardRounds = [
-              CardRound(TestFactory.leftPlayer)
-                ..playedCards[player.position] = card,
+              CardRound(TestFactory.leftPlayer)..playedCards[player.position] = card,
               CardRound(TestFactory.leftPlayer)
                 ..playedCards[player.position] = Card(CardColor.Diamond, CardHead.King)
             ]
         ]);
         expect(gameContext.isPlayedCardBelote(card, player), BeloteResult.Rebelote);
+      });
+    });
+
+    group('analyseDeclarations', () {
+      test('finds Tierce and stores it in lastTurn', () {
+        final cards = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.King),
+          Card(CardColor.Diamond, CardHead.Queen),
+        ];
+        final orderedCards = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Diamond, CardHead.King),
+        ];
+        final player = TestFactory.leftPlayer..cards = cards;
+        final expectedDeclarations = {
+          Position.Left: [Declaration(DeclarationType.Tierce, orderedCards)]
+        };
+        var gameContext = GameContext(
+            [player], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('finds several Declarations and stores it in lastTurn', () {
+        final cards = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.King),
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.King),
+          Card(CardColor.Spade, CardHead.Ten),
+          Card(CardColor.Spade, CardHead.Queen),
+          Card(CardColor.Spade, CardHead.Ace),
+        ];
+        final orderedDiamondsCards = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Diamond, CardHead.King),
+        ];
+        final orderedSpadeCards = [
+          Card(CardColor.Spade, CardHead.Ten),
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.Queen),
+          Card(CardColor.Spade, CardHead.King),
+          Card(CardColor.Spade, CardHead.Ace),
+        ];
+        final player = TestFactory.leftPlayer..cards = cards;
+        final expectedDeclarations = {
+          Position.Left: [
+            Declaration(DeclarationType.Tierce, orderedDiamondsCards),
+            Declaration(DeclarationType.Quinte, orderedSpadeCards),
+          ]
+        };
+        var gameContext = GameContext(
+            [player], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('finds Quarte and stores it in lastTurn', () {
+        final cards = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.King),
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Diamond, CardHead.Ace),
+        ];
+        final orderedCards = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Diamond, CardHead.King),
+          Card(CardColor.Diamond, CardHead.Ace),
+        ];
+        final player = TestFactory.leftPlayer..cards = cards;
+        final expectedDeclarations = {
+          Position.Left: [Declaration(DeclarationType.Quarte, orderedCards)]
+        };
+        var gameContext = GameContext(
+            [player], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('finds Carre and stores it in lastTurn', () {
+        final kingCarre = [
+          Card(CardColor.Diamond, CardHead.King),
+          Card(CardColor.Heart, CardHead.King),
+          Card(CardColor.Spade, CardHead.King),
+          Card(CardColor.Club, CardHead.King),
+        ];
+        final queenCarre = [
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Heart, CardHead.Queen),
+          Card(CardColor.Spade, CardHead.Queen),
+          Card(CardColor.Club, CardHead.Queen),
+        ];
+        final cards = [
+          Card(CardColor.Diamond, CardHead.King),
+          Card(CardColor.Heart, CardHead.King),
+          Card(CardColor.Spade, CardHead.King),
+          Card(CardColor.Club, CardHead.King),
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Heart, CardHead.Queen),
+          Card(CardColor.Spade, CardHead.Queen),
+          Card(CardColor.Club, CardHead.Queen),
+        ];
+        final player = TestFactory.leftPlayer..cards = cards;
+        final expectedDeclarations = {
+          Position.Left: [
+            Declaration(DeclarationType.Carre, kingCarre),
+            Declaration(DeclarationType.Carre, queenCarre),
+          ]
+        };
+        var gameContext = GameContext(
+            [player], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('finds Carre and stores it in lastTurn with jacks and nines', () {
+        final jackCarre = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Heart, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Club, CardHead.Jack),
+        ];
+        final nineCarre = [
+          Card(CardColor.Diamond, CardHead.Nine),
+          Card(CardColor.Heart, CardHead.Nine),
+          Card(CardColor.Spade, CardHead.Nine),
+          Card(CardColor.Club, CardHead.Nine),
+        ];
+        final cards = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Heart, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Club, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.Nine),
+          Card(CardColor.Heart, CardHead.Nine),
+          Card(CardColor.Spade, CardHead.Nine),
+          Card(CardColor.Club, CardHead.Nine),
+        ];
+        final player = TestFactory.leftPlayer..cards = cards;
+        final expectedDeclarations = {
+          Position.Left: [
+            Declaration(DeclarationType.Carre, jackCarre),
+            Declaration(DeclarationType.Carre, nineCarre),
+          ]
+        };
+        var gameContext = GameContext(
+            [player], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
       });
     });
   });

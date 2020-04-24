@@ -12,6 +12,7 @@ Widget buildTestableWidget(Widget widget) {
         BlocProvider(create: (_) => Mocks.appBloc),
         BlocProvider(create: (_) => Mocks.currentTurnBloc),
         BlocProvider(create: (_) => Mocks.takeOrPassBloc),
+        BlocProvider(create: (_) => Mocks.declarationsBloc),
       ],
       child: MaterialApp(home: Scaffold(body: widget)),
     ),

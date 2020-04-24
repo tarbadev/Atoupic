@@ -10,9 +10,15 @@ import 'package:bloc/bloc.dart';
 class ApplicationBlocDelegate extends BlocDelegate {
   final GameBloc _gameBloc;
   final TakeOrPassBloc _takeOrPassDialogBloc;
+  final DeclarationsBloc _declarationsBloc;
   final ErrorReporter _errorReporter;
 
-  ApplicationBlocDelegate(this._gameBloc, this._takeOrPassDialogBloc, this._errorReporter);
+  ApplicationBlocDelegate(
+    this._gameBloc,
+    this._takeOrPassDialogBloc,
+    this._errorReporter,
+    this._declarationsBloc,
+  );
 
   @override
   void onTransition(Bloc bloc, Transition transition) {
@@ -23,6 +29,12 @@ class ApplicationBlocDelegate extends BlocDelegate {
     } else if (transition.nextState is TurnCreated) {
       _makePlayerTakeOrPass(transition.nextState.turn.firstPlayer, transition.nextState.turn);
     } else if (transition.nextState is CardRoundCreated) {
+      if (transition.nextState.gameContext.lastTurn.cardRounds.length == 1) {
+        _declarationsBloc.add(AnalyseDeclarations(transition.nextState.gameContext));
+      } else {
+        _makePlayerPlayCard(transition.nextState.gameContext);
+      }
+    } else if (transition.nextState is FinishedAnalyzingDeclarations) {
       _makePlayerPlayCard(transition.nextState.gameContext);
     } else if (transition.nextState is CardPlayed) {
       _makePlayerPlayCard(transition.nextState.gameContext);
@@ -36,16 +48,16 @@ class ApplicationBlocDelegate extends BlocDelegate {
     }
   }
 
-  void _makePlayerTakeOrPass(Player player, Turn turn) {
-    _takeOrPassDialogBloc.add(
-      player.isRealPlayer ? RealPlayerTurn(player, turn) : ComputerPlayerTurn(player, turn),
-    );
-  }
-
   @override
   void onError(Bloc bloc, Object error, StackTrace stacktrace) {
     super.onError(bloc, error, stacktrace);
     _errorReporter.report(error, stacktrace);
+  }
+
+  void _makePlayerTakeOrPass(Player player, Turn turn) {
+    _takeOrPassDialogBloc.add(
+      player.isRealPlayer ? RealPlayerTurn(player, turn) : ComputerPlayerTurn(player, turn),
+    );
   }
 
   void _makePlayerPlayCard(GameContext gameContext) {

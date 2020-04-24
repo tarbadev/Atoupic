@@ -50,6 +50,7 @@ abstract class ApplicationInjector {
   @Register.singleton(AppBloc)
   @Register.singleton(CurrentTurnBloc)
   @Register.singleton(TakeOrPassBloc)
+  @Register.singleton(DeclarationsBloc)
   @Register.singleton(ApplicationBlocDelegate)
   void configureAnnotations();
 }

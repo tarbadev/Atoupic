@@ -21,22 +21,14 @@ class NewTurn extends GameEvent {
   List<Object> get props => [turnAlreadyCreated];
 }
 
-class DisplayPlayerPassedCaption extends GameEvent {
+class DisplayPlayerCaption extends GameEvent {
   final Position position;
+  final String caption;
 
-  DisplayPlayerPassedCaption(this.position);
+  DisplayPlayerCaption(this.position, this.caption);
 
   @override
-  List<Object> get props => [position];
-}
-
-class DisplayPlayerTookCaption extends GameEvent {
-  final Position position;
-
-  DisplayPlayerTookCaption(this.position);
-
-  @override
-  List<Object> get props => [position];
+  List<Object> get props => [position, caption];
 }
 
 class ResetPlayersCaption extends GameEvent {}

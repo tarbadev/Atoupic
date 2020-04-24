@@ -2,9 +2,11 @@ import 'dart:collection';
 
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/cart_round.dart';
+import 'package:atoupic/domain/entity/declaration.dart';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/domain/entity/turn.dart';
 import 'package:atoupic/domain/service/game_service.dart';
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 
 enum BeloteResult { Belote, Rebelote, None }
@@ -165,5 +167,68 @@ class GameContext extends Equatable {
     }
 
     return BeloteResult.None;
+  }
+
+  GameContext analyseDeclarations() {
+    var playerDeclarations = <Position, List<Declaration>>{};
+
+    players.forEach((player) {
+      final playerCards = player.cards.toList();
+
+      List<Declaration> sequenceDeclarations = _getSequenceDeclarations(playerCards);
+      List<Declaration> carreDeclarations = _getCarreDeclarations(playerCards);
+
+      if (sequenceDeclarations.isNotEmpty || carreDeclarations.isNotEmpty) {
+        playerDeclarations[player.position] = sequenceDeclarations.toList()
+          ..addAll(carreDeclarations);
+      }
+    });
+    lastTurn.playerDeclarations = playerDeclarations;
+    return this;
+  }
+
+  List<Declaration> _getSequenceDeclarations(List<Card> playerCards) {
+    var declarations = List<Declaration>();
+    var cardsByColor = groupBy(playerCards, (playedCard) => playedCard.color)
+      ..removeWhere((color, cards) => cards.length < 3);
+    if (cardsByColor.isNotEmpty) {
+      cardsByColor.forEach((color, cards) {
+        final sortedCards = cards.toList()
+          ..sort((a, b) => a.head.sequenceOrder.compareTo(b.head.sequenceOrder));
+
+        var counter = 0;
+        var lastSequenceIndex = -100;
+        var declarationCards = List<Card>();
+        sortedCards.forEach((card) {
+          if (lastSequenceIndex != card.head.sequenceOrder - counter) {
+            declarationCards.clear();
+            counter = 0;
+            lastSequenceIndex = card.head.sequenceOrder;
+          }
+
+          declarationCards.add(card);
+          counter++;
+
+          if (counter == 3) {
+            declarations.add(Declaration(DeclarationType.Tierce, declarationCards));
+          } else if (counter == 4) {
+            declarations.removeLast();
+            declarations.add(Declaration(DeclarationType.Quarte, declarationCards));
+          } else if (counter == 5) {
+            declarations.removeLast();
+            declarations.add(Declaration(DeclarationType.Quinte, declarationCards));
+          }
+        });
+      });
+    }
+    return declarations;
+  }
+
+  List<Declaration> _getCarreDeclarations(List<Card> playerCards) {
+    return groupBy(playerCards, (playedCard) => playedCard.head)
+        .entries
+        .where((entry) => entry.value.length == 4)
+        .map((entry) => Declaration(DeclarationType.Carre, entry.value))
+        .toList();
   }
 }

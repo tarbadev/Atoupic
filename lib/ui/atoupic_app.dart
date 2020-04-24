@@ -21,6 +21,7 @@ class AtoupicApp extends StatelessWidget {
         BlocProvider(create: (_) => container.resolve<GameBloc>()),
         BlocProvider(create: (_) => container.resolve<AppBloc>()),
         BlocProvider(create: (_) => container.resolve<TakeOrPassBloc>()),
+        BlocProvider(create: (_) => container.resolve<DeclarationsBloc>()),
       ],
       child: MaterialApp(
         title: 'Atoupic',

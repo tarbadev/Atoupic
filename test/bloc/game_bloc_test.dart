@@ -85,22 +85,12 @@ void main() {
     });
 
     blocTest<GameBloc, GameEvent, GameState>(
-      'calls the game to display player passed',
+      'calls the game to display the text',
       build: () async => gameBloc,
-      act: (bloc) async => bloc.add(DisplayPlayerPassedCaption(Position.Left)),
+      act: (bloc) async => bloc.add(DisplayPlayerCaption(Position.Left, 'Whatever I have to say')),
       expect: [],
       verify: (_) async {
-        verify(Mocks.atoupicGame.setPlayerDialogText(Position.Left, 'Pass!'));
-      },
-    );
-
-    blocTest<GameBloc, GameEvent, GameState>(
-      'calls the game to display player took',
-      build: () async => gameBloc,
-      act: (bloc) async => bloc.add(DisplayPlayerTookCaption(Position.Left)),
-      expect: [],
-      verify: (_) async {
-        verify(Mocks.atoupicGame.setPlayerDialogText(Position.Left, 'I Take!'));
+        verify(Mocks.atoupicGame.setPlayerDialogText(Position.Left, 'Whatever I have to say'));
       },
     );
 

@@ -51,4 +51,11 @@ class GameService {
 
     return _gameContextRepository.save(gameContext);
   }
+
+  GameContext lookForDeclarations() {
+    final gameContext = read().analyseDeclarations();
+    save(gameContext);
+
+    return gameContext;
+  }
 }

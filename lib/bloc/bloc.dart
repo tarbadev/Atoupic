@@ -9,3 +9,6 @@ export 'current_turn_event.dart';
 export 'take_or_pass_bloc.dart';
 export 'take_or_pass_event.dart';
 export 'take_or_pass_state.dart';
+export 'declarations_bloc.dart';
+export 'declarations_event.dart';
+export 'declarations_state.dart';

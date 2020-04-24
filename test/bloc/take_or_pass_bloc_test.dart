@@ -76,7 +76,7 @@ void main() {
             expect(verify(Mocks.cardService.distributeCards(2)).callCount, 1);
             verify(
                 Mocks.gameBloc.add(AddPlayerCards([distributedCard, card], realPlayer.position)));
-            verify(Mocks.gameBloc.add(DisplayPlayerTookCaption(realPlayer.position)));
+            verify(Mocks.gameBloc.add(DisplayPlayerCaption(realPlayer.position, 'I Take!')));
             expect(verify(Mocks.cardService.distributeCards(3)).callCount, 3);
             verify(Mocks.gameBloc.add(AddPlayerCards([distributedCard], Position.Left)));
             verify(Mocks.gameBloc.add(AddPlayerCards([distributedCard], firstPlayer.position)));
@@ -121,7 +121,7 @@ void main() {
           },
           expect: [PlayerPassed(gameContext)],
           verify: (_) async {
-            verify(Mocks.gameBloc.add(DisplayPlayerPassedCaption(firstPlayer.position)));
+            verify(Mocks.gameBloc.add(DisplayPlayerCaption(firstPlayer.position, 'Pass!')));
             verify(Mocks.gameService.read());
             verify(Mocks.gameService.save(updatedGameContext));
           });
@@ -141,7 +141,7 @@ void main() {
           },
           expect: [PlayerPassed(updatedGameContext2)],
           verify: (_) async {
-            verify(Mocks.gameBloc.add(DisplayPlayerPassedCaption(firstPlayer.position)));
+            verify(Mocks.gameBloc.add(DisplayPlayerCaption(firstPlayer.position, 'Pass!')));
             verify(mockedContext.setDecision(firstPlayer, Decision.Pass));
             verify(Mocks.gameService.read());
             verify(mockedContext.nextRound());
@@ -163,7 +163,7 @@ void main() {
           },
           expect: [NoOneTook()],
           verify: (_) async {
-            verify(Mocks.gameBloc.add(DisplayPlayerPassedCaption(firstPlayer.position)));
+            verify(Mocks.gameBloc.add(DisplayPlayerCaption(firstPlayer.position, 'Pass!')));
             verify(mockedContext.setDecision(firstPlayer, Decision.Pass));
             verify(Mocks.gameService.read());
             verify(Mocks.gameService.save(mockedContext));

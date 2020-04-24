@@ -42,7 +42,7 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
     yield HideTakeOrPass();
     var gameContext = _gameService.read().setDecision(player, Decision.Take);
 
-    _gameBloc.add(DisplayPlayerTookCaption(player.position));
+    _gameBloc.add(DisplayPlayerCaption(player.position, 'I Take!'));
     _gameBloc.add(DisplayTrumpColor(color, player.position));
 
     await Future.delayed(Duration(milliseconds: 1000));
@@ -82,7 +82,7 @@ class TakeOrPassBloc extends Bloc<TakeOrPassEvent, TakeOrPassState> {
     yield HideTakeOrPass();
     var gameContext = _gameService.read().setDecision(player, Decision.Pass);
 
-    _gameBloc.add(DisplayPlayerPassedCaption(player.position));
+    _gameBloc.add(DisplayPlayerCaption(player.position, 'Pass!'));
 
     if (gameContext.nextPlayer() == null && gameContext.lastTurn.round == 1) {
       await Future.delayed(Duration(milliseconds: 1000));
