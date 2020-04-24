@@ -228,7 +228,7 @@ class GameContext extends Equatable {
     return groupBy(playerCards, (playedCard) => playedCard.head)
         .entries
         .where((entry) => entry.value.length == 4)
-        .map((entry) => Declaration(DeclarationType.Carre, entry.value))
+        .map((entry) => Declaration(DeclarationType.Square, entry.value))
         .toList();
   }
 }

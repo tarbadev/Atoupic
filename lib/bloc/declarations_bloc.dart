@@ -55,8 +55,8 @@ class DeclarationsBloc extends Bloc<DeclarationsEvent, DeclarationsState> {
         return 'Quarte!';
       case DeclarationType.Quinte:
         return 'Quinte!';
-      case DeclarationType.Carre:
-        return 'Carre of ${_getCardHeadCarreCaption(declaration.cards.first.head)}!';
+      case DeclarationType.Square:
+        return 'Square of ${_getCardHeadCarreCaption(declaration.cards.first.head)}!';
       default:
         return '';
     }

@@ -586,14 +586,14 @@ void main() {
         expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
       });
 
-      test('finds Carre and stores it in lastTurn', () {
-        final kingCarre = [
+      test('finds Square and stores it in lastTurn', () {
+        final kingSquare = [
           Card(CardColor.Diamond, CardHead.King),
           Card(CardColor.Heart, CardHead.King),
           Card(CardColor.Spade, CardHead.King),
           Card(CardColor.Club, CardHead.King),
         ];
-        final queenCarre = [
+        final queenSquare = [
           Card(CardColor.Diamond, CardHead.Queen),
           Card(CardColor.Heart, CardHead.Queen),
           Card(CardColor.Spade, CardHead.Queen),
@@ -612,8 +612,8 @@ void main() {
         final player = TestFactory.leftPlayer..cards = cards;
         final expectedDeclarations = {
           Position.Left: [
-            Declaration(DeclarationType.Carre, kingCarre),
-            Declaration(DeclarationType.Carre, queenCarre),
+            Declaration(DeclarationType.Square, kingSquare),
+            Declaration(DeclarationType.Square, queenSquare),
           ]
         };
         var gameContext = GameContext(
@@ -622,14 +622,14 @@ void main() {
         expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
       });
 
-      test('finds Carre and stores it in lastTurn with jacks and nines', () {
-        final jackCarre = [
+      test('finds Square and stores it in lastTurn with jacks and nines', () {
+        final jackSquare = [
           Card(CardColor.Diamond, CardHead.Jack),
           Card(CardColor.Heart, CardHead.Jack),
           Card(CardColor.Spade, CardHead.Jack),
           Card(CardColor.Club, CardHead.Jack),
         ];
-        final nineCarre = [
+        final nineSquare = [
           Card(CardColor.Diamond, CardHead.Nine),
           Card(CardColor.Heart, CardHead.Nine),
           Card(CardColor.Spade, CardHead.Nine),
@@ -648,8 +648,8 @@ void main() {
         final player = TestFactory.leftPlayer..cards = cards;
         final expectedDeclarations = {
           Position.Left: [
-            Declaration(DeclarationType.Carre, jackCarre),
-            Declaration(DeclarationType.Carre, nineCarre),
+            Declaration(DeclarationType.Square, jackSquare),
+            Declaration(DeclarationType.Square, nineSquare),
           ]
         };
         var gameContext = GameContext(

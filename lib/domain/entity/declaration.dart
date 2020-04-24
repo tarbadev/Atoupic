@@ -1,7 +1,7 @@
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:equatable/equatable.dart';
 
-enum DeclarationType { Tierce, Quarte, Quinte, Carre }
+enum DeclarationType { Tierce, Quarte, Quinte, Square }
 
 class Declaration extends Equatable {
   final DeclarationType type;

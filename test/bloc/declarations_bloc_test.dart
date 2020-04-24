@@ -31,7 +31,7 @@ void main() {
       final turnDeclarations = <Position, List<Declaration>>{
         Position.Left: [Declaration(DeclarationType.Tierce, TestFactory.cards.sublist(0, 3))],
         Position.Top: [],
-        Position.Right: [Declaration(DeclarationType.Carre, [Card(CardColor.Diamond, CardHead.Jack)])],
+        Position.Right: [Declaration(DeclarationType.Square, [Card(CardColor.Diamond, CardHead.Jack)])],
       };
       blocTest<DeclarationsBloc, DeclarationsEvent, DeclarationsState>(
         'emits AnalyzingDeclarations then FinishedAnalyzingDeclarations',
@@ -47,7 +47,7 @@ void main() {
         verify: (_) async {
           verify(Mocks.gameService.lookForDeclarations());
           verify(Mocks.gameBloc.add(DisplayPlayerCaption(Position.Left, 'Tierce!')));
-          verify(Mocks.gameBloc.add(DisplayPlayerCaption(Position.Right, 'Carre of Jacks!')));
+          verify(Mocks.gameBloc.add(DisplayPlayerCaption(Position.Right, 'Square of Jacks!')));
         },
       );
     });

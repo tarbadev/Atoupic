@@ -18,10 +18,7 @@ class Turn extends Equatable {
   TurnResult turnResult;
   Position belote;
 
-  CardRound get lastCardRound =>
-      cardRounds.length > 0
-          ? cardRounds.last
-          : null;
+  CardRound get lastCardRound => cardRounds.length > 0 ? cardRounds.last : null;
 
   Turn(this.number, this.firstPlayer);
 
@@ -33,10 +30,8 @@ class Turn extends Equatable {
   bool get stringify => true;
 
   void calculatePoints(List<Player> players) {
-    var takerPosition = playerDecisions.entries
-        .where((entry) => entry.value == Decision.Take)
-        .single
-        .key;
+    var takerPosition =
+        playerDecisions.entries.where((entry) => entry.value == Decision.Take).single.key;
     var taker = players.firstWhere((p) => p.position == takerPosition);
 
     var horizontalCardPoints = 0;
@@ -52,8 +47,13 @@ class Turn extends Equatable {
       }
     });
 
-    var verticalDeclarationPoints = 0;
-    var horizontalDeclarationPoints = 0;
+    final verticalDeclarations = playerDeclarations.entries.where((entry) => entry.key.isVertical);
+    final horizontalDeclarations =
+        playerDeclarations.entries.where((entry) => !entry.key.isVertical);
+    var verticalDeclarationPoints =
+        verticalDeclarations.isEmpty ? 0 : _calculateDeclarations(verticalDeclarations);
+    var horizontalDeclarationPoints =
+        horizontalDeclarations.isEmpty ? 0 : _calculateDeclarations(horizontalDeclarations);
 
     if (belote != null) {
       if (belote.isVertical) {
@@ -69,34 +69,24 @@ class Turn extends Equatable {
     var isTakerVertical = takerPosition.isVertical;
     var isSuccessful = isTakerVertical && verticalPoints >= horizontalPoints ||
         !isTakerVertical && horizontalPoints >= verticalPoints;
-    var result = isSuccessful
-        ? Result.Success
-        : Result.Failure;
+    var result = isSuccessful ? Result.Success : Result.Failure;
     var verticalScore = 0;
     var horizontalScore = 0;
 
     if (isTakerVertical) {
       if (isSuccessful) {
-        verticalScore = horizontalCardPoints == 0
-            ? 252
-            : verticalCardPoints;
+        verticalScore = horizontalCardPoints == 0 ? 252 : verticalCardPoints;
         horizontalScore = horizontalCardPoints;
       } else {
         verticalScore = 0;
-        horizontalScore = verticalCardPoints == 0
-            ? 252
-            : 162;
+        horizontalScore = verticalCardPoints == 0 ? 252 : 162;
       }
     } else {
       if (isSuccessful) {
         verticalScore = verticalCardPoints;
-        horizontalScore = verticalCardPoints == 0
-            ? 252
-            : horizontalCardPoints;
+        horizontalScore = verticalCardPoints == 0 ? 252 : horizontalCardPoints;
       } else {
-        verticalScore = horizontalCardPoints == 0
-            ? 252
-            : 162;
+        verticalScore = horizontalCardPoints == 0 ? 252 : 162;
         horizontalScore = 0;
       }
     }
@@ -123,7 +113,7 @@ class Turn extends Equatable {
       points += 10;
     }
 
-    points+= calculatePointsFromCards(cardRound.playedCards.values.toList(), trumpColor);
+    points += calculatePointsFromCards(cardRound.playedCards.values.toList(), trumpColor);
 
     return points;
   }
@@ -131,13 +121,39 @@ class Turn extends Equatable {
   int calculatePointsFromCards(List<Card> cards, CardColor trumpColor) {
     var points = 0;
 
-    cards.forEach((card) =>
-    points += card.color == trumpColor
-        ? card.head.trumpPoints
-        : card.head.points);
+    cards.forEach(
+        (card) => points += card.color == trumpColor ? card.head.trumpPoints : card.head.points);
 
     return points;
   }
 
-  Position getCardRoundWinnerPosition(CardRound cartRound) => cartRound.getCardRoundWinner(trumpColor).key;
+  Position getCardRoundWinnerPosition(CardRound cartRound) =>
+      cartRound.getCardRoundWinner(trumpColor).key;
+
+  int _calculateDeclarations(Iterable<MapEntry<Position, List<Declaration>>> verticalDeclarations) {
+    return verticalDeclarations
+        .map((entry) => entry.value.map(_getPointsForDeclaration).reduce((a, b) => a + b))
+        .reduce((a, b) => a + b);
+  }
+
+  int _getPointsForDeclaration(Declaration declaration) {
+    switch (declaration.type) {
+      case DeclarationType.Tierce:
+        return 20;
+      case DeclarationType.Quarte:
+        return 50;
+      case DeclarationType.Quinte:
+        return 100;
+      case DeclarationType.Square:
+        if (declaration.cards.first.head == CardHead.Jack) {
+          return 200;
+        } else if (declaration.cards.first.head == CardHead.Nine) {
+          return 150;
+        }
+
+        return 100;
+      default:
+        return 0;
+    }
+  }
 }
