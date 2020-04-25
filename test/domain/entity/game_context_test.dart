@@ -622,6 +622,24 @@ void main() {
         expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
       });
 
+      test('ignores squares of 8 and 7', () {
+        final cards = [
+          Card(CardColor.Diamond, CardHead.Eight),
+          Card(CardColor.Heart, CardHead.Eight),
+          Card(CardColor.Spade, CardHead.Eight),
+          Card(CardColor.Club, CardHead.Eight),
+          Card(CardColor.Diamond, CardHead.Seven),
+          Card(CardColor.Heart, CardHead.Seven),
+          Card(CardColor.Spade, CardHead.Seven),
+          Card(CardColor.Club, CardHead.Seven),
+        ];
+        final player = TestFactory.leftPlayer..cards = cards;
+        var gameContext = GameContext(
+            [player], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, isEmpty);
+      });
+
       test('finds Square and stores it in lastTurn with jacks and nines', () {
         final jackSquare = [
           Card(CardColor.Diamond, CardHead.Jack),
@@ -654,6 +672,276 @@ void main() {
         };
         var gameContext = GameContext(
             [player], [Turn(1, TestFactory.leftPlayer)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('removes lower sequence if 2 teams have a Tierce', () {
+        final cards1 = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.King),
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Club, CardHead.Ace),
+          Card(CardColor.Club, CardHead.King),
+          Card(CardColor.Club, CardHead.Queen),
+        ];
+        final cards2 = [
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.Ten),
+          Card(CardColor.Spade, CardHead.Queen),
+        ];
+        final orderedCards1 = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Diamond, CardHead.King),
+        ];
+        final orderedCards2 = [
+          Card(CardColor.Club, CardHead.Queen),
+          Card(CardColor.Club, CardHead.King),
+          Card(CardColor.Club, CardHead.Ace),
+        ];
+        final player1 = TestFactory.leftPlayer..cards = cards1;
+        final player2 = TestFactory.topPlayer..cards = cards2;
+        final expectedDeclarations = {
+          Position.Left: [
+            Declaration(DeclarationType.Tierce, orderedCards1),
+            Declaration(DeclarationType.Tierce, orderedCards2),
+          ]
+        };
+        var gameContext = GameContext(
+            [player1, player2], [Turn(1, player1)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('removes regular sequence if 2 teams have a Tierce of with same high card but one is at Trump color', () {
+        final cards1 = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.King),
+          Card(CardColor.Diamond, CardHead.Queen),
+        ];
+        final cards2 = [
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.King),
+          Card(CardColor.Spade, CardHead.Queen),
+        ];
+        final orderedCards1 = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Diamond, CardHead.King),
+        ];
+        final player1 = TestFactory.leftPlayer..cards = cards1;
+        final player2 = TestFactory.topPlayer..cards = cards2;
+        final expectedDeclarations = {
+          Position.Left: [
+            Declaration(DeclarationType.Tierce, orderedCards1),
+          ]
+        };
+        var gameContext = GameContext(
+            [player2, player1], [Turn(1, player1)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('removes both sequence if 2 teams have a Tierce of with same high card none at Trump color', () {
+        final cards1 = [
+          Card(CardColor.Club, CardHead.Jack),
+          Card(CardColor.Club, CardHead.King),
+          Card(CardColor.Club, CardHead.Queen),
+        ];
+        final cards2 = [
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.King),
+          Card(CardColor.Spade, CardHead.Queen),
+        ];
+        final player1 = TestFactory.leftPlayer..cards = cards1;
+        final player2 = TestFactory.topPlayer..cards = cards2;
+        var gameContext = GameContext(
+            [player2, player1], [Turn(1, player1)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, isEmpty);
+      });
+
+      test('removes lowest sequence if 2 teams have a Tierce and a Quarte', () {
+        final cards1 = [
+          Card(CardColor.Club, CardHead.Jack),
+          Card(CardColor.Club, CardHead.King),
+          Card(CardColor.Club, CardHead.Queen),
+          Card(CardColor.Club, CardHead.Ace),
+        ];
+        final cards2 = [
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.King),
+          Card(CardColor.Spade, CardHead.Queen),
+        ];
+        final orderedCards1 = [
+          Card(CardColor.Club, CardHead.Jack),
+          Card(CardColor.Club, CardHead.Queen),
+          Card(CardColor.Club, CardHead.King),
+          Card(CardColor.Club, CardHead.Ace),
+        ];
+        final player1 = TestFactory.leftPlayer..cards = cards1;
+        final player2 = TestFactory.topPlayer..cards = cards2;
+        final expectedDeclarations = {
+          Position.Left: [
+            Declaration(DeclarationType.Quarte, orderedCards1),
+          ]
+        };
+        var gameContext = GameContext(
+            [player2, player1], [Turn(1, player1)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('removes lowest sequence if 2 teams have a Tierce and a Quinte', () {
+        final cards1 = [
+          Card(CardColor.Club, CardHead.Jack),
+          Card(CardColor.Club, CardHead.King),
+          Card(CardColor.Club, CardHead.Queen),
+          Card(CardColor.Club, CardHead.Ten),
+          Card(CardColor.Club, CardHead.Ace),
+        ];
+        final cards2 = [
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.King),
+          Card(CardColor.Spade, CardHead.Queen),
+        ];
+        final orderedCards1 = [
+          Card(CardColor.Club, CardHead.Ten),
+          Card(CardColor.Club, CardHead.Jack),
+          Card(CardColor.Club, CardHead.Queen),
+          Card(CardColor.Club, CardHead.King),
+          Card(CardColor.Club, CardHead.Ace),
+        ];
+        final player1 = TestFactory.leftPlayer..cards = cards1;
+        final player2 = TestFactory.topPlayer..cards = cards2;
+        final expectedDeclarations = {
+          Position.Left: [
+            Declaration(DeclarationType.Quinte, orderedCards1),
+          ]
+        };
+        var gameContext = GameContext(
+            [player2, player1], [Turn(1, player1)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('removes lowest square if 2 teams have a Square', () {
+        final cards1 = [
+          Card(CardColor.Diamond, CardHead.Jack),
+          Card(CardColor.Heart, CardHead.Jack),
+          Card(CardColor.Spade, CardHead.Jack),
+          Card(CardColor.Club, CardHead.Jack),
+        ];
+        final cards2 = [
+          Card(CardColor.Diamond, CardHead.Nine),
+          Card(CardColor.Heart, CardHead.Nine),
+          Card(CardColor.Spade, CardHead.Nine),
+          Card(CardColor.Club, CardHead.Nine),
+        ];
+        final player1 = TestFactory.leftPlayer..cards = cards1;
+        final player2 = TestFactory.topPlayer..cards = cards2;
+        final expectedDeclarations = {
+          Position.Left: [
+            Declaration(DeclarationType.Square, cards1),
+          ]
+        };
+        var gameContext = GameContext(
+            [player2, player1], [Turn(1, player1)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('cancels square if 2 teams have a Square of same value', () {
+        final cards1 = [
+          Card(CardColor.Diamond, CardHead.Ten),
+          Card(CardColor.Heart, CardHead.Ten),
+          Card(CardColor.Spade, CardHead.Ten),
+          Card(CardColor.Club, CardHead.Ten),
+        ];
+        final cards2 = [
+          Card(CardColor.Diamond, CardHead.Ace),
+          Card(CardColor.Heart, CardHead.Ace),
+          Card(CardColor.Spade, CardHead.Ace),
+          Card(CardColor.Club, CardHead.Ace),
+        ];
+        final player1 = TestFactory.leftPlayer..cards = cards1;
+        final player2 = TestFactory.topPlayer..cards = cards2;
+        final expectedDeclarations = {
+          Position.Top: [
+            Declaration(DeclarationType.Square, cards2),
+          ]
+        };
+        var gameContext = GameContext(
+            [player2, player1], [Turn(1, player1)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('cancels only square if 2 teams have a Square of same value and a Tierce', () {
+        final cards1 = [
+          Card(CardColor.Diamond, CardHead.Ten),
+          Card(CardColor.Heart, CardHead.Ten),
+          Card(CardColor.Spade, CardHead.Ten),
+          Card(CardColor.Club, CardHead.Ten),
+        ];
+        final cards2 = [
+          Card(CardColor.Diamond, CardHead.Ace),
+          Card(CardColor.Heart, CardHead.Ace),
+          Card(CardColor.Spade, CardHead.Ace),
+          Card(CardColor.Club, CardHead.Ace),
+        ];
+        final cards3 = [
+          Card(CardColor.Diamond, CardHead.Queen),
+          Card(CardColor.Diamond, CardHead.King),
+          Card(CardColor.Diamond, CardHead.Ace),
+        ];
+        final player1 = TestFactory.leftPlayer..cards = (cards1.toList()..addAll(cards3));
+        final player2 = TestFactory.topPlayer..cards = cards2;
+        final expectedDeclarations = {
+          Position.Top: [
+            Declaration(DeclarationType.Square, cards2),
+          ],
+          Position.Left: [
+            Declaration(DeclarationType.Tierce, cards3),
+          ],
+        };
+        var gameContext = GameContext(
+            [player2, player1], [Turn(1, player1)..trumpColor = CardColor.Diamond]);
+
+        expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
+      });
+
+      test('2 cards cannot be of the same declaration', () {
+        final cards1 = [
+          Card(CardColor.Diamond, CardHead.Ten),
+          Card(CardColor.Heart, CardHead.Ten),
+          Card(CardColor.Spade, CardHead.Ten),
+          Card(CardColor.Club, CardHead.Ten),
+        ];
+        final cards2 = [
+          Card(CardColor.Diamond, CardHead.Ace),
+          Card(CardColor.Heart, CardHead.Ace),
+          Card(CardColor.Spade, CardHead.Ace),
+          Card(CardColor.Club, CardHead.Ace),
+        ];
+        final cards3 = [
+          Card(CardColor.Diamond, CardHead.Seven),
+          Card(CardColor.Diamond, CardHead.Eight),
+          Card(CardColor.Diamond, CardHead.Nine),
+        ];
+        final player1 = TestFactory.leftPlayer..cards = (cards1.toList()..addAll(cards3));
+        final player2 = TestFactory.topPlayer..cards = cards2;
+        final expectedDeclarations = {
+          Position.Top: [
+            Declaration(DeclarationType.Square, cards2),
+          ],
+          Position.Left: [
+            Declaration(DeclarationType.Tierce, cards3),
+          ],
+        };
+        var gameContext = GameContext(
+            [player2, player1], [Turn(1, player1)..trumpColor = CardColor.Diamond]);
 
         expect(gameContext.analyseDeclarations().lastTurn.playerDeclarations, expectedDeclarations);
       });

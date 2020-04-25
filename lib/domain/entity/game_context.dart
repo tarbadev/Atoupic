@@ -170,21 +170,122 @@ class GameContext extends Equatable {
   }
 
   GameContext analyseDeclarations() {
+    Map<Position, List<Declaration>> playerDeclarations = _getAllPlayerDeclarations();
+    final playerSequenceDeclarations = playerDeclarations.entries.where(
+      (entry) =>
+          entry.value.where((declaration) => declaration.type != DeclarationType.Square).isNotEmpty,
+    );
+    final playerSquareDeclarations = playerDeclarations.entries.where(
+      (entry) =>
+          entry.value.where((declaration) => declaration.type == DeclarationType.Square).isNotEmpty,
+    );
+
+    if (playerSequenceDeclarations.isNotEmpty) {
+      final bestSequenceDeclarationByPlayer = playerSequenceDeclarations.map((entry) => MapEntry(
+          entry.key, entry.value.reduce((a, b) => a.cards.length > b.cards.length ? a : b)));
+      var bestSequence = bestSequenceDeclarationByPlayer.length > 1
+          ? bestSequenceDeclarationByPlayer.reduce((entry1, entry2) =>
+              entry1.value.cards.length > entry2.value.cards.length ? entry1 : entry2)
+          : bestSequenceDeclarationByPlayer.first;
+
+      final otherEqualSequences = bestSequenceDeclarationByPlayer.where((entry) =>
+          entry.value.cards.length == bestSequence.value.cards.length &&
+          entry.key != bestSequence.key);
+
+      Declaration bestSequenceDeclaration = bestSequence.value;
+      if (otherEqualSequences.isNotEmpty) {
+        otherEqualSequences.forEach((entry) {
+          if (bestSequenceDeclaration == null) {
+            bestSequenceDeclaration = entry.value;
+          } else {
+            if (bestSequenceDeclaration.cards.last.head.sequenceOrder <
+                entry.value.cards.last.head.sequenceOrder) {
+              bestSequenceDeclaration = entry.value;
+            } else if (bestSequenceDeclaration.cards.last.head.sequenceOrder ==
+                    entry.value.cards.last.head.sequenceOrder &&
+                entry.value.cards.last.color == lastTurn.trumpColor) {
+              bestSequenceDeclaration = entry.value;
+            } else if (bestSequenceDeclaration.cards.last.head.sequenceOrder ==
+                    entry.value.cards.last.head.sequenceOrder &&
+                entry.value.cards.last.color != lastTurn.trumpColor &&
+                bestSequenceDeclaration.cards.last.color != lastTurn.trumpColor) {
+              bestSequenceDeclaration = null;
+            }
+          }
+        });
+      }
+
+      if (bestSequenceDeclaration == null) {
+        playerDeclarations = {};
+      } else {
+        final bestSequencePosition = bestSequenceDeclarationByPlayer
+            .firstWhere((entry) => entry.value == bestSequenceDeclaration)
+            .key;
+        playerDeclarations.entries.forEach((entry) => entry.value.removeWhere((declaration) =>
+            entry.key.isVertical != bestSequencePosition.isVertical &&
+            declaration.type != DeclarationType.Square));
+      }
+    }
+
+    if (playerSquareDeclarations.isNotEmpty) {
+      var bestSquareDeclaration = playerSquareDeclarations
+          .map((entry) => MapEntry(
+              entry.key,
+              entry.value.reduce((declaration1, declaration2) =>
+                  lastTurn.getPointsForDeclaration(declaration1) >
+                          lastTurn.getPointsForDeclaration(declaration2)
+                      ? declaration1
+                      : declaration2)))
+          .reduce((entry1, entry2) => lastTurn.getPointsForDeclaration(entry1.value) >
+                  lastTurn.getPointsForDeclaration(entry2.value)
+              ? entry1
+              : entry2);
+      if (bestSquareDeclaration.value.cards.first.head != CardHead.Jack &&
+          bestSquareDeclaration.value.cards.first.head != CardHead.Nine) {
+        var otherSquares = playerSquareDeclarations.where((entry) => entry.value
+            .where((declaration) => declaration != bestSquareDeclaration.value)
+            .isNotEmpty);
+        if (otherSquares.isNotEmpty) {
+          otherSquares.forEach((entry) {
+            entry.value.forEach((declaration) {
+              if (declaration.cards.first.head.sequenceOrder >
+                  bestSquareDeclaration.value.cards.first.head.sequenceOrder) {
+                bestSquareDeclaration = MapEntry(entry.key, declaration);
+              }
+            });
+          });
+        }
+      }
+
+      final bestSequencePosition = bestSquareDeclaration.key;
+      playerDeclarations.entries.forEach((entry) => entry.value.removeWhere((declaration) =>
+          entry.key.isVertical != bestSequencePosition.isVertical &&
+          declaration.type == DeclarationType.Square));
+    }
+
+    playerDeclarations.removeWhere((position, declarations) => declarations.isEmpty);
+
+    lastTurn.playerDeclarations = playerDeclarations;
+    return this;
+  }
+
+  Map<Position, List<Declaration>> _getAllPlayerDeclarations() {
     var playerDeclarations = <Position, List<Declaration>>{};
 
     players.forEach((player) {
       final playerCards = player.cards.toList();
 
-      List<Declaration> sequenceDeclarations = _getSequenceDeclarations(playerCards);
       List<Declaration> carreDeclarations = _getCarreDeclarations(playerCards);
+      List<Declaration> sequenceDeclarations = _getSequenceDeclarations(playerCards
+        ..removeWhere((card) =>
+            carreDeclarations.where((declaration) => declaration.cards.contains(card)).isNotEmpty));
 
       if (sequenceDeclarations.isNotEmpty || carreDeclarations.isNotEmpty) {
         playerDeclarations[player.position] = sequenceDeclarations.toList()
           ..addAll(carreDeclarations);
       }
     });
-    lastTurn.playerDeclarations = playerDeclarations;
-    return this;
+    return playerDeclarations;
   }
 
   List<Declaration> _getSequenceDeclarations(List<Card> playerCards) {
@@ -225,9 +326,12 @@ class GameContext extends Equatable {
   }
 
   List<Declaration> _getCarreDeclarations(List<Card> playerCards) {
-    return groupBy(playerCards, (playedCard) => playedCard.head)
+    return groupBy(playerCards, (card) => card.head)
         .entries
-        .where((entry) => entry.value.length == 4)
+        .where((entry) =>
+            entry.value.length == 4 &&
+            entry.value.first.head != CardHead.Seven &&
+            entry.value.first.head != CardHead.Eight)
         .map((entry) => Declaration(DeclarationType.Square, entry.value))
         .toList();
   }

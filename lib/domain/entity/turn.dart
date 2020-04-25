@@ -132,11 +132,11 @@ class Turn extends Equatable {
 
   int _calculateDeclarations(Iterable<MapEntry<Position, List<Declaration>>> verticalDeclarations) {
     return verticalDeclarations
-        .map((entry) => entry.value.map(_getPointsForDeclaration).reduce((a, b) => a + b))
+        .map((entry) => entry.value.map(getPointsForDeclaration).reduce((a, b) => a + b))
         .reduce((a, b) => a + b);
   }
 
-  int _getPointsForDeclaration(Declaration declaration) {
+  int getPointsForDeclaration(Declaration declaration) {
     switch (declaration.type) {
       case DeclarationType.Tierce:
         return 20;
