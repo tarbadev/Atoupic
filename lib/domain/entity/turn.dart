@@ -55,16 +55,15 @@ class Turn extends Equatable {
     var horizontalDeclarationPoints =
         horizontalDeclarations.isEmpty ? 0 : _calculateDeclarations(horizontalDeclarations);
 
-    if (belote != null) {
-      if (belote.isVertical) {
-        verticalDeclarationPoints += 20;
-      } else {
-        horizontalDeclarationPoints += 20;
-      }
-    }
+    final verticalBelote = belote != null && belote.isVertical
+        ? 20
+        : 0;
+    final horizontalBelote = belote != null && !belote.isVertical
+        ? 20
+        : 0;
 
-    var verticalPoints = verticalCardPoints + verticalDeclarationPoints;
-    var horizontalPoints = horizontalCardPoints + horizontalDeclarationPoints;
+    var verticalPoints = verticalCardPoints + verticalDeclarationPoints + verticalBelote;
+    var horizontalPoints = horizontalCardPoints + horizontalDeclarationPoints + horizontalBelote;
 
     var isTakerVertical = takerPosition.isVertical;
     var isSuccessful = isTakerVertical && verticalPoints >= horizontalPoints ||
@@ -91,8 +90,24 @@ class Turn extends Equatable {
       }
     }
 
-    verticalScore += verticalDeclarationPoints;
-    horizontalScore += horizontalDeclarationPoints;
+    if (isTakerVertical) {
+      if (isSuccessful) {
+        verticalScore += verticalDeclarationPoints;
+        horizontalScore += horizontalDeclarationPoints;
+      } else {
+        horizontalScore += horizontalDeclarationPoints + verticalDeclarationPoints;
+      }
+    } else {
+      if (isSuccessful) {
+        verticalScore += verticalDeclarationPoints;
+        horizontalScore += horizontalDeclarationPoints;
+      } else {
+        verticalScore += horizontalDeclarationPoints + verticalDeclarationPoints;
+      }
+    }
+
+    verticalScore += verticalBelote;
+    horizontalScore += horizontalBelote;
 
     var turnResult = TurnResult(
       taker,
