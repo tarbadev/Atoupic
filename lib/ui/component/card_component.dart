@@ -123,9 +123,12 @@ class CardComponent extends SpriteComponent with Resizable, Tapable, Destroyable
 
   void setWidthAndHeightFromTileSize(double tileSize) {
     this.tileSize = tileSize;
-    width = tileSize * 1.25;
-    height = tileSize * 1.25 * heightFactor;
+    width = widthFromTileSize(tileSize);
+    height = heightFromWidth(tileSize);
   }
+
+  static double widthFromTileSize(double tileSize) => tileSize * 1.25;
+  static double heightFromWidth(double width) => width * heightFactor;
 
   void revealCard() {
     if (_spriteFileName == 'cards/BackFace.png') {

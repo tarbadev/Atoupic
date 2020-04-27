@@ -44,12 +44,12 @@ abstract class PlayerComponent extends PositionComponent
 
   @override
   void resize(Size size) {
+    super.resize(size);
+
     resizeCardDeck(size);
     resizePlayerName(size);
     resizeTrumpColor(size);
     resizePlayerDialog(size);
-
-    super.resize(size);
   }
 
   void resizeCardDeck(Size size);

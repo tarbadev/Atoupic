@@ -3,16 +3,20 @@ import 'dart:ui';
 import 'package:atoupic/bloc/bloc.dart';
 import 'package:atoupic/domain/entity/card.dart';
 import 'package:atoupic/domain/entity/player.dart';
+import 'package:atoupic/ui/component/bottom_player_component.dart';
+import 'package:atoupic/ui/component/card_component.dart';
 import 'package:atoupic/ui/component/carpet_component.dart';
 import 'package:atoupic/ui/component/player_component.dart';
 import 'package:flame/game.dart';
 import 'package:kiwi/kiwi.dart';
 
 class AtoupicGame extends BaseGame {
+  static double tileSize;
+
   final CarpetComponent _carpetComponent = CarpetComponent();
   bool visible = false;
   List<PlayerComponent> _players = List();
-  PlayerComponent _realPlayer;
+  BottomPlayerComponent _realPlayer;
 
   AtoupicGame() {
     add(_carpetComponent);
@@ -26,6 +30,12 @@ class AtoupicGame extends BaseGame {
     if (visible) {
       super.render(canvas);
     }
+  }
+
+  @override
+  void resize(Size size) {
+    tileSize = size.width / 9;
+    super.resize(size);
   }
 
   void setDomainPlayers(List<Player> players) {
@@ -70,7 +80,7 @@ class AtoupicGame extends BaseGame {
       final GameBloc gameBloc = container.resolve();
       _realPlayer.setCardsOnTapCallback((card) => gameBloc.add(PlayCard(card, _realPlayer.player)));
       _realPlayer.cards.forEach((cardComponent) =>
-          cardComponent.canBePlayed = possiblePlayableCards.contains(cardComponent.card));
+      cardComponent.canBePlayed = possiblePlayableCards.contains(cardComponent.card));
     } else {
       _realPlayer.cards.forEach((cardComponent) {
         cardComponent.canBePlayed = false;
@@ -82,7 +92,7 @@ class AtoupicGame extends BaseGame {
   void setLastCardPlayed(Card card, Position position, Function onAnimationDoneCallback) {
     var playerComponent = _getPlayerFromPosition(position);
     var playedCard =
-        playerComponent.cards.firstWhere((cardComponent) => cardComponent.card == card);
+    playerComponent.cards.firstWhere((cardComponent) => cardComponent.card == card);
 
     playerComponent.playCard(playedCard);
     _carpetComponent.add(playedCard);
@@ -122,7 +132,7 @@ class AtoupicGame extends BaseGame {
 
   PlayerComponent _getPlayerFromPosition(Position position) {
     return _players.firstWhere(
-        (player) => player.runtimeType == PlayerComponent.positionToPlayerType[position]);
+            (player) => player.runtimeType == PlayerComponent.positionToPlayerType[position]);
   }
 
   Rect getCenterRect() {
@@ -131,12 +141,13 @@ class AtoupicGame extends BaseGame {
     var rightPlayer = _getPlayerFromPosition(Position.Right);
     var bottomPlayer = _realPlayer;
 
+    var cardHeight =
+    CardComponent.heightFromWidth(CardComponent.widthFromTileSize(AtoupicGame.tileSize));
+
     final double left = leftPlayer.playerName.x + leftPlayer.playerName.width - 10;
     final double top = topPlayer.playerName.y + (topPlayer.playerName.height * 2) - 5;
     final double right = rightPlayer.playerName.x - rightPlayer.playerName.width;
-    final double bottom = bottomPlayer.cards.isEmpty
-        ? 0
-        : (bottomPlayer.cards.first.y - (bottomPlayer.cards.first.height / 2));
+    final double bottom = bottomPlayer.getYCoordinate() - (cardHeight / 2);
 
     return Rect.fromLTRB(left, top, right, bottom);
   }

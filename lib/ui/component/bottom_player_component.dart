@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:atoupic/domain/entity/player.dart';
 import 'package:atoupic/ui/component/card_component.dart';
 import 'package:atoupic/ui/component/player_component.dart';
+import 'package:atoupic/ui/view/atoupic_game.dart';
 import 'package:flame/anchor.dart';
 import 'package:flutter/gestures.dart';
 
@@ -50,11 +51,12 @@ class BottomPlayerComponent extends PlayerComponent {
     final cardWidth = tileSize * 1.25;
     final fullDeckWidth = cardWidth * .25 * (cards.length - 1) + cardWidth;
     final initialX = (size.width / 2) - (fullDeckWidth / 2) + (cardWidth / 2);
+    final y = getYCoordinate();
 
     cards.asMap().forEach((index, card) {
       card.setWidthAndHeightFromTileSize(tileSize);
       card.x = initialX + (card.width * .25 * index);
-      card.y = size.height - (card.height * .25);
+      card.y = y;
       card.fullyDisplayed = index == cards.length - 1;
     });
   }
@@ -89,5 +91,11 @@ class BottomPlayerComponent extends PlayerComponent {
       isDown = true;
       super.handleTapDown(details);
     }
+  }
+
+  double getYCoordinate() {
+    return size.height -
+        (CardComponent.heightFromWidth(CardComponent.widthFromTileSize(AtoupicGame.tileSize)) *
+            .25);
   }
 }
