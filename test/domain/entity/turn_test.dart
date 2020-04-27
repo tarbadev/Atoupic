@@ -427,6 +427,78 @@ void main() {
 
           expect(turn.turnResult, expectedTurnResult);
         });
+
+        group('declarations', () {
+          test('adds points to the team', () {
+            var turn = Turn(1, firstPlayer)
+              ..playerDecisions[Position.Left] = Decision.Take
+              ..card = Card(CardColor.Spade, CardHead.Ten)
+              ..trumpColor = CardColor.Spade
+              ..playerDeclarations[Position.Left] = [
+                Declaration(DeclarationType.Tierce, []),
+                Declaration(DeclarationType.Quarte, [])
+              ]
+              ..playerDeclarations[Position.Right] = [
+                Declaration(DeclarationType.Quinte, []),
+                Declaration(DeclarationType.Square, [Card(CardColor.Diamond, CardHead.King)])
+              ]
+              ..cardRounds = [
+                CardRound(TestFactory.topPlayer) // 35
+                  ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
+                  ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
+                  ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
+                  ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Seven),
+                CardRound(TestFactory.topPlayer) // 27
+                  ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Nine)
+                  ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.Ten)
+                  ..playedCards[Position.Bottom] = Card(CardColor.Heart, CardHead.Queen)
+                  ..playedCards[Position.Left] = Card(CardColor.Diamond, CardHead.Seven),
+                CardRound(TestFactory.topPlayer) // 27
+                  ..playedCards[Position.Top] = Card(CardColor.Diamond, CardHead.Ace)
+                  ..playedCards[Position.Right] = Card(CardColor.Diamond, CardHead.Eight)
+                  ..playedCards[Position.Bottom] = Card(CardColor.Diamond, CardHead.King)
+                  ..playedCards[Position.Left] = Card(CardColor.Diamond, CardHead.Jack),
+              ];
+            var expectedTurnResult = TurnResult(firstPlayer, 270, 89, Result.Success, 270, 89);
+            turn.calculatePoints(players);
+
+            expect(turn.turnResult, expectedTurnResult);
+          });
+
+          test('adds points when Square is Jack or Nines to the team', () {
+            var turn = Turn(1, firstPlayer)
+              ..playerDecisions[Position.Left] = Decision.Take
+              ..card = Card(CardColor.Spade, CardHead.Ten)
+              ..trumpColor = CardColor.Spade
+              ..playerDeclarations[Position.Left] = [
+                Declaration(DeclarationType.Square, [Card(CardColor.Diamond, CardHead.Jack)]),
+              ]
+              ..playerDeclarations[Position.Right] = [
+                Declaration(DeclarationType.Square, [Card(CardColor.Diamond, CardHead.Nine)]),
+              ]
+              ..cardRounds = [
+                CardRound(TestFactory.topPlayer) // 35
+                  ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Jack)
+                  ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.King)
+                  ..playedCards[Position.Bottom] = Card(CardColor.Spade, CardHead.Ace)
+                  ..playedCards[Position.Left] = Card(CardColor.Spade, CardHead.Seven),
+                CardRound(TestFactory.topPlayer) // 27
+                  ..playedCards[Position.Top] = Card(CardColor.Spade, CardHead.Nine)
+                  ..playedCards[Position.Right] = Card(CardColor.Spade, CardHead.Queen)
+                  ..playedCards[Position.Bottom] = Card(CardColor.Heart, CardHead.Ten)
+                  ..playedCards[Position.Left] = Card(CardColor.Diamond, CardHead.Seven),
+                CardRound(TestFactory.topPlayer) // 27
+                  ..playedCards[Position.Top] = Card(CardColor.Diamond, CardHead.Ace)
+                  ..playedCards[Position.Right] = Card(CardColor.Diamond, CardHead.Eight)
+                  ..playedCards[Position.Bottom] = Card(CardColor.Diamond, CardHead.King)
+                  ..playedCards[Position.Left] = Card(CardColor.Diamond, CardHead.Jack),
+              ];
+            var expectedTurnResult = TurnResult(firstPlayer, 350, 89, Result.Success, 350, 89);
+            turn.calculatePoints(players);
+
+            expect(turn.turnResult, expectedTurnResult);
+          });
+        });
       });
     });
   });
