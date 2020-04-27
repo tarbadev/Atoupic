@@ -130,13 +130,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       gameContext.lastTurn.calculatePoints(gameContext.players);
       _gameService.save(gameContext);
 
-      var usScore = 0;
-      var themScore = 0;
-
-      gameContext.turns.where((turn) => turn.turnResult != null).forEach((turn) {
-        usScore += turn.turnResult.verticalScore;
-        themScore += turn.turnResult.horizontalScore;
-      });
+      final gameScore = getGameScore(gameContext);
+      final usScore = gameScore[0];
+      final themScore = gameScore[1];
 
       final pointsNeededToWin = 501;
       var isGameOver = usScore >= pointsNeededToWin || themScore >= pointsNeededToWin;
@@ -153,16 +149,24 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  Stream<GameState> _mapEndGameEventToState(EndGame event) async* {
+  List<int> getGameScore(gameContext) {
     var usScore = 0;
     var themScore = 0;
 
-    var gameContext = _gameService.read();
-
-    gameContext.turns.forEach((turn) {
+    gameContext.turns.where((turn) => turn.turnResult != null).forEach((turn) {
       usScore += turn.turnResult.verticalScore;
       themScore += turn.turnResult.horizontalScore;
     });
+
+    return [usScore, themScore];
+  }
+
+  Stream<GameState> _mapEndGameEventToState(EndGame event) async* {
+    final gameContext = _gameService.read();
+    final gameScore = getGameScore(gameContext);
+
+    final usScore = gameScore[0];
+    final themScore = gameScore[1];
 
     yield GameEnded(usScore, themScore);
   }

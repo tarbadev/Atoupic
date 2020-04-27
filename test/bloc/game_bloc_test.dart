@@ -518,7 +518,9 @@ void main() {
         act: (bloc) async {
           when(Mocks.gameService.read()).thenReturn(mockGameContext);
           when(mockGameContext.turns).thenReturn(UnmodifiableListView([
-            Turn(1, null)..turnResult = TestFactory.turnResult,
+            Turn(1, null),
+            Turn(2, null)
+              ..turnResult = TestFactory.turnResult,
           ]));
 
           bloc.add(EndGame());
