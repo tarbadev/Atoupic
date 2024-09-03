@@ -59,7 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: "Download application bundle"
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: appbundle
       - name: "Setup Sentry CLI"
